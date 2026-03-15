@@ -274,6 +274,28 @@ async function main() {
   }
   console.log(`  Created ${settingCount} default settings`);
 
+  // ========================================================================
+  // Default Bays
+  // ========================================================================
+  const defaultBays = [
+    { name: "Bay 1", type: "GENERAL", color: "#3B82F6", sortOrder: 0 },
+    { name: "Bay 2", type: "GENERAL", color: "#10B981", sortOrder: 1 },
+    { name: "Bay 3", type: "GENERAL", color: "#F59E0B", sortOrder: 2 },
+    { name: "Paint Booth", type: "PAINT_BOOTH", color: "#EF4444", sortOrder: 3 },
+    { name: "Detail Bay", type: "DETAIL", color: "#8B5CF6", sortOrder: 4 },
+    { name: "PDR Station", type: "PDR", color: "#EC4899", sortOrder: 5 },
+  ];
+
+  for (const bay of defaultBays) {
+    const existing = await prisma.bay.findFirst({
+      where: { name: bay.name, deletedAt: null },
+    });
+    if (!existing) {
+      await prisma.bay.create({ data: bay });
+    }
+  }
+  console.log(`  Created ${defaultBays.length} default bays`);
+
   console.log("Seed complete!");
 }
 
