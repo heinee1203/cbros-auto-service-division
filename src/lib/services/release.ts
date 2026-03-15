@@ -274,11 +274,24 @@ export async function completeRelease(releaseId: string, userId: string) {
   const { jobOrder } = release;
   const releaseDate = new Date();
 
-  // Transaction: update job status + release record dates
+  // Transaction: update job status + release record dates + auto-release bay
+  let releasedBayAssignment = false;
   await prisma.$transaction(async (tx) => {
+    // Auto-release bay assignment
+    const activeBayAssignment = await tx.bayAssignment.findFirst({
+      where: { jobOrderId: jobOrder.id, endDate: null },
+    });
+    if (activeBayAssignment) {
+      await tx.bayAssignment.update({
+        where: { id: activeBayAssignment.id },
+        data: { endDate: new Date() },
+      });
+      releasedBayAssignment = true;
+    }
+
     await tx.jobOrder.update({
       where: { id: jobOrder.id },
-      data: { status: "RELEASED", updatedBy: userId },
+      data: { status: "RELEASED", assignedBayId: null, updatedBy: userId },
     });
 
     await tx.releaseRecord.update({
@@ -293,6 +306,17 @@ export async function completeRelease(releaseId: string, userId: string) {
       },
     });
   });
+
+  // Log bay release activity (outside transaction — non-critical)
+  if (releasedBayAssignment) {
+    await logActivity({
+      jobOrderId: jobOrder.id,
+      type: "BAY_RELEASED",
+      title: "Bay released",
+      description: "Bay automatically released on vehicle release",
+      userId,
+    });
+  }
 
   // Create Warranty records
   const serviceCategories = getServiceCategories(jobOrder);
