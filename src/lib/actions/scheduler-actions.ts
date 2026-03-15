@@ -11,6 +11,8 @@ import {
   updateAppointmentSchema,
   updateAppointmentStatusSchema,
   assignBaySchema,
+  updateBayAssignmentSchema,
+  reorderBaysSchema,
 } from "@/lib/validators";
 
 type ActionResult = {
@@ -199,6 +201,57 @@ export async function assignJobToBayAction(input: unknown): Promise<ActionResult
     return { success: true, data: assignment };
   } catch (err) {
     return { success: false, error: err instanceof Error ? err.message : "Failed to assign bay" };
+  }
+}
+
+export async function updateBayAssignmentAction(id: string, input: unknown): Promise<ActionResult> {
+  const session = await getSession();
+  if (!session?.user) return { success: false, error: "Unauthorized" };
+  if (!can(session.user.role, "schedule:bays_assign"))
+    return { success: false, error: "Permission denied" };
+
+  const parsed = updateBayAssignmentSchema.safeParse(input);
+  if (!parsed.success) return { success: false, error: parsed.error.issues[0].message };
+
+  try {
+    const data: {
+      bayId?: string;
+      startDate?: Date;
+      endDate?: Date | null;
+      notes?: string | null;
+    } = {};
+    if (parsed.data.bayId) data.bayId = parsed.data.bayId;
+    if (parsed.data.startDate) data.startDate = new Date(parsed.data.startDate);
+    if (parsed.data.endDate !== undefined) {
+      data.endDate = parsed.data.endDate ? new Date(parsed.data.endDate) : null;
+    }
+    if (parsed.data.notes !== undefined) data.notes = parsed.data.notes;
+
+    const assignment = await scheduler.updateBayAssignment(id, data);
+    revalidatePath("/schedule/bays");
+    revalidatePath("/jobs");
+    return { success: true, data: assignment };
+  } catch (err) {
+    return { success: false, error: err instanceof Error ? err.message : "Failed to update bay assignment" };
+  }
+}
+
+export async function reorderBaysAction(input: unknown): Promise<ActionResult> {
+  const session = await getSession();
+  if (!session?.user) return { success: false, error: "Unauthorized" };
+  if (!can(session.user.role, "schedule:bays_manage"))
+    return { success: false, error: "Permission denied" };
+
+  const parsed = reorderBaysSchema.safeParse(input);
+  if (!parsed.success) return { success: false, error: parsed.error.issues[0].message };
+
+  try {
+    await scheduler.reorderBays(parsed.data.orderedIds);
+    revalidatePath("/settings");
+    revalidatePath("/schedule/bays");
+    return { success: true };
+  } catch (err) {
+    return { success: false, error: err instanceof Error ? err.message : "Failed to reorder bays" };
   }
 }
 

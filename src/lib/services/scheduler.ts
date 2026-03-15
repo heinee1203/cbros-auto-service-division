@@ -362,6 +362,87 @@ export async function getUpcomingPickUpsByCustomerIds(customerIds: string[]) {
   });
 }
 
+export async function updateBayAssignment(id: string, data: {
+  bayId?: string;
+  startDate?: Date;
+  endDate?: Date | null;
+  notes?: string | null;
+}) {
+  const current = await prisma.bayAssignment.findUniqueOrThrow({ where: { id } });
+  const targetBayId = data.bayId ?? current.bayId;
+  const targetStart = data.startDate ?? current.startDate;
+  const targetEnd = data.endDate !== undefined ? data.endDate : current.endDate;
+
+  const conflicts = await getConflicts(targetBayId, targetStart, targetEnd);
+  const realConflicts = conflicts.filter(c => c.id !== id);
+  if (realConflicts.length > 0) {
+    throw new Error("Bay is already occupied during this time period");
+  }
+
+  const updated = await prisma.bayAssignment.update({ where: { id }, data });
+
+  // If bay changed, update jobOrder.assignedBayId
+  if (data.bayId && data.bayId !== current.bayId) {
+    await prisma.jobOrder.update({
+      where: { id: current.jobOrderId },
+      data: { assignedBayId: data.bayId },
+    });
+  }
+  return updated;
+}
+
+export async function suggestBayForJob(jobOrderId: string) {
+  const job = await prisma.jobOrder.findUniqueOrThrow({
+    where: { id: jobOrderId },
+    include: {
+      estimates: {
+        include: { estimateRequest: { select: { requestedCategories: true } } },
+        take: 1,
+      },
+    },
+  });
+
+  const categories: string[] = job.estimates[0]?.estimateRequest?.requestedCategories
+    ? JSON.parse(job.estimates[0].estimateRequest.requestedCategories)
+    : [];
+
+  const preferredTypes = mapCategoriesToBayTypes(categories);
+  const allBays = await prisma.bay.findMany({
+    where: { deletedAt: null, isActive: true },
+    orderBy: { sortOrder: "asc" },
+  });
+
+  const now = new Date();
+  const endDate = job.scheduledEndDate ?? new Date(now.getTime() + 14 * 86400000);
+
+  for (const bayType of [...preferredTypes, "GENERAL"]) {
+    for (const bay of allBays.filter(b => b.type === bayType)) {
+      const conflicts = await getConflicts(bay.id, now, endDate);
+      if (conflicts.length === 0) return { suggestedBay: bay, allBays };
+    }
+  }
+  return { suggestedBay: null, allBays };
+}
+
+function mapCategoriesToBayTypes(categories: string[]): string[] {
+  const map: Record<string, string> = {
+    "Painting & Refinishing": "PAINT_BOOTH",
+    "Car Detailing": "DETAIL",
+    "Buffing & Paint Correction": "DETAIL",
+    "Undercoating & Rust Protection": "GENERAL",
+    "Collision Repair": "GENERAL",
+    "Car Restoration": "GENERAL",
+  };
+  return Array.from(new Set(categories.map(c => map[c]).filter((v): v is string => Boolean(v))));
+}
+
+export async function reorderBays(orderedIds: string[]) {
+  const updates = orderedIds.map((id, index) =>
+    prisma.bay.update({ where: { id }, data: { sortOrder: index } })
+  );
+  await prisma.$transaction(updates);
+}
+
 export async function getShopCapacity(startDate: Date, endDate: Date) {
   const bays = await prisma.bay.count({ where: { isActive: true, deletedAt: null } });
   const techs = await prisma.user.count({

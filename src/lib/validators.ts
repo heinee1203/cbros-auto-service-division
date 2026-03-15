@@ -404,3 +404,14 @@ export const assignBaySchema = z.object({
   endDate: z.string().optional().nullable(),
   notes: z.string().max(500).optional().nullable(),
 });
+
+export const updateBayAssignmentSchema = z.object({
+  bayId: z.string().optional(),
+  startDate: z.string().optional(),
+  endDate: z.string().optional().nullable(),
+  notes: z.string().max(500).optional().nullable(),
+});
+
+export const reorderBaysSchema = z.object({
+  orderedIds: z.array(z.string().min(1)).min(1),
+});
