@@ -20,14 +20,11 @@ const DOT_COLOR_MAP: Record<string, string> = {
   surface: "bg-surface-400",
 };
 
-function formatTime(isoString: string): string {
-  const date = new Date(isoString);
-  const hours = date.getHours();
-  const minutes = date.getMinutes();
-  const ampm = hours >= 12 ? "PM" : "AM";
-  const displayHour = hours % 12 || 12;
-  const displayMin = minutes.toString().padStart(2, "0");
-  return `${displayHour}:${displayMin} ${ampm}`;
+function formatTime(time: string): string {
+  const [h, m] = time.split(":").map(Number);
+  const period = h >= 12 ? "PM" : "AM";
+  const hour = h % 12 || 12;
+  return `${hour}:${m.toString().padStart(2, "0")} ${period}`;
 }
 
 export function TodaysAppointmentsWidget({
