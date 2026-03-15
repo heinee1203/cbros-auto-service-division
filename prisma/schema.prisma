@@ -33,6 +33,10 @@ model User {
   email         String?
   avatarUrl     String?
 
+  // Scheduling
+  workSchedule      String?   // JSON: {"mon":{"start":"08:00","end":"17:00"}, ...}
+  maxConcurrentJobs Int       @default(2)
+
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   createdBy     String?
@@ -47,6 +51,8 @@ model User {
   notifications       Notification[]     @relation("NotificationRecipient")
   auditLogs           AuditLog[]
   jobActivities       JobActivity[]
+  bayAssignmentsCreated BayAssignment[] @relation("BayAssignmentCreator")
+  appointmentsCreated   Appointment[]   @relation("AppointmentCreator")
 
   @@index([pinHash])
   @@index([role])
@@ -87,6 +93,7 @@ model Customer {
   estimateRequests  EstimateRequest[]
   jobOrders         JobOrder[]
   warranties        Warranty[]
+  appointments      Appointment[]
 
   @@index([phone])
   @@index([lastName, firstName])
@@ -120,6 +127,7 @@ model Vehicle {
   estimateRequests  EstimateRequest[]
   jobOrders         JobOrder[]
   warranties        Warranty[]
+  appointments      Appointment[]
 
   @@unique([plateNumber])
   @@index([plateNumber])
@@ -156,6 +164,7 @@ model EstimateRequest {
   customer          Customer  @relation(fields: [customerId], references: [id])
   vehicle           Vehicle   @relation(fields: [vehicleId], references: [id])
   estimates         Estimate[]
+  appointments      Appointment[]
 
   @@index([requestNumber])
   @@index([customerId])
@@ -294,6 +303,11 @@ model JobOrder {
   primaryTechnicianId String?
   notes             String?
 
+  // Scheduling
+  scheduledStartDate  DateTime?
+  scheduledEndDate    DateTime?
+  assignedBayId       String?
+
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
   createdBy         String?
@@ -316,6 +330,7 @@ model JobOrder {
   warranties        Warranty[]
   adjusterLogs      AdjusterLog[]
   activities        JobActivity[]
+  bayAssignments      BayAssignment[]
 
   @@index([jobOrderNumber])
   @@index([customerId])
@@ -1074,4 +1089,80 @@ model Setting {
 
   @@index([key])
   @@index([category])
+}
+
+// ============================================================================
+// SCHEDULING
+// ============================================================================
+
+model Bay {
+  id          String    @id @default(cuid())
+  name        String
+  type        String    @default("GENERAL") // BayType
+  capacity    Int       @default(1)
+  isActive    Boolean   @default(true)
+  sortOrder   Int       @default(0)
+  notes       String?
+  color       String?   // Hex color for calendar display
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  // Relations
+  assignments BayAssignment[]
+
+  @@index([isActive])
+  @@index([deletedAt])
+}
+
+model BayAssignment {
+  id          String    @id @default(cuid())
+  bayId       String
+  jobOrderId  String
+  startDate   DateTime
+  endDate     DateTime?
+  notes       String?
+  createdBy   String
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relations
+  bay           Bay       @relation(fields: [bayId], references: [id])
+  jobOrder      JobOrder  @relation(fields: [jobOrderId], references: [id])
+  createdByUser User      @relation("BayAssignmentCreator", fields: [createdBy], references: [id])
+
+  @@index([bayId, startDate])
+  @@index([jobOrderId])
+}
+
+model Appointment {
+  id              String    @id @default(cuid())
+  customerId      String
+  vehicleId       String?
+  estimateId      String?
+  type            String    @default("DROP_OFF") // AppointmentType
+  scheduledDate   DateTime
+  scheduledTime   String    // "09:00", "14:30"
+  duration        Int       @default(60) // minutes
+  status          String    @default("SCHEDULED") // AppointmentStatus
+  notes           String?
+  reminderSent    Boolean   @default(false)
+  createdBy       String
+
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  deletedAt       DateTime?
+
+  // Relations
+  customer        Customer  @relation(fields: [customerId], references: [id])
+  vehicle         Vehicle?  @relation(fields: [vehicleId], references: [id])
+  estimate        EstimateRequest? @relation(fields: [estimateId], references: [id])
+  createdByUser   User      @relation("AppointmentCreator", fields: [createdBy], references: [id])
+
+  @@index([scheduledDate])
+  @@index([customerId])
+  @@index([status])
+  @@index([deletedAt])
 }
