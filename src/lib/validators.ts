@@ -363,3 +363,44 @@ export const userUpdateSchema = z.object({
 });
 
 export type UserUpdateInput = z.infer<typeof userUpdateSchema>;
+
+// ============================================================================
+// SCHEDULER VALIDATORS
+// ============================================================================
+
+export const createBaySchema = z.object({
+  name: z.string().min(1, "Bay name is required").max(100),
+  type: z.enum(["GENERAL", "PAINT_BOOTH", "DETAIL", "PDR", "MECHANICAL", "WASH"]),
+  capacity: z.number().int().min(1).max(5).default(1),
+  color: z.string().regex(/^#[0-9A-Fa-f]{6}$/, "Invalid hex color").optional().nullable(),
+  notes: z.string().max(500).optional().nullable(),
+  sortOrder: z.number().int().min(0).default(0),
+});
+
+export const updateBaySchema = createBaySchema.partial();
+
+export const createAppointmentSchema = z.object({
+  customerId: z.string().min(1, "Customer is required"),
+  vehicleId: z.string().optional().nullable(),
+  estimateId: z.string().optional().nullable(),
+  type: z.enum(["ESTIMATE_INSPECTION", "DROP_OFF", "PICK_UP", "FOLLOW_UP", "CONSULTATION"]),
+  scheduledDate: z.string().min(1, "Date is required"), // ISO date string
+  scheduledTime: z.string().regex(/^\d{2}:\d{2}$/, "Time must be HH:MM format"),
+  duration: z.number().int().min(15).max(480).default(60),
+  notes: z.string().max(1000).optional().nullable(),
+});
+
+export const updateAppointmentSchema = createAppointmentSchema.partial();
+
+export const updateAppointmentStatusSchema = z.object({
+  status: z.enum(["SCHEDULED", "CONFIRMED", "ARRIVED", "NO_SHOW", "CANCELLED", "COMPLETED"]),
+  notes: z.string().max(1000).optional().nullable(),
+});
+
+export const assignBaySchema = z.object({
+  jobOrderId: z.string().min(1),
+  bayId: z.string().min(1),
+  startDate: z.string().min(1), // ISO date string
+  endDate: z.string().optional().nullable(),
+  notes: z.string().max(500).optional().nullable(),
+});
