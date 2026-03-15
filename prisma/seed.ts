@@ -165,6 +165,10 @@ async function main() {
     { key: "warranty_spot_paint_months", value: "12", category: "warranty", description: "Spot paint warranty duration in months" },
     { key: "warranty_ceramic_coating_months", value: "24", category: "warranty", description: "Ceramic coating warranty duration in months" },
     { key: "warranty_collision_repair_months", value: "12", category: "warranty", description: "Collision repair warranty duration in months" },
+    { key: "warranty_duration_detailing", value: "6", category: "warranty", description: "Detailing warranty duration in months" },
+    { key: "warranty_duration_undercoating", value: "12", category: "warranty", description: "Undercoating warranty duration in months" },
+    { key: "warranty_duration_ppf", value: "60", category: "warranty", description: "PPF warranty duration in months" },
+    { key: "warranty_duration_restoration", value: "12", category: "warranty", description: "Car restoration warranty duration in months" },
 
     // Numbering
     { key: "next_est_sequence", value: "1", category: "numbering", description: "Next estimate request sequence number" },
@@ -178,6 +182,17 @@ async function main() {
     { key: "followup_30day_enabled", value: "true", category: "followup", description: "Enable 30-day satisfaction survey" },
     { key: "followup_6month_enabled", value: "true", category: "followup", description: "Enable 6-month maintenance reminder" },
     { key: "followup_1year_enabled", value: "true", category: "followup", description: "Enable 1-year anniversary reminder" },
+
+    // Care Instructions
+    { key: "care_instructions_paint", value: "Avoid washing for 7 days. Avoid automatic car washes for 30 days. No waxing for 60 days. Hand wash only with pH-neutral shampoo.", category: "care_instructions", description: "Care instructions for paint/repaint jobs" },
+    { key: "care_instructions_ceramic_coating", value: "Avoid water for 24 hours. No soap wash for 7 days. First maintenance wash at 2 weeks. Use pH-neutral shampoo only.", category: "care_instructions", description: "Care instructions for ceramic coating" },
+    { key: "care_instructions_undercoating", value: "Allow 48 hours for full cure. Avoid pressure washing underbody for 1 week. Inspect annually.", category: "care_instructions", description: "Care instructions for undercoating" },
+    { key: "care_instructions_ppf", value: "No washing for 48 hours. Avoid pressure washer on film edges. Use pH-neutral shampoo. No abrasive polishing on film.", category: "care_instructions", description: "Care instructions for PPF" },
+    { key: "care_instructions_detailing", value: "Maintain with pH-neutral shampoo. Avoid automatic car washes. Use microfiber towels only. Re-apply coating maintenance spray monthly.", category: "care_instructions", description: "Care instructions for detailing" },
+    { key: "care_instructions_collision", value: "Avoid high-pressure washing on repaired areas for 14 days. Check for any paint chips or bubbling within first month.", category: "care_instructions", description: "Care instructions for collision repair" },
+
+    // Warranty Terms Template
+    { key: "warranty_terms_template", value: "This warranty covers defects in workmanship and materials for the specified service. Normal wear and tear, accident damage, and modifications by third parties are excluded. To make a claim, contact us at the shop phone number with your completion report reference.", category: "warranty", description: "Default warranty terms template" },
 
     // Working Hours
     { key: "shop_open_time", value: '"08:00"', category: "schedule", description: "Shop opening time (24hr format)" },
@@ -195,6 +210,52 @@ async function main() {
 
     // Approval link expiry
     { key: "estimate_approval_link_days", value: "7", category: "documents", description: "Days before estimate approval link expires" },
+
+    // QC Checklist Templates
+    { key: "qc_checklist_paint_body", value: JSON.stringify([
+      {"description": "Color match accuracy (natural light + fluorescent)", "sortOrder": 1},
+      {"description": "Orange peel level acceptable", "sortOrder": 2},
+      {"description": "No runs, sags, drips, or fisheyes", "sortOrder": 3},
+      {"description": "Blending on adjacent panels seamless", "sortOrder": 4},
+      {"description": "Clear coat gloss and DOI satisfactory", "sortOrder": 5},
+      {"description": "No sanding marks, halos, or burn-throughs", "sortOrder": 6},
+      {"description": "All masking removed cleanly", "sortOrder": 7},
+      {"description": "Panel alignment and gaps consistent", "sortOrder": 8},
+      {"description": "All clips, fasteners, trim reinstalled", "sortOrder": 9},
+      {"description": "No rattles or loose components", "sortOrder": 10},
+      {"description": "All hardware torqued", "sortOrder": 11},
+    ]), category: "qc", description: "Paint & Body QC checklist template" },
+
+    { key: "qc_checklist_detailing", value: JSON.stringify([
+      {"description": "Surface free of swirls, holograms, marring (LED inspection)", "sortOrder": 1},
+      {"description": "Coating applied evenly, no high spots", "sortOrder": 2},
+      {"description": "Glass clean and streak-free", "sortOrder": 3},
+      {"description": "Interior surfaces clean, no residue", "sortOrder": 4},
+      {"description": "Tires and trim dressed evenly", "sortOrder": 5},
+      {"description": "No fingerprints or water spots", "sortOrder": 6},
+      {"description": "No chemical odor remaining", "sortOrder": 7},
+    ]), category: "qc", description: "Detailing QC checklist template" },
+
+    { key: "qc_checklist_undercoating", value: JSON.stringify([
+      {"description": "Full coverage on specified areas", "sortOrder": 1},
+      {"description": "Consistent thickness", "sortOrder": 2},
+      {"description": "No drips or runs", "sortOrder": 3},
+      {"description": "Drain holes not blocked", "sortOrder": 4},
+      {"description": "No overspray on suspension/exhaust/brake components", "sortOrder": 5},
+      {"description": "Adequate curing time observed", "sortOrder": 6},
+    ]), category: "qc", description: "Undercoating QC checklist template" },
+
+    { key: "qc_checklist_mechanical", value: JSON.stringify([
+      {"description": "All lights function", "sortOrder": 1},
+      {"description": "Doors, hood, trunk open/close/latch properly", "sortOrder": 2},
+      {"description": "Windows operate correctly", "sortOrder": 3},
+      {"description": "Locks function", "sortOrder": 4},
+      {"description": "No fluid leaks", "sortOrder": 5},
+      {"description": "Test drive completed (if applicable)", "sortOrder": 6},
+    ]), category: "qc", description: "Mechanical/Functional QC checklist template" },
+
+    // Discount threshold
+    { key: "discount_approval_threshold", value: "500000", category: "invoicing", description: "Discount amount (centavos) requiring OWNER/MANAGER approval" },
   ];
 
   let settingCount = 0;

@@ -79,7 +79,7 @@ export function GlobalSearch({ open, onOpenChange }: GlobalSearchProps) {
       } finally {
         setLoading(false);
       }
-    }, 200);
+    }, 300);
 
     return () => clearTimeout(timer);
   }, [query]);

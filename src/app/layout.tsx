@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { DM_Sans, JetBrains_Mono } from "next/font/google";
 import { Providers } from "@/components/providers";
 import "./globals.css";
@@ -15,10 +15,23 @@ const jetbrainsMono = JetBrains_Mono({
   display: "swap",
 });
 
+export const viewport: Viewport = {
+  themeColor: "#1A1A2E",
+};
+
 export const metadata: Metadata = {
   title: "AutoServ Pro",
   description:
     "Every scratch documented. Every hour tracked. Every customer protected.",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "AutoServ Pro",
+  },
+  icons: {
+    apple: "/icons/icon-180x180.png",
+  },
 };
 
 export default function RootLayout({

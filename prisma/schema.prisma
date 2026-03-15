@@ -46,6 +46,7 @@ model User {
   qcInspections       QCInspection[]     @relation("QCInspector")
   notifications       Notification[]     @relation("NotificationRecipient")
   auditLogs           AuditLog[]
+  jobActivities       JobActivity[]
 
   @@index([pinHash])
   @@index([role])
@@ -314,6 +315,7 @@ model JobOrder {
   releaseRecord     ReleaseRecord?
   warranties        Warranty[]
   adjusterLogs      AdjusterLog[]
+  activities        JobActivity[]
 
   @@index([jobOrderNumber])
   @@index([customerId])
@@ -623,6 +625,8 @@ model QCChecklistItem {
   status          String    @default("NA") // QCChecklistItemStatus: "PASS" | "FAIL" | "NA"
   notes           String?
   sortOrder       Int       @default(0)
+  photoId         String?   // optional photo reference (Photo.id)
+  inspectedAt     DateTime? // timestamp when result was set
 
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
@@ -670,6 +674,15 @@ model Invoice {
   dueDate           DateTime?
   paidInFullAt      DateTime?
   notes             String?
+
+  // Insurance split
+  insurancePays     Int       @default(0)  // insurance portion (centavos)
+  customerCopay     Int       @default(0)  // customer portion (centavos)
+
+  // Versioning
+  version           Int       @default(1)  // invoice version number
+  isLatest          Boolean   @default(true)  // only latest version is active
+  shareToken        String?   @unique  // for public share link
 
   // Variance tracking (internal)
   estimatedTotal    Int       @default(0)
@@ -779,6 +792,9 @@ model ReleaseRecord {
   followUp6MonthSent  Boolean   @default(false)
   followUp1YearDate   DateTime?
   followUp1YearSent   Boolean   @default(false)
+
+  completionReportToken String? @unique
+  belongingsNotes       String?
 
   createdAt           DateTime  @default(now())
   updatedAt           DateTime  @updatedAt
@@ -971,6 +987,7 @@ model Notification {
   entityType      String?
   entityId        String?
   metadata        String?   // JSON
+  scheduledAt     DateTime?  // for future-dated notifications (follow-ups)
 
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
@@ -983,7 +1000,33 @@ model Notification {
 
   @@index([recipientId, isRead])
   @@index([type])
+  @@index([scheduledAt])
   @@index([deletedAt])
+}
+
+// ============================================================================
+// JOB ACTIVITY FEED (Append-only — purpose-built timeline for job detail UI)
+// ============================================================================
+
+model JobActivity {
+  id              String    @id @default(cuid())
+  jobOrderId      String
+  type            String    // status_change, clock_in, clock_out, photo_upload,
+                            // note, material_logged, supplement_created, qc_result,
+                            // task_status_change, assignment_change
+  title           String    // Human-readable: "Alex clocked in on Base Coat"
+  description     String?   // Optional detail text
+  metadata        String?   // JSON for structured data (task name, hours, photo thumbnail, etc.)
+  userId          String
+
+  createdAt       DateTime  @default(now())
+
+  // Relations
+  jobOrder        JobOrder  @relation(fields: [jobOrderId], references: [id])
+  user            User      @relation(fields: [userId], references: [id])
+
+  @@index([jobOrderId, createdAt])
+  @@index([type])
 }
 
 // ============================================================================

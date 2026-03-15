@@ -183,6 +183,10 @@ export const NotificationType = {
   VEHICLE_READY: "VEHICLE_READY",
   FOLLOW_UP: "FOLLOW_UP",
   GENERAL: "GENERAL",
+  FOLLOW_UP_SATISFACTION: "FOLLOW_UP_SATISFACTION",
+  FOLLOW_UP_SURVEY: "FOLLOW_UP_SURVEY",
+  FOLLOW_UP_MAINTENANCE: "FOLLOW_UP_MAINTENANCE",
+  WARRANTY_EXPIRY: "WARRANTY_EXPIRY",
 } as const;
 export type NotificationType =
   (typeof NotificationType)[keyof typeof NotificationType];
@@ -240,4 +244,167 @@ export const USER_ROLE_LABELS: Record<UserRole, string> = {
   TECHNICIAN: "Technician",
   QC_INSPECTOR: "QC Inspector",
   CASHIER: "Cashier",
+};
+
+export const ESTIMATE_REQUEST_STATUS_LABELS: Record<EstimateRequestStatus, string> = {
+  INQUIRY_RECEIVED: "New Inquiry",
+  PENDING_ESTIMATE: "Pending Estimate",
+  ESTIMATE_SENT: "Sent",
+  ESTIMATE_APPROVED: "Approved",
+  ESTIMATE_REVISION_REQUESTED: "Revision Requested",
+  CANCELLED: "Cancelled",
+};
+
+export const ESTIMATE_REQUEST_STATUS_COLORS: Record<EstimateRequestStatus, string> = {
+  INQUIRY_RECEIVED: "bg-blue-100 text-blue-700",
+  PENDING_ESTIMATE: "bg-accent-100 text-accent-700",
+  ESTIMATE_SENT: "bg-purple-100 text-purple-700",
+  ESTIMATE_APPROVED: "bg-success-100 text-success-600",
+  ESTIMATE_REVISION_REQUESTED: "bg-warning-100 text-warning-600",
+  CANCELLED: "bg-gray-100 text-gray-500",
+};
+
+export const ESTIMATE_LINE_ITEM_GROUP_LABELS: Record<EstimateLineItemGroup, string> = {
+  LABOR: "Labor",
+  PARTS: "Parts & Materials",
+  MATERIALS: "Paint & Consumables",
+  PAINT: "Paint",
+  SUBLET: "Sublet / Outsourced",
+  OTHER: "Other",
+};
+
+export const PRIORITY_OPTIONS = [
+  { value: "NORMAL", label: "Normal" },
+  { value: "RUSH", label: "Rush" },
+  { value: "INSURANCE", label: "Insurance Claim" },
+] as const;
+
+export const DAMAGE_TYPE_LABELS: Record<DamageType, string> = {
+  SCRATCH: "Scratch",
+  DENT: "Dent",
+  CHIP: "Chip",
+  CRACK: "Crack",
+  RUST: "Rust",
+  MISSING_PART: "Missing Part",
+  BROKEN: "Broken",
+  OTHER: "Other",
+};
+
+export const DAMAGE_SEVERITY_LABELS: Record<DamageSeverity, string> = {
+  COSMETIC: "Cosmetic",
+  MINOR: "Minor",
+  MODERATE: "Moderate",
+  SEVERE: "Severe",
+};
+
+export const DAMAGE_SEVERITY_COLORS: Record<DamageSeverity, string> = {
+  COSMETIC: "bg-success-100 text-success-600",
+  MINOR: "bg-yellow-100 text-yellow-700",
+  MODERATE: "bg-orange-100 text-orange-700",
+  SEVERE: "bg-danger-100 text-danger-600",
+};
+
+export const FUEL_LEVEL_LABELS: Record<FuelLevel, string> = {
+  EMPTY: "E",
+  QUARTER: "¼",
+  HALF: "½",
+  THREE_QUARTER: "¾",
+  FULL: "F",
+};
+
+export const FUEL_LEVEL_DISPLAY: Record<FuelLevel, string> = {
+  EMPTY: "Empty",
+  QUARTER: "Quarter",
+  HALF: "Half",
+  THREE_QUARTER: "Three Quarter",
+  FULL: "Full",
+};
+
+// Phase 5: Task status display
+export const TASK_STATUS_LABELS: Record<TaskStatus, string> = {
+  QUEUED: "Queued",
+  IN_PROGRESS: "In Progress",
+  PAUSED: "Paused",
+  QC_REVIEW: "QC Review",
+  DONE: "Done",
+  REWORK: "Rework",
+};
+
+export const TASK_STATUS_COLORS: Record<TaskStatus, string> = {
+  QUEUED: "bg-surface-200 text-surface-600",
+  IN_PROGRESS: "bg-blue-100 text-blue-700",
+  PAUSED: "bg-yellow-100 text-yellow-700",
+  QC_REVIEW: "bg-purple-100 text-purple-700",
+  DONE: "bg-success-100 text-success-600",
+  REWORK: "bg-danger-100 text-danger-600",
+};
+
+export const SUPPLEMENT_STATUS_LABELS: Record<SupplementStatus, string> = {
+  DRAFT: "Draft",
+  SUBMITTED: "Submitted",
+  UNDER_REVIEW: "Under Review",
+  APPROVED: "Approved",
+  DENIED: "Denied",
+  APPEAL: "Appeal",
+};
+
+export const SUPPLEMENT_STATUS_COLORS: Record<SupplementStatus, string> = {
+  DRAFT: "bg-surface-200 text-surface-600",
+  SUBMITTED: "bg-blue-100 text-blue-700",
+  UNDER_REVIEW: "bg-purple-100 text-purple-700",
+  APPROVED: "bg-success-100 text-success-600",
+  DENIED: "bg-danger-100 text-danger-600",
+  APPEAL: "bg-warning-100 text-warning-600",
+};
+
+export const TIME_ENTRY_SOURCE_LABELS: Record<TimeEntrySource, string> = {
+  MANUAL: "Manual",
+  PIN_CLOCK: "PIN Clock",
+  TABLET_CLOCK: "Task Board",
+};
+
+// Phase 6+7: QC Result Display
+export const QC_RESULT_LABELS: Record<string, string> = {
+  PENDING: "Pending",
+  PASSED: "Passed",
+  FAILED: "Failed",
+};
+
+export const QC_RESULT_COLORS: Record<string, string> = {
+  PENDING: "bg-yellow-100 text-yellow-700",
+  PASSED: "bg-success-100 text-success-600",
+  FAILED: "bg-danger-100 text-danger-600",
+};
+
+// Phase 7: Payment Display
+export const PAYMENT_METHOD_LABELS: Record<PaymentMethod, string> = {
+  CASH: "Cash",
+  GCASH: "GCash",
+  MAYA: "Maya",
+  BANK_TRANSFER: "Bank Transfer",
+  CREDIT_CARD: "Credit Card",
+  DEBIT_CARD: "Debit Card",
+  CHECK: "Check",
+  INSURANCE_DIRECT: "Insurance Direct",
+};
+
+export const PAYMENT_STATUS_LABELS: Record<PaymentStatus, string> = {
+  UNPAID: "Unpaid",
+  PARTIAL: "Partial",
+  PAID: "Fully Paid",
+};
+
+export const PAYMENT_STATUS_COLORS: Record<PaymentStatus, string> = {
+  UNPAID: "bg-danger-100 text-danger-600",
+  PARTIAL: "bg-yellow-100 text-yellow-700",
+  PAID: "bg-success-100 text-success-600",
+};
+
+export const RELEASE_STEP_LABELS: Record<number, string> = {
+  0: "Release Photos",
+  1: "Before/After Review",
+  2: "Belongings Return",
+  3: "Vehicle Condition",
+  4: "Warranty & Care",
+  5: "Sign-Off",
 };

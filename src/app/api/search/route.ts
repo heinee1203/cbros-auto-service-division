@@ -41,12 +41,19 @@ export async function GET(req: NextRequest) {
         },
         take: 5,
       }),
-      // Job Orders by number
+      // Job Orders by number, plate number, or customer name
       prisma.jobOrder.findMany({
         where: {
-          OR: [{ jobOrderNumber: { contains: query } }],
+          deletedAt: null,
+          OR: [
+            { jobOrderNumber: { contains: query } },
+            { vehicle: { plateNumber: { contains: query } } },
+            { customer: { firstName: { contains: query } } },
+            { customer: { lastName: { contains: query } } },
+          ],
         },
         include: {
+          customer: { select: { firstName: true, lastName: true } },
           vehicle: { select: { plateNumber: true, make: true, model: true } },
         },
         take: 5,
@@ -102,7 +109,7 @@ export async function GET(req: NextRequest) {
       id: jo.id,
       type: "job_order" as const,
       title: jo.jobOrderNumber,
-      subtitle: `${jo.vehicle.plateNumber} — ${jo.vehicle.make} ${jo.vehicle.model}`,
+      subtitle: `${jo.customer.firstName} ${jo.customer.lastName} — ${jo.vehicle.plateNumber} ${jo.vehicle.make} ${jo.vehicle.model}`,
       href: `/jobs/${jo.id}`,
     })),
     ...estimates.map((er) => ({

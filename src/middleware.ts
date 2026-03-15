@@ -40,6 +40,6 @@ export const config = {
      * - _next (Next.js internals)
      * - static files
      */
-    "/((?!api/auth|login|pin-login|_next/static|_next/image|favicon.ico).*)",
+    "/((?!api/auth|api/health|api/supplements/approve|approve|view|login|pin-login|clock|_next/static|_next/image|favicon.ico).*)",
   ],
 };

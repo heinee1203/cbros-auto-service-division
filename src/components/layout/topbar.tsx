@@ -4,6 +4,7 @@ import { Bell, LogOut, Search, User } from "lucide-react";
 import { signOut } from "next-auth/react";
 import { cn, getInitials } from "@/lib/utils";
 import { USER_ROLE_LABELS, type UserRole } from "@/types/enums";
+import { SyncStatusBadge } from "@/components/ui/sync-status-badge";
 
 interface TopbarProps {
   user: {
@@ -38,6 +39,9 @@ export function Topbar({ user, onSearchOpen }: TopbarProps) {
         <Bell className="w-5 h-5 text-surface-500" />
         {/* Unread indicator — wired up in Phase 10 */}
       </button>
+
+      {/* Sync status */}
+      <SyncStatusBadge />
 
       {/* User menu */}
       <div className="flex items-center gap-3 pl-3 border-l border-surface-200">

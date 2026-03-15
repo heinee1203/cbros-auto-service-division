@@ -1,8 +1,63 @@
-export default function JobQCPage() {
+import { prisma } from "@/lib/prisma";
+import { getSession } from "@/lib/auth";
+import { getQCInspection, getJobQCInspections } from "@/lib/services/qc";
+import QCClient from "./qc-client";
+
+export default async function QCPage({ params }: { params: Promise<{ id: string }> }) {
+  const session = await getSession();
+  const { id } = await params;
+
+  // Get all QC inspections for this job
+  const inspections = await getJobQCInspections(id);
+
+  // Get the active (PENDING) inspection detail if one exists
+  const activeInspection = inspections.find(i => i.overallResult === "PENDING");
+  let activeDetail = null;
+  if (activeInspection) {
+    activeDetail = await getQCInspection(activeInspection.id);
+  }
+
+  // Get job info for status check
+  const job = await prisma.jobOrder.findUnique({
+    where: { id },
+    select: {
+      id: true,
+      status: true,
+      jobOrderNumber: true,
+      intakeRecord: { select: { id: true } },
+    },
+  });
+
+  // Fetch intake photos for angle reference
+  let intakePhotos: Array<{ id: string; thumbnailPath: string | null; fullSizePath: string; category: string | null }> = [];
+  if (job?.intakeRecord) {
+    intakePhotos = await prisma.photo.findMany({
+      where: { entityType: "INTAKE", entityId: job.intakeRecord.id, deletedAt: null },
+      select: { id: true, thumbnailPath: true, fullSizePath: true, category: true },
+      orderBy: { sortOrder: "asc" },
+      take: 10,
+    });
+  }
+
+  // Fetch QC photos
+  const qcPhotos = await prisma.photo.findMany({
+    where: { entityType: "QC_INSPECTION", entityId: id, stage: "QC", deletedAt: null },
+    select: { id: true, thumbnailPath: true, fullSizePath: true, category: true, createdAt: true },
+    orderBy: { createdAt: "desc" },
+  });
+
+  if (!job) return <div>Job not found</div>;
+
   return (
-    <div>
-      <h1 className="text-2xl font-bold text-primary">Quality Control</h1>
-      <p className="text-sm text-surface-400 mt-2">Coming in Phase 6.</p>
-    </div>
+    <QCClient
+      jobOrderId={id}
+      jobStatus={job.status}
+      inspections={JSON.parse(JSON.stringify(inspections))}
+      activeInspection={activeDetail ? JSON.parse(JSON.stringify(activeDetail)) : null}
+      intakePhotos={JSON.parse(JSON.stringify(intakePhotos))}
+      qcPhotos={JSON.parse(JSON.stringify(qcPhotos))}
+      canStartQC={job.status === "QC_PENDING" || job.status === "QC_FAILED_REWORK"}
+      userRole={session?.user?.role || "TECHNICIAN"}
+    />
   );
 }

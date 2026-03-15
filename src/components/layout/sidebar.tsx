@@ -100,7 +100,7 @@ export function Sidebar({ userRole }: SidebarProps) {
   return (
     <aside
       className={cn(
-        "flex flex-col h-screen bg-primary text-white transition-all duration-200 ease-in-out",
+        "hidden md:flex flex-col h-screen bg-primary text-white transition-all duration-200 ease-in-out",
         collapsed ? "w-16" : "w-60"
       )}
     >

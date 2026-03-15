@@ -90,3 +90,50 @@ export function truncate(text: string, maxLength: number): string {
   if (text.length <= maxLength) return text;
   return text.slice(0, maxLength - 3) + "...";
 }
+
+// Format Philippine phone number for display
+// "09171234567" → "0917 123 4567"
+// "+639171234567" → "+63 917 123 4567"
+export function formatPhone(phone: string): string {
+  const digits = phone.replace(/\D/g, "");
+  if (digits.startsWith("63") && digits.length === 12) {
+    return `+63 ${digits.slice(2, 5)} ${digits.slice(5, 8)} ${digits.slice(8)}`;
+  }
+  if (digits.startsWith("0") && digits.length === 11) {
+    return `${digits.slice(0, 4)} ${digits.slice(4, 7)} ${digits.slice(7)}`;
+  }
+  return phone; // return as-is if format doesn't match
+}
+
+// Validate Philippine phone number
+export function isValidPhPhone(phone: string): boolean {
+  const digits = phone.replace(/\D/g, "");
+  // 09XX XXXX XXX (11 digits starting with 09)
+  if (digits.startsWith("09") && digits.length === 11) return true;
+  // +63 9XX XXXX XXX (12 digits starting with 639)
+  if (digits.startsWith("639") && digits.length === 12) return true;
+  return false;
+}
+
+// Validate Philippine plate number
+// Standard: ABC 1234 or ABC-1234 (3 letters + 4 digits)
+// Newer format allows mixed letter/digit sequences
+export function isValidPlateNumber(plate: string): boolean {
+  const cleaned = plate.replace(/[\s-]/g, "").toUpperCase();
+  if (cleaned.length < 6 || cleaned.length > 8) return false;
+  // Standard format: 3 letters + 4 digits
+  if (/^[A-Z]{3}\d{4}$/.test(cleaned)) return true;
+  // Newer format: mixed alphanumeric, 6-7 chars
+  if (/^[A-Z0-9]{6,7}$/.test(cleaned)) return true;
+  return false;
+}
+
+// Format plate number for display: "ABC1234" → "ABC 1234"
+export function formatPlateNumber(plate: string): string {
+  const cleaned = plate.replace(/[\s-]/g, "").toUpperCase();
+  // Standard format: split after 3 letters
+  if (/^[A-Z]{3}\d{4}$/.test(cleaned)) {
+    return `${cleaned.slice(0, 3)} ${cleaned.slice(3)}`;
+  }
+  return cleaned;
+}
