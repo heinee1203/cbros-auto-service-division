@@ -11,6 +11,7 @@ import {
   MoreHorizontal,
   Car,
   Receipt,
+  Calendar,
   BarChart3,
   Settings,
   X,
@@ -34,6 +35,7 @@ const PRIMARY_ITEMS: NavItem[] = [
 ];
 
 const MORE_ITEMS: NavItem[] = [
+  { label: "Schedule", href: "/schedule", icon: Calendar, permission: "schedule:view" },
   { label: "Vehicles", href: "/vehicles", icon: Car, permission: "customers:view" },
   { label: "Invoices", href: "/invoices", icon: Receipt, permission: "invoices:view" },
   { label: "Analytics", href: "/analytics", icon: BarChart3, permission: "analytics:view" },

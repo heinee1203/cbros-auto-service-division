@@ -9,6 +9,7 @@ import {
   Users,
   Car,
   Receipt,
+  Calendar,
   BarChart3,
   Settings,
   ChevronLeft,
@@ -25,6 +26,7 @@ const ICONS = {
   ClipboardList,
   Users,
   Car,
+  Calendar,
   Receipt,
   BarChart3,
   Settings,
@@ -46,6 +48,12 @@ const NAV_ITEMS: NavItem[] = [
     icon: "Wrench",
     permission: "jobs:view",
     showBadge: true,
+  },
+  {
+    label: "Schedule",
+    href: "/schedule",
+    icon: "Calendar",
+    permission: "schedule:view",
   },
   {
     label: "Estimates",
