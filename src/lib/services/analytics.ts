@@ -1266,6 +1266,17 @@ async function getTechnicianDashboard(
   };
 }
 
+// ============================================================================
+// 11. Today's Appointments (for dashboard widget)
+// ============================================================================
+
+export async function getTodaysAppointments() {
+  const { getAppointmentsByDate } = await import("@/lib/services/scheduler");
+  const today = new Date();
+  const appointments = await getAppointmentsByDate(today);
+  return appointments.filter((a: any) => a.status !== "CANCELLED");
+}
+
 async function getAdvisorDashboard(
   userId: string
 ): Promise<MyDashboardAdvisor> {

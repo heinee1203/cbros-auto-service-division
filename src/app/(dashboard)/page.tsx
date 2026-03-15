@@ -1,6 +1,6 @@
 import { getSession } from "@/lib/auth";
 import { can } from "@/lib/permissions";
-import { getDashboardMetrics, getMyDashboard } from "@/lib/services/analytics";
+import { getDashboardMetrics, getMyDashboard, getTodaysAppointments } from "@/lib/services/analytics";
 import { DashboardClient } from "./dashboard-client";
 
 export default async function DashboardPage() {
@@ -13,9 +13,15 @@ export default async function DashboardPage() {
   const isManager = can(userRole, "analytics:view"); // OWNER or MANAGER
 
   let dashboardData;
+  let todaysAppointments;
 
   if (isManager) {
-    dashboardData = await getDashboardMetrics();
+    const [metrics, appointments] = await Promise.all([
+      getDashboardMetrics(),
+      getTodaysAppointments(),
+    ]);
+    dashboardData = metrics;
+    todaysAppointments = appointments;
   } else {
     dashboardData = await getMyDashboard(session.user.id, userRole);
   }
@@ -26,6 +32,7 @@ export default async function DashboardPage() {
       userRole={userRole}
       isManager={isManager}
       data={JSON.parse(JSON.stringify(dashboardData))}
+      todaysAppointments={todaysAppointments ? JSON.parse(JSON.stringify(todaysAppointments)) : undefined}
     />
   );
 }

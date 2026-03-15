@@ -5,6 +5,7 @@ import {
   Wrench,
   ClipboardList,
   Clock,
+  Calendar,
   AlertTriangle,
   Receipt,
   TrendingUp,
@@ -27,6 +28,7 @@ import {
   type JobOrderStatus,
   type TaskStatus,
 } from "@/types/enums";
+import { TodaysAppointmentsWidget } from "@/components/schedule/todays-appointments-widget";
 import type {
   DashboardMetrics,
   MyDashboardTechnician,
@@ -38,6 +40,14 @@ interface DashboardClientProps {
   userRole: string;
   isManager: boolean;
   data: DashboardMetrics | MyDashboardTechnician | MyDashboardAdvisor | null;
+  todaysAppointments?: Array<{
+    id: string;
+    type: string;
+    scheduledTime: string;
+    status: string;
+    customer: { firstName: string; lastName: string };
+    vehicle?: { plateNumber: string; make: string; model: string } | null;
+  }>;
 }
 
 function getGreeting(): string {
@@ -107,9 +117,11 @@ function MetricCard({
 function ManagerDashboard({
   userName,
   data,
+  todaysAppointments,
 }: {
   userName: string;
   data: DashboardMetrics;
+  todaysAppointments?: DashboardClientProps["todaysAppointments"];
 }) {
   const router = useRouter();
 
@@ -126,7 +138,7 @@ function ManagerDashboard({
       </div>
 
       {/* Metric Cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-4 xl:grid-cols-7 gap-4">
         <MetricCard
           icon={Wrench}
           label="Active Jobs"
@@ -167,6 +179,12 @@ function ManagerDashboard({
           label="Today's Revenue"
           value={formatPeso(data.todayRevenue)}
           color="text-green-600 bg-green-50"
+        />
+        <MetricCard
+          icon={Calendar}
+          label="Today's Appts"
+          value={todaysAppointments?.length || 0}
+          color="text-indigo-600 bg-indigo-50"
         />
       </div>
 
@@ -294,6 +312,9 @@ function ManagerDashboard({
             </button>
           </div>
         </div>
+
+        {/* Today's Appointments */}
+        <TodaysAppointmentsWidget appointments={todaysAppointments || []} />
       </div>
     </div>
   );
@@ -609,10 +630,11 @@ export function DashboardClient({
   userRole,
   isManager,
   data,
+  todaysAppointments,
 }: DashboardClientProps) {
   if (isManager && data) {
     return (
-      <ManagerDashboard userName={userName} data={data as DashboardMetrics} />
+      <ManagerDashboard userName={userName} data={data as DashboardMetrics} todaysAppointments={todaysAppointments} />
     );
   }
 
