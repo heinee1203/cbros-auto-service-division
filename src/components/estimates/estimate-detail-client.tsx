@@ -71,6 +71,7 @@ interface EstimateVersion {
   grandTotal: number;
   termsAndConditions: string | null;
   estimatedDays: number | null;
+  approvalToken: string | null;
   lineItems: LineItem[];
 }
 
@@ -194,6 +195,7 @@ export function EstimateDetailClient({ estimateRequest }: Props) {
         estimateRequestId={estimateRequest.id}
         version={version}
         status={estimateRequest.status}
+        approvalToken={version.approvalToken}
       />
     </div>
   );

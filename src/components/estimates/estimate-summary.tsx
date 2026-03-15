@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Loader2, Send, CheckCircle, ClipboardCheck } from "lucide-react";
+import { Loader2, Send, CheckCircle, ClipboardCheck, Printer } from "lucide-react";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import {
   updateVersionDetailsAction,
@@ -40,13 +40,14 @@ interface Props {
   estimateRequestId: string;
   version: EstimateVersion;
   status: string;
+  approvalToken?: string | null;
 }
 
 // ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
 
-export function EstimateSummary({ estimateRequestId, version, status }: Props) {
+export function EstimateSummary({ estimateRequestId, version, status, approvalToken }: Props) {
   const router = useRouter();
 
   // Discount state
@@ -302,6 +303,17 @@ export function EstimateSummary({ estimateRequestId, version, status }: Props) {
 
       {/* Action Buttons */}
       <div className="border-t border-surface-200 pt-3 space-y-2">
+        {approvalToken && (
+          <a
+            href={`/view/estimate/${approvalToken}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-surface-200 text-surface-600 hover:bg-surface-50 text-sm font-semibold transition-colors"
+          >
+            <Printer className="w-4 h-4" />
+            Print / View Estimate
+          </a>
+        )}
         <button
           onClick={() => setConfirmAction("ESTIMATE_SENT")}
           disabled={statusLoading !== null}
