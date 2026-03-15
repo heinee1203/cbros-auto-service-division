@@ -17,3 +17,29 @@
     @apply min-h-touch min-w-touch;
   }
 }
+
+/* Global print safety net — hides app chrome on any Ctrl+P */
+@media print {
+  /* Hide app shell */
+  [data-sidebar],
+  [data-topbar],
+  nav:not(.print-nav),
+  aside,
+  .mobile-bottom-nav,
+  .global-search,
+  .no-print {
+    display: none !important;
+  }
+
+  /* Remove layout constraints */
+  main {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  body {
+    background: white !important;
+  }
+}

@@ -142,7 +142,7 @@ export default async function CompletionReportPage({
 
   return (
     <div>
-      <ReportClient />
+      <ReportClient completionReportToken={release.completionReportToken} />
       {/* Printable report content */}
       <div className="max-w-[210mm] mx-auto bg-white print:max-w-none">
         {/* ===== PAGE 1: COVER ===== */}

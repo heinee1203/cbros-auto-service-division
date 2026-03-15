@@ -955,11 +955,25 @@ export default function InvoiceClient({
         <div className="no-print sticky bottom-0 bg-white border-t border-surface-200 -mx-6 px-6 py-4 md:relative md:mx-0 md:border-t-0 md:bg-transparent md:p-0">
           <div className="flex flex-wrap gap-3">
             <button
-              onClick={() => window.print()}
-              className="flex items-center gap-2 border border-surface-300 text-surface-600 hover:bg-surface-50 px-4 py-2 rounded-lg text-sm font-medium"
+              onClick={() => {
+                if (invoice.shareToken) {
+                  window.open(`/view/invoice/${invoice.shareToken}`, '_blank');
+                } else {
+                  startTransition(async () => {
+                    const result = await generateShareLinkAction(invoice.id, job.id);
+                    if (result.success && result.data?.token) {
+                      window.open(`/view/invoice/${result.data.token}`, '_blank');
+                    } else {
+                      setError(result.error ?? "Failed to generate print link");
+                    }
+                  });
+                }
+              }}
+              disabled={isPending}
+              className="flex items-center gap-2 border border-surface-300 text-surface-600 hover:bg-surface-50 px-4 py-2 rounded-lg text-sm font-medium disabled:opacity-50"
             >
               <Printer className="h-4 w-4" />
-              Print Invoice
+              {isPending ? "Opening..." : "Print Invoice"}
             </button>
 
             <button

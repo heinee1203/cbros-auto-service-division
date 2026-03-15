@@ -283,9 +283,35 @@ export function ReportsClient() {
       {/* Print-only styles */}
       <style>{`
         @media print {
-          .no-print { display: none !important; }
-          .print-full { width: 100% !important; max-width: 100% !important; }
-          body { font-size: 12px; }
+          /* Hide ALL app chrome */
+          .no-print,
+          nav, aside, header,
+          [data-sidebar], [data-topbar],
+          .mobile-bottom-nav,
+          .global-search { display: none !important; }
+
+          /* Full-width report content */
+          main {
+            margin: 0 !important;
+            padding: 0 !important;
+            width: 100% !important;
+            max-width: 100% !important;
+          }
+
+          .print-full {
+            width: 100% !important;
+            max-width: 100% !important;
+          }
+
+          body {
+            background: white !important;
+            font-size: 12px;
+          }
+
+          @page {
+            size: A4 landscape;
+            margin: 10mm;
+          }
         }
       `}</style>
 

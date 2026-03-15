@@ -3,13 +3,15 @@ import { getReceiptData } from "@/lib/services/payments";
 import { ReceiptContent } from "@/components/receipt/receipt-content";
 
 interface ReceiptPageProps {
-  params: { id: string; paymentId: string };
+  params: Promise<{ paymentId: string }>;
 }
 
-export default async function ReceiptPage({ params }: ReceiptPageProps) {
+export default async function PublicReceiptPage({ params }: ReceiptPageProps) {
+  const { paymentId } = await params;
+
   let data;
   try {
-    data = await getReceiptData(params.paymentId);
+    data = await getReceiptData(paymentId);
   } catch {
     notFound();
   }
@@ -18,7 +20,6 @@ export default async function ReceiptPage({ params }: ReceiptPageProps) {
     notFound();
   }
 
-  // Serialize dates for client component
   const serializedData = {
     shopInfo: data.shopInfo,
     payment: {

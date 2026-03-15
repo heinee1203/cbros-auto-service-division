@@ -3,7 +3,11 @@
 import { useRouter } from "next/navigation";
 import { Printer, ArrowLeft } from "lucide-react";
 
-export default function ReportClient() {
+export default function ReportClient({
+  completionReportToken,
+}: {
+  completionReportToken?: string | null;
+}) {
   const router = useRouter();
 
   return (
@@ -15,7 +19,13 @@ export default function ReportClient() {
         <ArrowLeft className="w-4 h-4" /> Back
       </button>
       <button
-        onClick={() => window.print()}
+        onClick={() => {
+          if (completionReportToken) {
+            window.open(`/view/report/${completionReportToken}`, '_blank');
+          } else {
+            window.print();
+          }
+        }}
         className="flex items-center gap-2 px-4 py-2 text-sm bg-accent-600 text-white rounded-lg hover:bg-accent-700"
       >
         <Printer className="w-4 h-4" /> Print Report
