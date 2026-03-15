@@ -80,8 +80,9 @@ export async function getEstimateRequests({
         _count: { select: { estimates: true } },
         estimates: {
           where: { deletedAt: null },
+          orderBy: { createdAt: "desc" },
           take: 1,
-          include: {
+          select: {
             versions: {
               where: { deletedAt: null },
               orderBy: { versionNumber: "desc" as const },
