@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { AlertTriangle } from "lucide-react";
 
 interface ConfirmDialogProps {
@@ -7,7 +8,7 @@ interface ConfirmDialogProps {
   onClose: () => void;
   onConfirm: () => void;
   title: string;
-  message: string;
+  message: ReactNode;
   confirmLabel?: string;
   cancelLabel?: string;
   variant?: "danger" | "warning";
@@ -44,7 +45,7 @@ export function ConfirmDialog({
             </div>
             <div>
               <h3 className="font-semibold text-primary">{title}</h3>
-              <p className="text-sm text-surface-500 mt-1">{message}</p>
+              <div className="text-sm text-surface-500 mt-1">{message}</div>
             </div>
           </div>
           <div className="flex justify-end gap-3 mt-6">
