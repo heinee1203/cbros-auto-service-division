@@ -1,14 +1,20 @@
 "use client";
 
 import { useState, useEffect, useTransition } from "react";
-import { Plus, Edit2, Trash2 } from "lucide-react";
+import { Plus, Edit2, Trash2, ChevronUp, ChevronDown } from "lucide-react";
 import {
   getBaysAction,
   createBayAction,
   updateBayAction,
   deleteBayAction,
+  reorderBaysAction,
 } from "@/lib/actions/scheduler-actions";
 import { BAY_TYPE_LABELS, BayType } from "@/types/enums";
+
+const COLOR_PRESETS = [
+  "#3B82F6", "#EF4444", "#22C55E", "#F59E0B", "#8B5CF6",
+  "#EC4899", "#06B6D4", "#F97316", "#6366F1", "#14B8A6",
+];
 
 interface Bay {
   id: string;
@@ -120,6 +126,22 @@ export default function BayManagement() {
     });
   }
 
+  function handleReorder(index: number, direction: "up" | "down") {
+    const swapIndex = direction === "up" ? index - 1 : index + 1;
+    if (swapIndex < 0 || swapIndex >= bays.length) return;
+    const reordered = [...bays];
+    [reordered[index], reordered[swapIndex]] = [reordered[swapIndex], reordered[index]];
+    const orderedIds = reordered.map((b) => b.id);
+    startTransition(async () => {
+      const result = await reorderBaysAction(orderedIds);
+      if (result.success) {
+        await loadBays();
+      } else {
+        setError(result.error || "Failed to reorder bays");
+      }
+    });
+  }
+
   return (
     <div className="bg-white rounded-xl border border-surface-200 p-6">
       <div className="flex items-center justify-between mb-4">
@@ -189,6 +211,22 @@ export default function BayManagement() {
               <label className="block text-sm font-medium text-surface-700 mb-1">
                 Color
               </label>
+              <div className="flex items-center gap-2 mb-2">
+                {COLOR_PRESETS.map((preset) => (
+                  <button
+                    key={preset}
+                    type="button"
+                    onClick={() => setColor(preset)}
+                    className={`w-6 h-6 rounded-full flex-shrink-0 transition-all ${
+                      color.toUpperCase() === preset.toUpperCase()
+                        ? "ring-2 ring-offset-2 ring-accent-500"
+                        : ""
+                    }`}
+                    style={{ backgroundColor: preset }}
+                    title={preset}
+                  />
+                ))}
+              </div>
               <div className="flex items-center gap-2">
                 <input
                   type="color"
@@ -271,7 +309,7 @@ export default function BayManagement() {
         </p>
       ) : (
         <div className="space-y-2">
-          {bays.map((bay) => (
+          {bays.map((bay, index) => (
             <div
               key={bay.id}
               className={`flex items-center gap-4 p-3 rounded-lg border ${
@@ -280,6 +318,23 @@ export default function BayManagement() {
                   : "border-surface-100 bg-surface-50 opacity-60"
               }`}
             >
+              {/* Reorder arrows */}
+              <div className="flex flex-col flex-shrink-0">
+                <button
+                  onClick={() => handleReorder(index, "up")}
+                  disabled={index === 0 || isPending}
+                  className="p-0.5 text-surface-400 hover:text-surface-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                >
+                  <ChevronUp className="w-3.5 h-3.5" />
+                </button>
+                <button
+                  onClick={() => handleReorder(index, "down")}
+                  disabled={index === bays.length - 1 || isPending}
+                  className="p-0.5 text-surface-400 hover:text-surface-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                >
+                  <ChevronDown className="w-3.5 h-3.5" />
+                </button>
+              </div>
               {/* Color swatch */}
               <div
                 className="w-4 h-4 rounded-full flex-shrink-0"
@@ -300,6 +355,11 @@ export default function BayManagement() {
                     </span>
                   )}
                 </div>
+                {!bay.isActive && (
+                  <p className="text-xs text-surface-400 italic mt-0.5">
+                    Hidden from schedule
+                  </p>
+                )}
                 {bay.notes && (
                   <p className="text-xs text-surface-400 mt-0.5 truncate">
                     {bay.notes}
