@@ -3,8 +3,9 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Loader2, Send, CheckCircle, ClipboardCheck, Printer } from "lucide-react";
+import { Loader2, Send, CheckCircle, ClipboardCheck, Printer, CalendarPlus } from "lucide-react";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { AppointmentForm } from "@/components/schedule/appointment-form";
 import {
   updateVersionDetailsAction,
   updateEstimateStatusAction,
@@ -41,13 +42,15 @@ interface Props {
   version: EstimateVersion;
   status: string;
   approvalToken?: string | null;
+  customerId?: string;
+  vehicleId?: string;
 }
 
 // ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
 
-export function EstimateSummary({ estimateRequestId, version, status, approvalToken }: Props) {
+export function EstimateSummary({ estimateRequestId, version, status, approvalToken, customerId, vehicleId }: Props) {
   const router = useRouter();
 
   // Discount state
@@ -74,6 +77,7 @@ export function EstimateSummary({ estimateRequestId, version, status, approvalTo
   const [statusLoading, setStatusLoading] = useState<string | null>(null);
   const [confirmAction, setConfirmAction] = useState<string | null>(null);
   const [beginningIntake, setBeginningIntake] = useState(false);
+  const [scheduleOpen, setScheduleOpen] = useState(false);
 
   // Calculate subtotal from groups
   const rawSubtotal =
@@ -301,6 +305,19 @@ export function EstimateSummary({ estimateRequestId, version, status, approvalTo
         </button>
       </div>
 
+      {/* Schedule Drop-Off — shown only when estimate is approved */}
+      {status === "ESTIMATE_APPROVED" && (
+        <div className="border-t border-surface-200 pt-3">
+          <button
+            onClick={() => setScheduleOpen(true)}
+            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-accent-200 text-accent-600 hover:bg-accent-50 text-sm font-semibold transition-colors"
+          >
+            <CalendarPlus className="w-4 h-4" />
+            Schedule Drop-Off
+          </button>
+        </div>
+      )}
+
       {/* Action Buttons */}
       <div className="border-t border-surface-200 pt-3 space-y-2">
         {approvalToken && (
@@ -382,6 +399,17 @@ export function EstimateSummary({ estimateRequestId, version, status, approvalTo
           </button>
         </div>
       )}
+
+      {/* Schedule Drop-Off Appointment Form */}
+      <AppointmentForm
+        open={scheduleOpen}
+        onClose={() => setScheduleOpen(false)}
+        defaultType="DROP_OFF"
+        customerId={customerId}
+        vehicleId={vehicleId}
+        estimateId={estimateRequestId}
+        onSaved={() => setScheduleOpen(false)}
+      />
     </div>
   );
 }

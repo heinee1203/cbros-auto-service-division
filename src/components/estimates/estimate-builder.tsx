@@ -72,6 +72,8 @@ interface Props {
   version: EstimateVersion;
   status: string;
   approvalToken?: string | null;
+  customerId?: string;
+  vehicleId?: string;
 }
 
 interface ServiceCatalogItem {
@@ -96,7 +98,7 @@ const GROUPS: EstimateLineItemGroup[] = [
 // Component
 // ---------------------------------------------------------------------------
 
-export function EstimateBuilder({ estimateRequestId, version, status, approvalToken }: Props) {
+export function EstimateBuilder({ estimateRequestId, version, status, approvalToken, customerId, vehicleId }: Props) {
   const router = useRouter();
   const [collapsedGroups, setCollapsedGroups] = useState<
     Record<string, boolean>
@@ -154,6 +156,8 @@ export function EstimateBuilder({ estimateRequestId, version, status, approvalTo
           version={version}
           status={status}
           approvalToken={approvalToken}
+          customerId={customerId}
+          vehicleId={vehicleId}
         />
       </div>
     </div>

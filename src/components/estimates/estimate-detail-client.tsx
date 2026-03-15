@@ -196,6 +196,8 @@ export function EstimateDetailClient({ estimateRequest }: Props) {
         version={version}
         status={estimateRequest.status}
         approvalToken={version.approvalToken}
+        customerId={estimateRequest.customer.id}
+        vehicleId={estimateRequest.vehicle.id}
       />
     </div>
   );
