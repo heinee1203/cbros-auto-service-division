@@ -3,6 +3,7 @@
 import { forwardRef, useImperativeHandle, useRef } from "react";
 import { BAY_TYPE_LABELS, type BayType } from "@/types/enums";
 import {
+  type DragState,
   type TimelineAssignment,
   type TimelineBay,
   DEFAULT_BAY_COLOR,
@@ -10,6 +11,7 @@ import {
   getAssignmentSpan,
   getDateKey,
   getTimelineDays,
+  hexToRgba,
 } from "./bay-timeline-types";
 import { BayAssignmentBlock } from "./bay-assignment-block";
 
@@ -19,6 +21,19 @@ interface BayTimelineGridProps {
   days: number;
   onAssignmentClick: (assignment: TimelineAssignment) => void;
   onEmptyCellClick: (bayId: string, date: Date) => void;
+  // Drag-and-drop props (optional)
+  dragState?: DragState | null;
+  onBlockPointerDown?: (
+    e: React.PointerEvent,
+    assignmentId: string,
+    bayId: string,
+    startCol: number,
+    colSpan: number,
+    mode: "move" | "resize",
+  ) => void;
+  onPointerMove?: (e: React.PointerEvent) => void;
+  onPointerUp?: (e: React.PointerEvent) => void;
+  ghostStyle?: React.CSSProperties | null;
 }
 
 export interface BayTimelineGridHandle {
@@ -27,7 +42,18 @@ export interface BayTimelineGridHandle {
 
 const BayTimelineGrid = forwardRef<BayTimelineGridHandle, BayTimelineGridProps>(
   function BayTimelineGrid(
-    { bays, startDate, days, onAssignmentClick, onEmptyCellClick },
+    {
+      bays,
+      startDate,
+      days,
+      onAssignmentClick,
+      onEmptyCellClick,
+      dragState,
+      onBlockPointerDown,
+      onPointerMove,
+      onPointerUp,
+      ghostStyle,
+    },
     ref,
   ) {
     const containerRef = useRef<HTMLDivElement>(null);
@@ -43,13 +69,29 @@ const BayTimelineGrid = forwardRef<BayTimelineGridHandle, BayTimelineGridProps>(
     const timelineDays = getTimelineDays(startDate, days);
     const todayKey = getDateKey(new Date());
 
+    // Find the dragged assignment for the ghost overlay
+    const draggedAssignment =
+      dragState
+        ? bays
+            .flatMap((b) => b.assignments)
+            .find((a) => a.id === dragState.assignmentId)
+        : null;
+
+    const draggedBayColor =
+      dragState && draggedAssignment
+        ? (bays.find((b) => b.id === dragState.originalBayId)?.color ??
+          DEFAULT_BAY_COLOR)
+        : null;
+
     return (
       <div
         ref={containerRef}
         className="overflow-x-auto border border-surface-200 rounded-lg bg-white min-h-[400px] max-h-[70vh]"
+        onPointerMove={onPointerMove}
+        onPointerUp={onPointerUp}
       >
         <div
-          className="grid"
+          className="grid relative"
           style={{
             gridTemplateColumns: `180px repeat(${days}, minmax(60px, 1fr))`,
           }}
@@ -131,6 +173,9 @@ const BayTimelineGrid = forwardRef<BayTimelineGridHandle, BayTimelineGridProps>(
                   // +1 to account for the bay label column
                   const gridStartCol = startCol + 1;
 
+                  const isBeingDragged =
+                    dragState?.assignmentId === assignment.id;
+
                   return (
                     <BayAssignmentBlock
                       key={assignment.id}
@@ -139,12 +184,49 @@ const BayTimelineGrid = forwardRef<BayTimelineGridHandle, BayTimelineGridProps>(
                       onClick={() => onAssignmentClick(assignment)}
                       startCol={gridStartCol}
                       colSpan={colSpan}
+                      enableDrag={!!onBlockPointerDown}
+                      onPointerDown={
+                        onBlockPointerDown
+                          ? (e, mode) =>
+                              onBlockPointerDown(
+                                e,
+                                assignment.id,
+                                bay.id,
+                                gridStartCol,
+                                colSpan,
+                                mode,
+                              )
+                          : undefined
+                      }
                     />
                   );
                 })}
               </div>
             );
           })}
+
+          {/* Ghost overlay for the block being dragged */}
+          {dragState && draggedAssignment && draggedBayColor && ghostStyle && (
+            <div
+              className="pointer-events-none opacity-60 rounded-md overflow-hidden"
+              style={{
+                position: "absolute",
+                gridColumn: `${dragState.originalStartCol + 1} / span ${dragState.originalColSpan}`,
+                // Position it using CSS grid placement, then translate via ghostStyle
+                zIndex: 50,
+                background: hexToRgba(draggedBayColor, 0.25),
+                borderLeft: `3px solid ${draggedBayColor}`,
+                minHeight: "48px",
+                padding: "4px 8px",
+                ...ghostStyle,
+              }}
+            >
+              <div className="text-xs font-bold truncate">
+                {draggedAssignment.jobOrder.vehicle?.plateNumber ??
+                  draggedAssignment.jobOrder.jobOrderNumber}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     );
