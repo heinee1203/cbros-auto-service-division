@@ -408,3 +408,78 @@ export const RELEASE_STEP_LABELS: Record<number, string> = {
   4: "Warranty & Care",
   5: "Sign-Off",
 };
+
+// Bay types
+export const BayType = {
+  GENERAL: "GENERAL",
+  PAINT_BOOTH: "PAINT_BOOTH",
+  DETAIL: "DETAIL",
+  PDR: "PDR",
+  MECHANICAL: "MECHANICAL",
+  WASH: "WASH",
+} as const;
+export type BayType = (typeof BayType)[keyof typeof BayType];
+
+export const BAY_TYPE_LABELS: Record<BayType, string> = {
+  GENERAL: "General",
+  PAINT_BOOTH: "Paint Booth",
+  DETAIL: "Detail",
+  PDR: "PDR",
+  MECHANICAL: "Mechanical",
+  WASH: "Wash",
+};
+
+// Appointment types
+export const AppointmentType = {
+  ESTIMATE_INSPECTION: "ESTIMATE_INSPECTION",
+  DROP_OFF: "DROP_OFF",
+  PICK_UP: "PICK_UP",
+  FOLLOW_UP: "FOLLOW_UP",
+  CONSULTATION: "CONSULTATION",
+} as const;
+export type AppointmentType = (typeof AppointmentType)[keyof typeof AppointmentType];
+
+export const APPOINTMENT_TYPE_LABELS: Record<AppointmentType, string> = {
+  ESTIMATE_INSPECTION: "Estimate Inspection",
+  DROP_OFF: "Drop-Off",
+  PICK_UP: "Pick-Up",
+  FOLLOW_UP: "Follow-Up",
+  CONSULTATION: "Consultation",
+};
+
+export const APPOINTMENT_TYPE_COLORS: Record<AppointmentType, string> = {
+  ESTIMATE_INSPECTION: "blue",
+  DROP_OFF: "green",
+  PICK_UP: "amber",
+  FOLLOW_UP: "purple",
+  CONSULTATION: "surface",
+};
+
+// Appointment status
+export const AppointmentStatus = {
+  SCHEDULED: "SCHEDULED",
+  CONFIRMED: "CONFIRMED",
+  ARRIVED: "ARRIVED",
+  NO_SHOW: "NO_SHOW",
+  CANCELLED: "CANCELLED",
+  COMPLETED: "COMPLETED",
+} as const;
+export type AppointmentStatus = (typeof AppointmentStatus)[keyof typeof AppointmentStatus];
+
+export const APPOINTMENT_STATUS_LABELS: Record<AppointmentStatus, string> = {
+  SCHEDULED: "Scheduled",
+  CONFIRMED: "Confirmed",
+  ARRIVED: "Arrived",
+  NO_SHOW: "No Show",
+  CANCELLED: "Cancelled",
+  COMPLETED: "Completed",
+};
+
+export const APPOINTMENT_STATUS_COLORS: Record<AppointmentStatus, string> = {
+  SCHEDULED: "surface",
+  CONFIRMED: "blue",
+  ARRIVED: "green",
+  NO_SHOW: "red",
+  CANCELLED: "surface",
+  COMPLETED: "green",
+};
