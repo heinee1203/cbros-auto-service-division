@@ -13,7 +13,10 @@ import {
   assignBaySchema,
   updateBayAssignmentSchema,
   reorderBaysSchema,
+  reassignTaskSchema,
+  updateWorkScheduleSchema,
 } from "@/lib/validators";
+import { prisma } from "@/lib/prisma";
 
 type ActionResult = {
   success: boolean;
@@ -268,5 +271,59 @@ export async function releaseFromBayAction(assignmentId: string): Promise<Action
     return { success: true };
   } catch (err) {
     return { success: false, error: err instanceof Error ? err.message : "Failed to release from bay" };
+  }
+}
+
+// ============================================================================
+// TECHNICIAN SCHEDULE ACTIONS
+// ============================================================================
+
+export async function reassignTaskAction(input: { taskId: string; newTechnicianId: string }): Promise<ActionResult> {
+  const session = await getSession();
+  if (!session?.user || !can(session.user.role, "schedule:tech_manage")) {
+    return { success: false, error: "Unauthorized" };
+  }
+
+  const parsed = reassignTaskSchema.safeParse(input);
+  if (!parsed.success) {
+    return { success: false, error: parsed.error.issues[0].message };
+  }
+
+  try {
+    const { updateTask } = await import("@/lib/services/tasks");
+    await updateTask(parsed.data.taskId, {
+      assignedTechnicianId: parsed.data.newTechnicianId,
+    });
+    revalidatePath("/schedule/technicians");
+    return { success: true };
+  } catch (err) {
+    return { success: false, error: err instanceof Error ? err.message : "Failed to reassign task" };
+  }
+}
+
+export async function updateWorkScheduleAction(input: { technicianId: string; workSchedule: string }): Promise<ActionResult> {
+  const session = await getSession();
+  if (!session?.user || !can(session.user.role, "schedule:tech_manage")) {
+    return { success: false, error: "Unauthorized" };
+  }
+
+  const parsed = updateWorkScheduleSchema.safeParse(input);
+  if (!parsed.success) {
+    return { success: false, error: parsed.error.issues[0].message };
+  }
+
+  try {
+    // Validate JSON is valid
+    JSON.parse(parsed.data.workSchedule);
+
+    await prisma.user.update({
+      where: { id: parsed.data.technicianId },
+      data: { workSchedule: parsed.data.workSchedule },
+    });
+    revalidatePath("/schedule/technicians");
+    revalidatePath("/settings");
+    return { success: true };
+  } catch (err) {
+    return { success: false, error: err instanceof Error ? err.message : "Failed to update work schedule" };
   }
 }

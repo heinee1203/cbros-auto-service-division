@@ -415,3 +415,17 @@ export const updateBayAssignmentSchema = z.object({
 export const reorderBaysSchema = z.object({
   orderedIds: z.array(z.string().min(1)).min(1),
 });
+
+export const reassignTaskSchema = z.object({
+  taskId: z.string().min(1),
+  newTechnicianId: z.string().min(1),
+});
+
+export type ReassignTaskInput = z.infer<typeof reassignTaskSchema>;
+
+export const updateWorkScheduleSchema = z.object({
+  technicianId: z.string().min(1),
+  workSchedule: z.string(), // JSON string
+});
+
+export type UpdateWorkScheduleInput = z.infer<typeof updateWorkScheduleSchema>;

@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 const TABS = [
   { label: "Appointments", href: "/schedule/appointments" },
   { label: "Bay Schedule", href: "/schedule/bays" },
+  { label: "Tech Schedule", href: "/schedule/technicians" },
 ] as const;
 
 export function ScheduleNav() {
