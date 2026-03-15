@@ -402,9 +402,13 @@ export async function suggestBayForJob(jobOrderId: string) {
     },
   });
 
-  const categories: string[] = job.estimates[0]?.estimateRequest?.requestedCategories
-    ? JSON.parse(job.estimates[0].estimateRequest.requestedCategories)
-    : [];
+  let categories: string[] = [];
+  try {
+    const raw = job.estimates[0]?.estimateRequest?.requestedCategories;
+    if (raw) categories = JSON.parse(raw);
+  } catch {
+    // Invalid JSON in requestedCategories — fall back to empty
+  }
 
   const preferredTypes = mapCategoriesToBayTypes(categories);
   const allBays = await prisma.bay.findMany({

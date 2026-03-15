@@ -19,6 +19,23 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  const bays = await getBayTimeline(new Date(start), new Date(end));
-  return NextResponse.json(bays);
+  const startDate = new Date(start);
+  const endDate = new Date(end);
+
+  if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+    return NextResponse.json(
+      { error: "Invalid date format" },
+      { status: 400 }
+    );
+  }
+
+  try {
+    const bays = await getBayTimeline(startDate, endDate);
+    return NextResponse.json(bays);
+  } catch {
+    return NextResponse.json(
+      { error: "Failed to fetch bay timeline" },
+      { status: 500 }
+    );
+  }
 }

@@ -17,6 +17,13 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  const result = await suggestBayForJob(jobOrderId);
-  return NextResponse.json(result);
+  try {
+    const result = await suggestBayForJob(jobOrderId);
+    return NextResponse.json(result);
+  } catch {
+    return NextResponse.json(
+      { error: "Failed to suggest bay" },
+      { status: 500 }
+    );
+  }
 }

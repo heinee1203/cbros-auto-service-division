@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useRef, useState, useMemo } from "react";
 import type { DragState } from "./bay-timeline-types";
 import { addDaysToDate, getDateKey } from "./bay-timeline-types";
 
@@ -8,8 +8,9 @@ import { addDaysToDate, getDateKey } from "./bay-timeline-types";
 // Touch device detection
 // ---------------------------------------------------------------------------
 
-export const isTouchDevice =
-  typeof window !== "undefined" && "ontouchstart" in window;
+export function isTouchDevice(): boolean {
+  return typeof window !== "undefined" && "ontouchstart" in window;
+}
 
 // ---------------------------------------------------------------------------
 // Options & Return types
@@ -89,7 +90,7 @@ export function useGanttDrag({
       mode: "move" | "resize",
     ) => {
       // Skip drag on touch devices
-      if (isTouchDevice) return;
+      if (isTouchDevice()) return;
 
       e.preventDefault();
       (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
@@ -206,9 +207,14 @@ export function useGanttDrag({
   );
 
   // ---- Ghost style ----
-  const ghostStyle: React.CSSProperties | null = dragState
-    ? { transform: `translate(${dxRef.current}px, ${dyRef.current}px)` }
-    : null;
+  // Derive ghost position from dragState offsets (which are updated via setState)
+  // rather than reading mutable refs during render
+  const ghostStyle: React.CSSProperties | null = useMemo(() => {
+    if (!dragState) return null;
+    const dx = dragState.dayOffset * columnWidth;
+    const dy = dragState.bayOffset * rowHeight;
+    return { transform: `translate(${dx}px, ${dy}px)` };
+  }, [dragState, columnWidth, rowHeight]);
 
   return {
     dragState,

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { assignJobToBayAction } from "@/lib/actions/scheduler-actions";
 import { toast } from "sonner";
 import { Loader2, MapPin, ChevronDown } from "lucide-react";
@@ -87,23 +87,38 @@ export function BaySuggestionModal({
     setSubmitting(false);
   }
 
+  // Escape key handler
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    },
+    [onClose]
+  );
+
+  useEffect(() => {
+    if (!open) return;
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [open, handleKeyDown]);
+
   if (!open) return null;
 
   const selectedBay =
     allBays.find((b) => b.id === selectedBayId) || suggestedBay;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
+    <div className="fixed inset-0 z-50 flex items-center justify-center" role="dialog" aria-modal="true" aria-labelledby="bay-suggestion-title">
       {/* Backdrop */}
       <div
         className="absolute inset-0 bg-black/40"
         onClick={onClose}
+        aria-hidden="true"
       />
 
       {/* Modal */}
       <div className="relative bg-white rounded-xl shadow-xl w-full max-w-md mx-4 p-6 space-y-5">
         <div>
-          <h3 className="text-lg font-semibold text-primary">
+          <h3 id="bay-suggestion-title" className="text-lg font-semibold text-primary">
             Assign to Bay
           </h3>
           <p className="text-sm text-surface-500 mt-1">

@@ -74,10 +74,10 @@ export function BayAssignModal({
       const res = await fetch(`/api/jobs?${params.toString()}`);
       if (res.ok) {
         const data = await res.json();
-        const items = data.data || data.jobs || data || [];
-        // Filter to only unassigned jobs
-        const unassigned = (Array.isArray(items) ? items : []).filter(
-          (j: JobResult) => !j.assignedBayId
+        const items: JobResult[] = data.jobOrders || [];
+        // Filter to only unassigned jobs (no bay currently assigned)
+        const unassigned = items.filter(
+          (j) => !j.assignedBayId
         );
         setJobs(unassigned);
       } else {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { SlideOver } from "@/components/ui/slide-over";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
@@ -56,6 +56,15 @@ export function BayAssignmentDetail({
   // Reschedule state
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+
+  // Reset form state when assignment changes
+  useEffect(() => {
+    setActionMode("none");
+    setSelectedBayId("");
+    setStartDate("");
+    setEndDate("");
+    setReleaseDialogOpen(false);
+  }, [assignment?.id]);
 
   if (!assignment) return null;
 
