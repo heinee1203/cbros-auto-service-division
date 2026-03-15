@@ -1,3 +1,4 @@
+import { randomUUID } from "crypto";
 import { prisma } from "@/lib/prisma";
 import type {
   EstimateLineItemInput,
@@ -365,4 +366,60 @@ export async function getActiveTechnicians() {
     },
     orderBy: { firstName: "asc" },
   });
+}
+
+// ---------------------------------------------------------------------------
+// 12. getEstimateVersionByToken
+// ---------------------------------------------------------------------------
+export async function getEstimateVersionByToken(token: string) {
+  // approvalToken is @unique, but we also need deletedAt: null for soft-delete
+  // filtering — findUnique doesn't support compound where with non-unique fields,
+  // so findFirst is required here.
+  const version = await prisma.estimateVersion.findFirst({
+    where: { approvalToken: token, deletedAt: null },
+    include: {
+      lineItems: {
+        where: { deletedAt: null },
+        orderBy: [{ group: "asc" }, { sortOrder: "asc" }],
+      },
+      estimate: {
+        include: {
+          estimateRequest: {
+            include: {
+              customer: true,
+              vehicle: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  if (!version) return null;
+
+  // Check token expiry if set
+  if (version.approvalTokenExpiry && new Date() > version.approvalTokenExpiry) {
+    return null;
+  }
+
+  return version;
+}
+
+// ---------------------------------------------------------------------------
+// 13. generateApprovalToken
+// ---------------------------------------------------------------------------
+export async function generateApprovalToken(versionId: string, userId?: string) {
+  const token = randomUUID();
+  const expiry = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days
+
+  await prisma.estimateVersion.update({
+    where: { id: versionId },
+    data: {
+      approvalToken: token,
+      approvalTokenExpiry: expiry,
+      updatedBy: userId,
+    },
+  });
+
+  return token;
 }
