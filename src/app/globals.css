@@ -1,0 +1,19 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-surface-200;
+  }
+  body {
+    @apply bg-surface-50 text-primary;
+  }
+}
+
+@layer utilities {
+  /* Minimum touch target for tablet-first design */
+  .touch-target {
+    @apply min-h-touch min-w-touch;
+  }
+}

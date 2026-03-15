@@ -1,0 +1,1034 @@
+// AutoServ Pro — Complete Database Schema
+// All monetary values stored as Int (centavos). ₱1,234.56 = 123456
+// All timestamps stored as UTC, displayed in Asia/Manila
+// Soft delete via deletedAt — filtered by Prisma Client Extension
+//
+// NOTE: SQLite does not support enums. All enum-like fields are String.
+// Type safety enforced at the application layer via TypeScript types in src/types/enums.ts
+// When migrating to PostgreSQL, these fields convert to native enums.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================================
+// USER & AUTH
+// ============================================================================
+
+model User {
+  id            String    @id @default(cuid())
+  username      String    @unique
+  passwordHash  String
+  pinHash       String?
+  firstName     String
+  lastName      String
+  role          String    @default("TECHNICIAN") // UserRole
+  isActive      Boolean   @default(true)
+  phone         String?
+  email         String?
+  avatarUrl     String?
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  createdBy     String?
+  updatedBy     String?
+  deletedAt     DateTime?
+
+  // Relations
+  timeEntries         TimeEntry[]
+  assignedTasks       Task[]             @relation("TaskAssignee")
+  jobOrdersTech       JobOrder[]         @relation("PrimaryTechnician")
+  qcInspections       QCInspection[]     @relation("QCInspector")
+  notifications       Notification[]     @relation("NotificationRecipient")
+  auditLogs           AuditLog[]
+
+  @@index([pinHash])
+  @@index([role])
+  @@index([deletedAt])
+}
+
+// ============================================================================
+// CUSTOMER & VEHICLE
+// ============================================================================
+
+model Customer {
+  id            String    @id @default(cuid())
+  firstName     String
+  lastName      String
+  phone         String
+  phoneAlt      String?
+  email         String?
+  address       String?
+  company       String?
+  referredBy    String?
+  notes         String?
+  tags          String    @default("[]") // JSON array stored as string for SQLite
+
+  totalSpend    Int       @default(0)    // centavos, auto-calculated
+  jobCount      Int       @default(0)    // auto-calculated
+  firstVisit    DateTime?
+  lastVisit     DateTime?
+  satisfactionScore Float?
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  createdBy     String?
+  updatedBy     String?
+  deletedAt     DateTime?
+
+  // Relations
+  vehicles          Vehicle[]
+  estimateRequests  EstimateRequest[]
+  jobOrders         JobOrder[]
+  warranties        Warranty[]
+
+  @@index([phone])
+  @@index([lastName, firstName])
+  @@index([deletedAt])
+}
+
+model Vehicle {
+  id                String    @id @default(cuid())
+  customerId        String
+  plateNumber       String
+  make              String
+  model             String
+  year              Int?
+  color             String
+  colorCode         String?
+  vin               String?
+  engineType        String?
+  bodyType          String    @default("SEDAN") // BodyType
+  insuranceCompany  String?
+  policyNumber      String?
+  notes             String?
+
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  createdBy         String?
+  updatedBy         String?
+  deletedAt         DateTime?
+
+  // Relations
+  customer          Customer  @relation(fields: [customerId], references: [id])
+  estimateRequests  EstimateRequest[]
+  jobOrders         JobOrder[]
+  warranties        Warranty[]
+
+  @@unique([plateNumber])
+  @@index([plateNumber])
+  @@index([customerId])
+  @@index([make, model])
+  @@index([deletedAt])
+}
+
+// ============================================================================
+// STAGE 1: INQUIRY / ESTIMATE REQUEST
+// ============================================================================
+
+model EstimateRequest {
+  id                String    @id @default(cuid())
+  requestNumber     String    @unique // EST-YYYYMMDD-XXXX
+  customerId        String
+  vehicleId         String
+  status            String    @default("INQUIRY_RECEIVED") // EstimateRequestStatus
+
+  customerConcern   String
+  requestedCategories String  @default("[]") // JSON array
+  isInsuranceClaim  Boolean   @default(false)
+  claimNumber       String?
+  adjusterName      String?
+  adjusterContact   String?
+
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  createdBy         String?
+  updatedBy         String?
+  deletedAt         DateTime?
+
+  // Relations
+  customer          Customer  @relation(fields: [customerId], references: [id])
+  vehicle           Vehicle   @relation(fields: [vehicleId], references: [id])
+  estimates         Estimate[]
+
+  @@index([requestNumber])
+  @@index([customerId])
+  @@index([vehicleId])
+  @@index([status])
+  @@index([deletedAt])
+}
+
+// ============================================================================
+// STAGE 2: QUOTATION / ESTIMATE
+// ============================================================================
+
+model Estimate {
+  id                  String    @id @default(cuid())
+  estimateRequestId   String
+  jobOrderId          String?
+
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+  createdBy           String?
+  updatedBy           String?
+  deletedAt           DateTime?
+
+  // Relations
+  estimateRequest     EstimateRequest   @relation(fields: [estimateRequestId], references: [id])
+  jobOrder            JobOrder?         @relation(fields: [jobOrderId], references: [id])
+  versions            EstimateVersion[]
+
+  @@index([estimateRequestId])
+  @@index([jobOrderId])
+  @@index([deletedAt])
+}
+
+model EstimateVersion {
+  id                String    @id @default(cuid())
+  estimateId        String
+  versionNumber     Int       @default(1)
+  versionLabel      String    // EST-YYYYMMDD-XXXX-v1
+
+  subtotalLabor     Int       @default(0) // centavos
+  subtotalParts     Int       @default(0)
+  subtotalMaterials Int       @default(0)
+  subtotalPaint     Int       @default(0)
+  subtotalSublet    Int       @default(0)
+  subtotalOther     Int       @default(0)
+  vatRate           Float     @default(12.0) // percentage
+  vatAmount         Int       @default(0) // centavos
+  discountType      String?   // "flat" | "percentage"
+  discountValue     Int       @default(0) // centavos or basis points
+  discountReason    String?
+  grandTotal        Int       @default(0) // centavos
+
+  termsAndConditions String?
+  estimatedDays      Int?
+  isApproved         Boolean   @default(false)
+  approvedAt         DateTime?
+  approvalToken      String?   @unique
+  approvalTokenExpiry DateTime?
+  customerSignature  String?   // base64 or file path
+  customerComments   String?
+
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+  createdBy          String?
+  updatedBy          String?
+  deletedAt          DateTime?
+
+  // Relations
+  estimate           Estimate          @relation(fields: [estimateId], references: [id])
+  lineItems          EstimateLineItem[]
+
+  @@unique([estimateId, versionNumber])
+  @@index([estimateId])
+  @@index([approvalToken])
+  @@index([deletedAt])
+}
+
+model EstimateLineItem {
+  id                  String    @id @default(cuid())
+  estimateVersionId   String
+  group               String    @default("LABOR") // EstimateLineItemGroup
+  description         String
+  serviceCatalogId    String?
+  quantity            Float     @default(1)
+  unit                String    @default("pcs")
+  unitCost            Int       @default(0)  // centavos
+  markup              Float     @default(0)  // percentage
+  subtotal            Int       @default(0)  // centavos, auto-calculated
+  notes               String?
+  estimatedHours      Float?
+  assignedTechnicianId String?
+  sortOrder           Int       @default(0)
+
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+  createdBy           String?
+  updatedBy           String?
+  deletedAt           DateTime?
+
+  // Relations
+  estimateVersion     EstimateVersion @relation(fields: [estimateVersionId], references: [id])
+  serviceCatalog      ServiceCatalog? @relation(fields: [serviceCatalogId], references: [id])
+
+  @@index([estimateVersionId])
+  @@index([serviceCatalogId])
+  @@index([deletedAt])
+}
+
+// ============================================================================
+// JOB ORDER (Master Record)
+// ============================================================================
+
+model JobOrder {
+  id                String    @id @default(cuid())
+  jobOrderNumber    String    @unique // JO-YYYYMMDD-XXXX
+  customerId        String
+  vehicleId         String
+  status            String    @default("PENDING") // JobOrderStatus
+  priority          String    @default("NORMAL")  // JobOrderPriority
+
+  targetCompletionDate DateTime?
+  actualCompletionDate DateTime?
+  rushSurchargePercent Float?
+
+  // Insurance fields
+  isInsuranceJob    Boolean   @default(false)
+  claimNumber       String?
+  dateOfLoss        DateTime?
+  adjusterName      String?
+  adjusterPhone     String?
+  adjusterEmail     String?
+  policyNumber      String?
+  insuranceCopay    Int?      // centavos
+  insuranceCoverage Int?      // centavos
+
+  primaryTechnicianId String?
+  notes             String?
+
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  createdBy         String?
+  updatedBy         String?
+  deletedAt         DateTime?
+
+  // Relations
+  customer          Customer  @relation(fields: [customerId], references: [id])
+  vehicle           Vehicle   @relation(fields: [vehicleId], references: [id])
+  primaryTechnician User?     @relation("PrimaryTechnician", fields: [primaryTechnicianId], references: [id])
+  estimates         Estimate[]
+  intakeRecord      IntakeRecord?
+  tasks             Task[]
+  timeEntries       TimeEntry[]
+  materialUsages    MaterialUsage[]
+  supplementalEstimates SupplementalEstimate[]
+  qcInspections     QCInspection[]
+  invoices          Invoice[]
+  releaseRecord     ReleaseRecord?
+  warranties        Warranty[]
+  adjusterLogs      AdjusterLog[]
+
+  @@index([jobOrderNumber])
+  @@index([customerId])
+  @@index([vehicleId])
+  @@index([status])
+  @@index([primaryTechnicianId])
+  @@index([deletedAt])
+}
+
+// ============================================================================
+// STAGE 3: INTAKE / VEHICLE CHECK-IN
+// ============================================================================
+
+model IntakeRecord {
+  id                String    @id @default(cuid())
+  jobOrderId        String    @unique
+  odometerReading   Int?
+  fuelLevel         String    @default("HALF") // FuelLevel
+  hasWarningLights  Boolean   @default(false)
+  warningLightsNote String?
+  keysCount         Int       @default(1)
+
+  // Intake authorization
+  authorizationTerms    String?
+  customerSignature     String?
+  customerSignedAt      DateTime?
+  advisorSignature      String?
+  advisorSignedAt       DateTime?
+  advisorId             String?
+
+  // Belongings
+  belongingsNote        String?
+  noItemsLeft           Boolean   @default(false)
+  belongingsCustomerSig String?
+  belongingsAdvisorSig  String?
+
+  checkedInAt           DateTime  @default(now())
+
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  createdBy         String?
+  updatedBy         String?
+  deletedAt         DateTime?
+
+  // Relations
+  jobOrder          JobOrder        @relation(fields: [jobOrderId], references: [id])
+  damageMarks       IntakeDamageMap[]
+  belongings        IntakeBelonging[]
+
+  @@index([jobOrderId])
+  @@index([deletedAt])
+}
+
+model IntakeDamageMap {
+  id              String    @id @default(cuid())
+  intakeRecordId  String
+  zone            String    // e.g., "hood", "left_fender", "rear_bumper"
+  positionX       Float?
+  positionY       Float?
+  damageType      String    @default("SCRATCH") // DamageType
+  severity        String    @default("COSMETIC") // DamageSeverity
+  notes           String?
+
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  createdBy       String?
+  updatedBy       String?
+  deletedAt       DateTime?
+
+  // Relations
+  intakeRecord    IntakeRecord @relation(fields: [intakeRecordId], references: [id])
+
+  @@index([intakeRecordId])
+  @@index([deletedAt])
+}
+
+model IntakeBelonging {
+  id              String    @id @default(cuid())
+  intakeRecordId  String
+  description     String
+  condition       String?
+  isReturned      Boolean   @default(false)
+  returnedAt      DateTime?
+
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  createdBy       String?
+  updatedBy       String?
+  deletedAt       DateTime?
+
+  // Relations
+  intakeRecord    IntakeRecord @relation(fields: [intakeRecordId], references: [id])
+
+  @@index([intakeRecordId])
+  @@index([deletedAt])
+}
+
+// ============================================================================
+// STAGE 4: IN-SERVICE / WORK IN PROGRESS
+// ============================================================================
+
+model Task {
+  id                  String    @id @default(cuid())
+  jobOrderId          String
+  serviceCatalogId    String?
+  name                String
+  description         String?
+  status              String    @default("QUEUED") // TaskStatus
+  sortOrder           Int       @default(0)
+  estimatedHours      Float     @default(0)
+  actualHours         Float     @default(0) // auto-calculated from TimeEntries
+  hourlyRate          Int       @default(0) // centavos
+  assignedTechnicianId String?
+  isRework            Boolean   @default(false)
+  reworkOfTaskId      String?
+  dependsOnTaskId     String?
+
+  startedAt           DateTime?
+  completedAt         DateTime?
+
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+  createdBy           String?
+  updatedBy           String?
+  deletedAt           DateTime?
+
+  // Relations
+  jobOrder            JobOrder        @relation(fields: [jobOrderId], references: [id])
+  assignedTechnician  User?           @relation("TaskAssignee", fields: [assignedTechnicianId], references: [id])
+  serviceCatalog      ServiceCatalog? @relation(fields: [serviceCatalogId], references: [id])
+  timeEntries         TimeEntry[]
+  materialUsages      MaterialUsage[]
+  dependsOnTask       Task?           @relation("TaskDependency", fields: [dependsOnTaskId], references: [id])
+  dependentTasks      Task[]          @relation("TaskDependency")
+  reworkOfTask        Task?           @relation("TaskRework", fields: [reworkOfTaskId], references: [id])
+  reworkTasks         Task[]          @relation("TaskRework")
+
+  @@index([jobOrderId])
+  @@index([assignedTechnicianId])
+  @@index([status])
+  @@index([deletedAt])
+}
+
+model TimeEntry {
+  id              String    @id @default(cuid())
+  jobOrderId      String
+  taskId          String
+  technicianId    String
+  clockIn         DateTime
+  clockOut        DateTime?
+  breakMinutes    Int       @default(0)
+  netMinutes      Int       @default(0) // auto-calculated
+  hourlyRate      Int       @default(0) // centavos
+  laborCost       Int       @default(0) // centavos, auto-calculated
+  notes           String?
+  isOvertime      Boolean   @default(false)
+  source          String    @default("TABLET_CLOCK") // TimeEntrySource
+
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  createdBy       String?
+  updatedBy       String?
+  deletedAt       DateTime?
+
+  // Relations
+  jobOrder        JobOrder  @relation(fields: [jobOrderId], references: [id])
+  task            Task      @relation(fields: [taskId], references: [id])
+  technician      User      @relation(fields: [technicianId], references: [id])
+
+  @@index([jobOrderId])
+  @@index([taskId])
+  @@index([technicianId])
+  @@index([clockIn])
+  @@index([deletedAt])
+}
+
+model MaterialUsage {
+  id                  String    @id @default(cuid())
+  jobOrderId          String
+  taskId              String?
+  itemDescription     String
+  partNumber          String?
+  quantity            Float     @default(1)
+  unit                String    @default("pcs")
+  actualCost          Int       @default(0) // centavos
+  estimatedLineItemId String?
+  loggedBy            String
+
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+  createdBy           String?
+  updatedBy           String?
+  deletedAt           DateTime?
+
+  // Relations
+  jobOrder            JobOrder  @relation(fields: [jobOrderId], references: [id])
+  task                Task?     @relation(fields: [taskId], references: [id])
+
+  @@index([jobOrderId])
+  @@index([taskId])
+  @@index([deletedAt])
+}
+
+model SupplementalEstimate {
+  id                String    @id @default(cuid())
+  jobOrderId        String
+  supplementNumber  String    @unique // SUP-YYYYMMDD-XXXX-S1
+  status            String    @default("DRAFT") // SupplementStatus
+  description       String
+  reason            String?
+
+  subtotalLabor     Int       @default(0)
+  subtotalParts     Int       @default(0)
+  subtotalMaterials Int       @default(0)
+  subtotalOther     Int       @default(0)
+  vatAmount         Int       @default(0)
+  grandTotal        Int       @default(0)
+
+  approvalToken     String?   @unique
+  approvalTokenExpiry DateTime?
+  customerSignature String?
+  approvedAt        DateTime?
+  customerComments  String?
+
+  // Insurance supplement tracking
+  submittedToAdjuster   Boolean   @default(false)
+  adjusterSubmittedAt   DateTime?
+  adjusterApprovedAt    DateTime?
+  adjusterDeniedAt      DateTime?
+  adjusterNotes         String?
+
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  createdBy         String?
+  updatedBy         String?
+  deletedAt         DateTime?
+
+  // Relations
+  jobOrder          JobOrder  @relation(fields: [jobOrderId], references: [id])
+  lineItems         SupplementLineItem[]
+
+  @@index([jobOrderId])
+  @@index([supplementNumber])
+  @@index([approvalToken])
+  @@index([deletedAt])
+}
+
+model SupplementLineItem {
+  id                      String    @id @default(cuid())
+  supplementalEstimateId  String
+  group                   String    @default("LABOR") // EstimateLineItemGroup
+  description             String
+  quantity                Float     @default(1)
+  unit                    String    @default("pcs")
+  unitCost                Int       @default(0)
+  subtotal                Int       @default(0)
+  notes                   String?
+  estimatedHours          Float?
+  sortOrder               Int       @default(0)
+
+  createdAt               DateTime  @default(now())
+  updatedAt               DateTime  @updatedAt
+  createdBy               String?
+  updatedBy               String?
+  deletedAt               DateTime?
+
+  // Relations
+  supplementalEstimate    SupplementalEstimate @relation(fields: [supplementalEstimateId], references: [id])
+
+  @@index([supplementalEstimateId])
+  @@index([deletedAt])
+}
+
+// ============================================================================
+// STAGE 5: QUALITY CONTROL
+// ============================================================================
+
+model QCInspection {
+  id              String    @id @default(cuid())
+  jobOrderId      String
+  inspectorId     String
+  inspectionDate  DateTime  @default(now())
+  overallResult   String    @default("PENDING") // "PENDING" | "PASSED" | "FAILED"
+  notes           String?
+
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  createdBy       String?
+  updatedBy       String?
+  deletedAt       DateTime?
+
+  // Relations
+  jobOrder        JobOrder          @relation(fields: [jobOrderId], references: [id])
+  inspector       User              @relation("QCInspector", fields: [inspectorId], references: [id])
+  checklistItems  QCChecklistItem[]
+
+  @@index([jobOrderId])
+  @@index([inspectorId])
+  @@index([deletedAt])
+}
+
+model QCChecklistItem {
+  id              String    @id @default(cuid())
+  qcInspectionId  String
+  category        String    // "paint_body", "detailing", "undercoating", "mechanical"
+  description     String
+  status          String    @default("NA") // QCChecklistItemStatus: "PASS" | "FAIL" | "NA"
+  notes           String?
+  sortOrder       Int       @default(0)
+
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  createdBy       String?
+  updatedBy       String?
+  deletedAt       DateTime?
+
+  // Relations
+  qcInspection    QCInspection @relation(fields: [qcInspectionId], references: [id])
+
+  @@index([qcInspectionId])
+  @@index([deletedAt])
+}
+
+// ============================================================================
+// STAGE 6: INVOICING & PAYMENT
+// ============================================================================
+
+model Invoice {
+  id                String    @id @default(cuid())
+  jobOrderId        String
+  invoiceNumber     String    @unique // INV-YYYYMMDD-XXXX
+  orNumber          String?   // Official Receipt number for BIR
+
+  billingMode       String    @default("estimated") // "estimated" | "actual"
+
+  subtotalLabor     Int       @default(0)
+  subtotalParts     Int       @default(0)
+  subtotalMaterials Int       @default(0)
+  subtotalPaint     Int       @default(0)
+  subtotalSublet    Int       @default(0)
+  subtotalOther     Int       @default(0)
+  vatableAmount     Int       @default(0)
+  vatAmount         Int       @default(0)
+  vatExemptAmount   Int       @default(0)
+  discountType      String?
+  discountValue     Int       @default(0)
+  discountReason    String?
+  grandTotal        Int       @default(0)
+
+  paymentStatus     String    @default("UNPAID") // PaymentStatus
+  totalPaid         Int       @default(0)
+  balanceDue        Int       @default(0)
+
+  dueDate           DateTime?
+  paidInFullAt      DateTime?
+  notes             String?
+
+  // Variance tracking (internal)
+  estimatedTotal    Int       @default(0)
+  actualTotal       Int       @default(0)
+
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  createdBy         String?
+  updatedBy         String?
+  deletedAt         DateTime?
+
+  // Relations
+  jobOrder          JobOrder  @relation(fields: [jobOrderId], references: [id])
+  lineItems         InvoiceLineItem[]
+  payments          Payment[]
+
+  @@index([jobOrderId])
+  @@index([invoiceNumber])
+  @@index([orNumber])
+  @@index([paymentStatus])
+  @@index([deletedAt])
+}
+
+model InvoiceLineItem {
+  id              String    @id @default(cuid())
+  invoiceId       String
+  group           String    @default("LABOR") // EstimateLineItemGroup
+  description     String
+  quantity        Float     @default(1)
+  unit            String    @default("pcs")
+  unitCost        Int       @default(0)
+  subtotal        Int       @default(0)
+  sortOrder       Int       @default(0)
+
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  createdBy       String?
+  updatedBy       String?
+  deletedAt       DateTime?
+
+  // Relations
+  invoice         Invoice   @relation(fields: [invoiceId], references: [id])
+
+  @@index([invoiceId])
+  @@index([deletedAt])
+}
+
+model Payment {
+  id              String    @id @default(cuid())
+  invoiceId       String
+  amount          Int       // centavos
+  method          String    // PaymentMethod
+  referenceNumber String?
+  last4Digits     String?
+  approvalCode    String?
+  checkBank       String?
+  checkDate       DateTime?
+  notes           String?
+  paidAt          DateTime  @default(now())
+
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  createdBy       String?
+  updatedBy       String?
+  deletedAt       DateTime?
+
+  // Relations
+  invoice         Invoice   @relation(fields: [invoiceId], references: [id])
+
+  @@index([invoiceId])
+  @@index([method])
+  @@index([deletedAt])
+}
+
+// ============================================================================
+// STAGE 7: RELEASE / VEHICLE HANDOVER
+// ============================================================================
+
+model ReleaseRecord {
+  id                  String    @id @default(cuid())
+  jobOrderId          String    @unique
+  releaseDate         DateTime  @default(now())
+  odometerReading     Int?
+  fuelLevel           String?   // FuelLevel
+
+  // Checklists
+  belongingsReturned  Boolean   @default(false)
+  fuelLevelMatches    Boolean   @default(false)
+  keysReturned        Boolean   @default(false)
+  customerSatisfied   Boolean   @default(false)
+  warrantyExplained   Boolean   @default(false)
+  careInstructionsGiven Boolean @default(false)
+
+  careInstructions    String?
+  customerSignature   String?
+  customerSignedAt    DateTime?
+  advisorSignature    String?
+  advisorSignedAt     DateTime?
+  advisorId           String?
+
+  // Follow-up scheduling
+  followUp7DayDate    DateTime?
+  followUp7DaySent    Boolean   @default(false)
+  followUp30DayDate   DateTime?
+  followUp30DaySent   Boolean   @default(false)
+  followUp6MonthDate  DateTime?
+  followUp6MonthSent  Boolean   @default(false)
+  followUp1YearDate   DateTime?
+  followUp1YearSent   Boolean   @default(false)
+
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+  createdBy           String?
+  updatedBy           String?
+  deletedAt           DateTime?
+
+  // Relations
+  jobOrder            JobOrder  @relation(fields: [jobOrderId], references: [id])
+
+  @@index([jobOrderId])
+  @@index([deletedAt])
+}
+
+// ============================================================================
+// WARRANTY
+// ============================================================================
+
+model Warranty {
+  id                String    @id @default(cuid())
+  jobOrderId        String
+  vehicleId         String
+  customerId        String
+  serviceCategory   String
+  description       String
+  startDate         DateTime
+  endDate           DateTime
+  terms             String?
+  status            String    @default("ACTIVE") // WarrantyStatus
+
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  createdBy         String?
+  updatedBy         String?
+  deletedAt         DateTime?
+
+  // Relations
+  jobOrder          JobOrder  @relation(fields: [jobOrderId], references: [id])
+  vehicle           Vehicle   @relation(fields: [vehicleId], references: [id])
+  customer          Customer  @relation(fields: [customerId], references: [id])
+  claims            WarrantyClaim[]
+
+  @@index([jobOrderId])
+  @@index([vehicleId])
+  @@index([customerId])
+  @@index([status])
+  @@index([endDate])
+  @@index([deletedAt])
+}
+
+model WarrantyClaim {
+  id                String    @id @default(cuid())
+  warrantyId        String
+  claimDate         DateTime  @default(now())
+  description       String
+  resolution        String?
+  resolvedDate      DateTime?
+  linkedJobOrderId  String?
+
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  createdBy         String?
+  updatedBy         String?
+  deletedAt         DateTime?
+
+  // Relations
+  warranty          Warranty  @relation(fields: [warrantyId], references: [id])
+
+  @@index([warrantyId])
+  @@index([deletedAt])
+}
+
+// ============================================================================
+// PHOTO (Polymorphic)
+// ============================================================================
+
+model Photo {
+  id              String    @id @default(cuid())
+  entityType      String    // "job_order", "task", "qc_inspection", "warranty_claim", etc.
+  entityId        String
+  stage           String    // PhotoStage
+  category        String?   // "front_full", "left_side", "odometer", "damage_closeup", etc.
+  fileName        String
+  originalPath    String
+  fullSizePath    String
+  thumbnailPath   String
+  mimeType        String    @default("image/jpeg")
+  fileSizeBytes   Int       @default(0)
+  width           Int?
+  height          Int?
+
+  // Metadata
+  caption         String?
+  notes           String?
+  takenAt         DateTime?
+  gpsLatitude     Float?
+  gpsLongitude    Float?
+  deviceInfo      String?
+  zone            String?
+  taskId          String?
+
+  // Annotation layer
+  hasAnnotations  Boolean   @default(false)
+  annotationPath  String?
+
+  sortOrder       Int       @default(0)
+  uploadedBy      String?
+
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  createdBy       String?
+  updatedBy       String?
+  deletedAt       DateTime?
+
+  @@index([entityType, entityId])
+  @@index([stage])
+  @@index([taskId])
+  @@index([deletedAt])
+}
+
+// ============================================================================
+// INSURANCE — ADJUSTER COMMUNICATION LOG
+// ============================================================================
+
+model AdjusterLog {
+  id              String    @id @default(cuid())
+  jobOrderId      String
+  contactDate     DateTime  @default(now())
+  contactMethod   String    // "phone", "email", "visit", "sms"
+  adjusterName    String?
+  summary         String
+  outcome         String?
+
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  createdBy       String?
+  updatedBy       String?
+  deletedAt       DateTime?
+
+  // Relations
+  jobOrder        JobOrder  @relation(fields: [jobOrderId], references: [id])
+
+  @@index([jobOrderId])
+  @@index([deletedAt])
+}
+
+// ============================================================================
+// SERVICE CATALOG
+// ============================================================================
+
+model ServiceCatalog {
+  id                      String    @id @default(cuid())
+  category                String
+  name                    String
+  description             String?
+  defaultEstimatedHours   Float     @default(0)
+  defaultLaborRate        Int       @default(0) // centavos per hour
+  requiresSublet          Boolean   @default(false)
+  isActive                Boolean   @default(true)
+  sortOrder               Int       @default(0)
+  requiredMilestonePhotos String    @default("[]") // JSON array
+
+  createdAt               DateTime  @default(now())
+  updatedAt               DateTime  @updatedAt
+  createdBy               String?
+  updatedBy               String?
+  deletedAt               DateTime?
+
+  // Relations
+  estimateLineItems       EstimateLineItem[]
+  tasks                   Task[]
+
+  @@index([category])
+  @@index([isActive])
+  @@index([deletedAt])
+}
+
+// ============================================================================
+// NOTIFICATION
+// ============================================================================
+
+model Notification {
+  id              String    @id @default(cuid())
+  recipientId     String
+  type            String    // NotificationType
+  title           String
+  message         String
+  isRead          Boolean   @default(false)
+  readAt          DateTime?
+  entityType      String?
+  entityId        String?
+  metadata        String?   // JSON
+
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  createdBy       String?
+  updatedBy       String?
+  deletedAt       DateTime?
+
+  // Relations
+  recipient       User      @relation("NotificationRecipient", fields: [recipientId], references: [id])
+
+  @@index([recipientId, isRead])
+  @@index([type])
+  @@index([deletedAt])
+}
+
+// ============================================================================
+// AUDIT LOG (Append-only — NO soft delete)
+// ============================================================================
+
+model AuditLog {
+  id              String    @id @default(cuid())
+  userId          String
+  action          String
+  entityType      String
+  entityId        String
+  previousState   String?   // JSON snapshot
+  newState        String?   // JSON snapshot
+  metadata        String?   // JSON
+  ipAddress       String?
+  userAgent       String?
+
+  createdAt       DateTime  @default(now())
+
+  // Relations
+  user            User      @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([entityType, entityId])
+  @@index([action])
+  @@index([createdAt])
+}
+
+// ============================================================================
+// SETTINGS (Key-Value Store)
+// ============================================================================
+
+model Setting {
+  id              String    @id @default(cuid())
+  key             String    @unique
+  value           String    // JSON-encoded value
+  category        String    @default("general")
+  description     String?
+
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  createdBy       String?
+  updatedBy       String?
+
+  @@index([key])
+  @@index([category])
+}
