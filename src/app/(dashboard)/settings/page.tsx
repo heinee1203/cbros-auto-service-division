@@ -3,6 +3,7 @@ import { getSession } from "@/lib/auth";
 import { can } from "@/lib/permissions";
 import { getAllSettings } from "@/lib/services/settings";
 import { SettingsClient } from "./settings-client";
+import BayManagement from "@/components/schedule/bay-management";
 import type { UserRole } from "@/types/enums";
 
 export default async function SettingsPage() {
@@ -18,5 +19,12 @@ export default async function SettingsPage() {
     grouped[s.category].push(s);
   }
 
-  return <SettingsClient initialSettings={grouped} />;
+  return (
+    <div className="space-y-6">
+      <SettingsClient initialSettings={grouped} />
+      {can(session.user.role as UserRole, "schedule:bays_manage") && (
+        <BayManagement />
+      )}
+    </div>
+  );
 }
