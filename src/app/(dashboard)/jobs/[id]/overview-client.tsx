@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { JobTimeline } from "@/components/jobs/job-timeline";
 import { JobProfitabilityCard } from "@/components/jobs/job-profitability";
+import { BaySuggestionModal } from "@/components/schedule/bay-suggestion-modal";
 import { formatPeso, formatDate, formatPlateNumber, formatPhone } from "@/lib/utils";
 import { JOB_STAGES } from "@/lib/constants";
 import {
@@ -152,6 +153,7 @@ export function OverviewClient({
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
+  const [baySuggestionOpen, setBaySuggestionOpen] = useState(false);
 
   const currentStageIndex = getCurrentStageIndex(jobOrder.status);
   const grandTotal = getEstimateGrandTotal(jobOrder);
@@ -179,6 +181,7 @@ export function OverviewClient({
       startTransition(() => {
         router.refresh();
       });
+      setBaySuggestionOpen(true);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to start work");
     }
@@ -653,21 +656,33 @@ export function OverviewClient({
           </div>
         )}
 
-        {jobOrder.status === "CHECKED_IN" ? (
-          <button
-            onClick={handleStartWork}
-            disabled={isPending}
-            className="inline-flex items-center gap-2 rounded-lg bg-amber-500 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-amber-600 transition-colors disabled:opacity-60"
-          >
-            <PlayCircle className="w-4 h-4" />
-            {isPending ? "Starting..." : "Start Work"}
-          </button>
-        ) : (
-          <div className="inline-flex items-center gap-2 rounded-lg bg-surface-100 px-5 py-2.5 text-sm font-medium text-surface-600">
-            <CheckCircle2 className="w-4 h-4" />
-            {getStatusActionLabel(jobOrder.status)}
-          </div>
-        )}
+        <div className="flex items-center gap-3 flex-wrap">
+          {jobOrder.status === "CHECKED_IN" ? (
+            <button
+              onClick={handleStartWork}
+              disabled={isPending}
+              className="inline-flex items-center gap-2 rounded-lg bg-amber-500 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-amber-600 transition-colors disabled:opacity-60"
+            >
+              <PlayCircle className="w-4 h-4" />
+              {isPending ? "Starting..." : "Start Work"}
+            </button>
+          ) : (
+            <div className="inline-flex items-center gap-2 rounded-lg bg-surface-100 px-5 py-2.5 text-sm font-medium text-surface-600">
+              <CheckCircle2 className="w-4 h-4" />
+              {getStatusActionLabel(jobOrder.status)}
+            </div>
+          )}
+
+          {jobOrder.status === "IN_PROGRESS" && !jobOrder.assignedBayId && (
+            <button
+              onClick={() => setBaySuggestionOpen(true)}
+              className="inline-flex items-center gap-2 rounded-lg bg-accent-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-accent-700 transition-colors"
+            >
+              <Wrench className="w-4 h-4" />
+              Assign Bay
+            </button>
+          )}
+        </div>
       </div>
 
       {/* ------------------------------------------------------------------ */}
@@ -683,6 +698,18 @@ export function OverviewClient({
           initialActivities={activities?.activities}
         />
       </div>
+
+      {/* Bay Suggestion Modal */}
+      <BaySuggestionModal
+        open={baySuggestionOpen}
+        onClose={() => setBaySuggestionOpen(false)}
+        jobOrderId={jobOrder.id}
+        onAssigned={() => {
+          startTransition(() => {
+            router.refresh();
+          });
+        }}
+      />
     </div>
   );
 }
