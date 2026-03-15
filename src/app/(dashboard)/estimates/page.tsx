@@ -43,6 +43,13 @@ interface EstimateRequestRow {
     color: string;
   };
   _count: { estimates: number };
+  estimates: Array<{
+    versions: Array<{
+      grandTotal: number;
+      versionNumber: number;
+      approvalToken: string | null;
+    }>;
+  }>;
 }
 
 interface EstimateListResult {
@@ -154,9 +161,15 @@ const columns: ColumnDef<EstimateRequestRow, unknown>[] = [
     id: "total",
     header: "Total",
     enableSorting: false,
-    cell: () => (
-      <span className="text-surface-300 text-sm">—</span>
-    ),
+    cell: ({ row }) => {
+      const latestVersion = row.original.estimates?.[0]?.versions?.[0];
+      if (!latestVersion) return <span className="text-surface-300 text-sm">—</span>;
+      return (
+        <span className="text-sm font-medium font-mono">
+          {formatPeso(latestVersion.grandTotal)}
+        </span>
+      );
+    },
   },
 ];
 

@@ -78,6 +78,18 @@ export async function getEstimateRequests({
           },
         },
         _count: { select: { estimates: true } },
+        estimates: {
+          where: { deletedAt: null },
+          take: 1,
+          include: {
+            versions: {
+              where: { deletedAt: null },
+              orderBy: { versionNumber: "desc" as const },
+              take: 1,
+              select: { grandTotal: true, versionNumber: true, approvalToken: true },
+            },
+          },
+        },
       },
     }),
     prisma.estimateRequest.count({ where }),
