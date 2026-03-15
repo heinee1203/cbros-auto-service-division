@@ -284,7 +284,7 @@ export async function getTechnicianSchedule(techId: string, startDate: Date, end
 
   const timeEntries = await prisma.timeEntry.findMany({
     where: {
-      userId: techId,
+      technicianId: techId,
       clockIn: { gte: startDate, lte: endDate },
     },
     orderBy: { clockIn: "asc" },
