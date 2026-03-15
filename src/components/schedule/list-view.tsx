@@ -4,6 +4,7 @@ import {
   CalendarAppointment,
   groupByDate,
   formatTimeSlot,
+  getBadgeVariant,
 } from "./calendar-types";
 import {
   APPOINTMENT_TYPE_LABELS,
@@ -23,20 +24,6 @@ interface ListViewProps {
   appointments: CalendarAppointment[];
   onAppointmentClick: (appointment: CalendarAppointment) => void;
   isLoading: boolean;
-}
-
-// Map color names from enums to Badge variant names
-const COLOR_TO_VARIANT: Record<string, "default" | "success" | "warning" | "danger" | "accent" | "outline"> = {
-  blue: "accent",
-  green: "success",
-  amber: "warning",
-  purple: "accent",
-  surface: "default",
-  red: "danger",
-};
-
-function toBadgeVariant(color: string): "default" | "success" | "warning" | "danger" | "accent" | "outline" {
-  return COLOR_TO_VARIANT[color] || "default";
 }
 
 function getDayOfWeek(dateStr: string): string {
@@ -109,7 +96,7 @@ export default function ListView({
                   </span>
 
                   {/* Type badge */}
-                  <Badge variant={toBadgeVariant(typeColor)}>
+                  <Badge variant={getBadgeVariant(typeColor)}>
                     {APPOINTMENT_TYPE_LABELS[appt.type as AppointmentType] || appt.type}
                   </Badge>
 
@@ -126,7 +113,7 @@ export default function ListView({
                   )}
 
                   {/* Status badge */}
-                  <Badge variant={toBadgeVariant(statusColor)}>
+                  <Badge variant={getBadgeVariant(statusColor)}>
                     {APPOINTMENT_STATUS_LABELS[appt.status as AppointmentStatus] || appt.status}
                   </Badge>
 

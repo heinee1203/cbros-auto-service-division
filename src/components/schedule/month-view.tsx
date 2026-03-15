@@ -7,6 +7,7 @@ import {
   getDateKey,
   groupByDate,
   formatTimeSlot,
+  TYPE_DOT_COLORS,
 } from "./calendar-types";
 import { APPOINTMENT_TYPE_COLORS } from "@/types/enums";
 
@@ -17,19 +18,11 @@ interface MonthViewProps {
   onAppointmentClick: (appointment: CalendarAppointment) => void;
 }
 
-const TYPE_COLOR_MAP: Record<string, string> = {
-  blue: "#3b82f6",
-  green: "#22c55e",
-  amber: "#f59e0b",
-  purple: "#a855f7",
-  surface: "#94a3b8",
-};
-
 function getTypeColor(type: string): string {
   const colorName =
     APPOINTMENT_TYPE_COLORS[type as keyof typeof APPOINTMENT_TYPE_COLORS] ||
     "surface";
-  return TYPE_COLOR_MAP[colorName] || TYPE_COLOR_MAP.surface;
+  return TYPE_DOT_COLORS[colorName] || TYPE_DOT_COLORS.surface;
 }
 
 const DAY_HEADERS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];

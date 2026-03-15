@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { APPOINTMENT_TYPE_COLORS } from "@/types/enums";
+import { formatTimeSlot, TYPE_DOT_COLORS } from "./calendar-types";
 
 interface AppointmentItem {
   id: string;
@@ -10,21 +11,6 @@ interface AppointmentItem {
   status: string;
   customer: { firstName: string; lastName: string };
   vehicle?: { plateNumber: string; make: string; model: string } | null;
-}
-
-const DOT_COLOR_MAP: Record<string, string> = {
-  blue: "bg-blue-500",
-  green: "bg-green-500",
-  amber: "bg-amber-500",
-  purple: "bg-purple-500",
-  surface: "bg-surface-400",
-};
-
-function formatTime(time: string): string {
-  const [h, m] = time.split(":").map(Number);
-  const period = h >= 12 ? "PM" : "AM";
-  const hour = h % 12 || 12;
-  return `${hour}:${m.toString().padStart(2, "0")} ${period}`;
 }
 
 export function TodaysAppointmentsWidget({
@@ -56,7 +42,7 @@ export function TodaysAppointmentsWidget({
               APPOINTMENT_TYPE_COLORS[
                 appt.type as keyof typeof APPOINTMENT_TYPE_COLORS
               ] ?? "surface";
-            const dotClass = DOT_COLOR_MAP[colorName] ?? "bg-surface-400";
+            const dotColor = TYPE_DOT_COLORS[colorName] ?? TYPE_DOT_COLORS.surface;
 
             return (
               <div
@@ -64,10 +50,11 @@ export function TodaysAppointmentsWidget({
                 className="flex items-center gap-3 text-sm"
               >
                 <span
-                  className={`w-2 h-2 rounded-full flex-shrink-0 ${dotClass}`}
+                  className="w-2 h-2 rounded-full flex-shrink-0"
+                  style={{ backgroundColor: dotColor }}
                 />
                 <span className="text-surface-500 font-mono text-xs w-[72px] flex-shrink-0">
-                  {formatTime(appt.scheduledTime)}
+                  {formatTimeSlot(appt.scheduledTime)}
                 </span>
                 <span className="text-primary font-medium truncate">
                   {appt.customer.lastName}

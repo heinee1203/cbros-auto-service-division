@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { getAppointmentsByDate } from "@/lib/services/scheduler";
 
 // ============================================================================
 // Types
@@ -1271,10 +1272,9 @@ async function getTechnicianDashboard(
 // ============================================================================
 
 export async function getTodaysAppointments() {
-  const { getAppointmentsByDate } = await import("@/lib/services/scheduler");
   const today = new Date();
   const appointments = await getAppointmentsByDate(today);
-  return appointments.filter((a: any) => a.status !== "CANCELLED");
+  return appointments.filter((a) => a.status !== "CANCELLED");
 }
 
 async function getAdvisorDashboard(

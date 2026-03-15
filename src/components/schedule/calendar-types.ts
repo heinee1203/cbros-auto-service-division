@@ -106,6 +106,40 @@ export function getDateKey(date: Date): string {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 }
 
+// ── Shared color maps (avoid duplication across views) ────────────────────
+
+/** Dot colors: color-name → hex (month view chips, widget dots) */
+export const TYPE_DOT_COLORS: Record<string, string> = {
+  blue: "#3b82f6",
+  green: "#22c55e",
+  amber: "#f59e0b",
+  purple: "#a855f7",
+  surface: "#94a3b8",
+};
+
+/** Block colors: color-name → {bg, border, text} (week/day view blocks) */
+export const TYPE_BLOCK_COLORS: Record<string, { bg: string; border: string; text: string }> = {
+  blue: { bg: "#eff6ff", border: "#3b82f6", text: "#1d4ed8" },
+  green: { bg: "#f0fdf4", border: "#22c55e", text: "#15803d" },
+  amber: { bg: "#fffbeb", border: "#f59e0b", text: "#b45309" },
+  purple: { bg: "#faf5ff", border: "#a855f7", text: "#7e22ce" },
+  surface: { bg: "#f8fafc", border: "#94a3b8", text: "#475569" },
+};
+
+/** Map enum color names to Badge component variant props */
+export const BADGE_VARIANT_MAP: Record<string, "default" | "success" | "warning" | "danger" | "accent" | "outline"> = {
+  blue: "accent",
+  green: "success",
+  amber: "warning",
+  purple: "accent",
+  surface: "default",
+  red: "danger",
+};
+
+export function getBadgeVariant(color: string): "default" | "success" | "warning" | "danger" | "accent" | "outline" {
+  return BADGE_VARIANT_MAP[color] || "default";
+}
+
 // Group appointments by date key
 export function groupByDate(appointments: CalendarAppointment[]): Map<string, CalendarAppointment[]> {
   const map = new Map<string, CalendarAppointment[]>();

@@ -3,25 +3,16 @@
 import {
   CalendarAppointment,
   formatTimeSlot,
+  TYPE_BLOCK_COLORS,
 } from "./calendar-types";
 import {
   APPOINTMENT_TYPE_COLORS,
   APPOINTMENT_TYPE_LABELS,
 } from "@/types/enums";
 
-// ── Color helpers ───────────────────────────────────────────────────────────
-
-const TYPE_COLOR_MAP: Record<string, { bg: string; border: string; text: string }> = {
-  blue: { bg: "#eff6ff", border: "#3b82f6", text: "#1d4ed8" },
-  green: { bg: "#f0fdf4", border: "#22c55e", text: "#15803d" },
-  amber: { bg: "#fffbeb", border: "#f59e0b", text: "#b45309" },
-  purple: { bg: "#faf5ff", border: "#a855f7", text: "#7e22ce" },
-  surface: { bg: "#f8fafc", border: "#94a3b8", text: "#475569" },
-};
-
 function getColors(type: string) {
   const colorName = APPOINTMENT_TYPE_COLORS[type as keyof typeof APPOINTMENT_TYPE_COLORS] || "surface";
-  return TYPE_COLOR_MAP[colorName] || TYPE_COLOR_MAP.surface;
+  return TYPE_BLOCK_COLORS[colorName] || TYPE_BLOCK_COLORS.surface;
 }
 
 // ── Hours displayed ─────────────────────────────────────────────────────────

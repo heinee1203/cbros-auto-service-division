@@ -184,7 +184,7 @@ export async function getAppointments(
   endDate: Date,
   filters?: { status?: string; type?: string }
 ) {
-  const where: any = {
+  const where: { scheduledDate: { gte: Date; lte: Date }; deletedAt: null; status?: string; type?: string } = {
     scheduledDate: { gte: startDate, lte: endDate },
     deletedAt: null,
   };
@@ -228,7 +228,7 @@ export async function updateAppointment(id: string, data: {
 }
 
 export async function updateAppointmentStatus(id: string, status: string, notes?: string | null) {
-  const updateData: any = { status };
+  const updateData: { status: string; notes?: string | null } = { status };
   if (notes !== undefined) updateData.notes = notes;
   return prisma.appointment.update({ where: { id }, data: updateData });
 }

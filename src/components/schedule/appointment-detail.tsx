@@ -15,7 +15,7 @@ import {
   APPOINTMENT_STATUS_COLORS,
 } from "@/types/enums";
 import { formatDate } from "@/lib/utils";
-import { formatTimeSlot } from "./calendar-types";
+import { formatTimeSlot, getBadgeVariant } from "./calendar-types";
 import type { CalendarAppointment } from "./calendar-types";
 import { AppointmentForm } from "./appointment-form";
 import { toast } from "sonner";
@@ -23,7 +23,6 @@ import {
   Phone,
   Car,
   Calendar,
-  Clock,
   FileText,
   User,
   Pencil,
@@ -31,23 +30,6 @@ import {
   Check,
   AlertTriangle,
 } from "lucide-react";
-
-// ── Badge variant mapping ──────────────────────────────────────────────────
-const BADGE_VARIANT_MAP: Record<
-  string,
-  "default" | "success" | "warning" | "danger" | "accent" | "outline"
-> = {
-  blue: "accent",
-  green: "success",
-  amber: "warning",
-  purple: "accent",
-  surface: "default",
-  red: "danger",
-};
-
-function badgeVariant(color: string) {
-  return BADGE_VARIANT_MAP[color] || "default";
-}
 
 // ── Props ──────────────────────────────────────────────────────────────────
 interface AppointmentDetailProps {
@@ -231,7 +213,7 @@ export function AppointmentDetail({
           {/* Header badges */}
           <div className="flex items-center gap-2">
             <Badge
-              variant={badgeVariant(
+              variant={getBadgeVariant(
                 APPOINTMENT_TYPE_COLORS[
                   appointment.type as keyof typeof APPOINTMENT_TYPE_COLORS
                 ] || "surface"
@@ -242,7 +224,7 @@ export function AppointmentDetail({
               ] || appointment.type}
             </Badge>
             <Badge
-              variant={badgeVariant(
+              variant={getBadgeVariant(
                 APPOINTMENT_STATUS_COLORS[
                   appointment.status as keyof typeof APPOINTMENT_STATUS_COLORS
                 ] || "surface"
