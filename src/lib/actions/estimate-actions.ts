@@ -23,7 +23,9 @@ import {
   duplicateLineItem,
   updateLineItemOrder,
   updateVersionDetails,
+  generateApprovalToken,
 } from "@/lib/services/estimates";
+import { prisma } from "@/lib/prisma";
 import { generateDocNumber } from "@/lib/utils";
 
 export type ActionResult = {
@@ -68,8 +70,6 @@ export async function startEstimateAction(
 ): Promise<ActionResult> {
   const session = await getSession();
   if (!session?.user) return { success: false, error: "Unauthorized" };
-
-  const { prisma } = await import("@/lib/prisma");
 
   const request = await prisma.estimateRequest.findUnique({
     where: { id: estimateRequestId },
@@ -246,7 +246,29 @@ export async function updateEstimateStatusAction(
     session.user.id
   );
 
+  // Generate approval token when marking as sent
+  let approvalToken: string | undefined;
+  if (status === "ESTIMATE_SENT") {
+    const estimate = await prisma.estimate.findFirst({
+      where: { estimateRequestId, deletedAt: null },
+      include: {
+        versions: {
+          where: { deletedAt: null },
+          orderBy: { versionNumber: "desc" },
+          take: 1,
+        },
+      },
+    });
+
+    const latestVersion = estimate?.versions?.[0];
+    if (latestVersion && !latestVersion.approvalToken) {
+      approvalToken = await generateApprovalToken(latestVersion.id, session.user.id);
+    } else if (latestVersion?.approvalToken) {
+      approvalToken = latestVersion.approvalToken;
+    }
+  }
+
   revalidatePath("/estimates");
   revalidatePath(`/estimates/${estimateRequestId}`);
-  return { success: true };
+  return { success: true, data: approvalToken ? { approvalToken } : undefined };
 }
