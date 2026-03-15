@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { Wrench, Search, X } from "lucide-react";
+import { Wrench, Search, X, CalendarCheck } from "lucide-react";
 import type { ColumnDef, SortingState } from "@tanstack/react-table";
 import { toast } from "sonner";
 
@@ -109,7 +109,10 @@ function priorityLabel(priority: string) {
 
 // ─── Table columns ─────────────────────────────────────────────────────────────
 
-const columns: ColumnDef<JobOrderRow, unknown>[] = [
+function buildColumns(
+  pickUpMap: Map<string, { date: string; time: string }>
+): ColumnDef<JobOrderRow, unknown>[] {
+  return [
   {
     accessorKey: "jobOrderNumber",
     header: "JO Number",
@@ -124,16 +127,27 @@ const columns: ColumnDef<JobOrderRow, unknown>[] = [
     id: "customer",
     header: "Customer",
     enableSorting: false,
-    cell: ({ row }) => (
-      <div>
-        <div className="font-medium text-primary text-sm">
-          {row.original.customer.firstName} {row.original.customer.lastName}
+    cell: ({ row }) => {
+      const pickup = pickUpMap.get(row.original.customer.id);
+      return (
+        <div>
+          <div className="font-medium text-primary text-sm flex items-center gap-1">
+            <span>{row.original.customer.firstName} {row.original.customer.lastName}</span>
+            {pickup && (
+              <span
+                className="inline-flex items-center text-accent-500"
+                title={`Pick-up: ${formatDate(pickup.date)}${pickup.time ? ` at ${pickup.time}` : ""}`}
+              >
+                <CalendarCheck className="w-3.5 h-3.5" />
+              </span>
+            )}
+          </div>
+          <div className="text-xs text-surface-400 mt-0.5">
+            {formatPhone(row.original.customer.phone)}
+          </div>
         </div>
-        <div className="text-xs text-surface-400 mt-0.5">
-          {formatPhone(row.original.customer.phone)}
-        </div>
-      </div>
-    ),
+      );
+    },
   },
   {
     id: "vehicle",
@@ -293,7 +307,8 @@ const columns: ColumnDef<JobOrderRow, unknown>[] = [
       );
     },
   },
-];
+  ];
+}
 
 // ─── Main page ─────────────────────────────────────────────────────────────────
 
@@ -304,6 +319,7 @@ export default function JobsPage() {
   const [total, setTotal] = useState(0);
   const [pageCount, setPageCount] = useState(1);
   const [loading, setLoading] = useState(true);
+  const [pickUpMap, setPickUpMap] = useState<Map<string, { date: string; time: string }>>(new Map());
 
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -357,6 +373,40 @@ export default function JobsPage() {
   useEffect(() => {
     fetchData();
   }, [fetchData]);
+
+  // Fetch upcoming pick-up appointments for loaded customers
+  useEffect(() => {
+    if (data.length === 0) {
+      setPickUpMap(new Map());
+      return;
+    }
+    const customerIds = Array.from(new Set(data.map((j) => j.customer.id)));
+    fetch(`/api/appointments/upcoming-pickups?customerIds=${customerIds.join(",")}`)
+      .then((r) => (r.ok ? r.json() : []))
+      .then(
+        (
+          pickups: Array<{
+            customerId: string;
+            scheduledDate: string;
+            scheduledTime: string;
+          }>
+        ) => {
+          const map = new Map<string, { date: string; time: string }>();
+          for (const p of pickups) {
+            if (!map.has(p.customerId)) {
+              map.set(p.customerId, {
+                date: p.scheduledDate,
+                time: p.scheduledTime,
+              });
+            }
+          }
+          setPickUpMap(map);
+        }
+      )
+      .catch(() => {});
+  }, [data]);
+
+  const columns = useMemo(() => buildColumns(pickUpMap), [pickUpMap]);
 
   function handleRowClick(row: JobOrderRow) {
     router.push(`/jobs/${row.id}`);

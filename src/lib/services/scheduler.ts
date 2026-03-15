@@ -340,6 +340,28 @@ export async function getAllTechSchedules(startDate: Date, endDate: Date) {
   return techs;
 }
 
+export async function getUpcomingPickUpsByCustomerIds(customerIds: string[]) {
+  if (customerIds.length === 0) return [];
+  const now = new Date();
+  now.setHours(0, 0, 0, 0);
+  return prisma.appointment.findMany({
+    where: {
+      customerId: { in: customerIds },
+      type: "PICK_UP",
+      status: { in: ["SCHEDULED", "CONFIRMED"] },
+      scheduledDate: { gte: now },
+      deletedAt: null,
+    },
+    select: {
+      id: true,
+      customerId: true,
+      scheduledDate: true,
+      scheduledTime: true,
+    },
+    orderBy: { scheduledDate: "asc" },
+  });
+}
+
 export async function getShopCapacity(startDate: Date, endDate: Date) {
   const bays = await prisma.bay.count({ where: { isActive: true, deletedAt: null } });
   const techs = await prisma.user.count({
