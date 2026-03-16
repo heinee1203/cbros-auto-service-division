@@ -350,6 +350,20 @@ export async function searchServiceCatalog(
 }
 
 // ---------------------------------------------------------------------------
+// 10b. getAllActiveServices
+// ---------------------------------------------------------------------------
+export async function getAllActiveServices(category?: string) {
+  const where: Record<string, unknown> = { isActive: true };
+  if (category) {
+    where.category = category;
+  }
+  return prisma.serviceCatalog.findMany({
+    where,
+    orderBy: [{ category: "asc" }, { sortOrder: "asc" }],
+  });
+}
+
+// ---------------------------------------------------------------------------
 // 11. getActiveTechnicians
 // ---------------------------------------------------------------------------
 export async function getActiveTechnicians() {
