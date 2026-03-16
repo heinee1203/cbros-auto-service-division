@@ -45,9 +45,9 @@ export default function WeekView({ currentDate, appointments, onAppointmentClick
   const grouped = groupByDate(appointments);
 
   return (
-    <div className="relative h-[720px] overflow-y-auto border border-surface-200 rounded-lg bg-white">
+    <div className="relative h-[720px] overflow-y-auto border border-white/10 rounded-lg bg-white/5">
       {/* Sticky header row */}
-      <div className="sticky top-0 z-10 flex border-b border-surface-200 bg-white">
+      <div className="sticky top-0 z-10 flex border-b border-white/10 bg-[#0F1729]">
         {/* Time gutter label */}
         <div className="w-[60px] shrink-0" />
         {/* Day headers */}
@@ -56,8 +56,8 @@ export default function WeekView({ currentDate, appointments, onAppointmentClick
           return (
             <div
               key={day.toISOString()}
-              className={`flex-1 text-center text-sm py-2 border-l border-surface-100 ${
-                today ? "text-accent-600 font-bold" : "text-surface-600"
+              className={`flex-1 text-center text-sm py-2 border-l border-white/5 ${
+                today ? "text-accent-400 font-bold" : "text-slate-400"
               }`}
             >
               {day.toLocaleDateString("en-PH", { weekday: "short" })}{" "}
@@ -74,7 +74,7 @@ export default function WeekView({ currentDate, appointments, onAppointmentClick
           {HOURS.map((hour) => (
             <div
               key={hour}
-              className="h-[60px] border-t border-surface-100 pr-2 text-right text-xs text-surface-400 leading-none pt-1"
+              className="h-[60px] border-t border-white/5 pr-2 text-right text-xs text-slate-400 leading-none pt-1"
             >
               {formatHourLabel(hour)}
             </div>
@@ -87,10 +87,10 @@ export default function WeekView({ currentDate, appointments, onAppointmentClick
           const dayAppts = grouped.get(key) || [];
 
           return (
-            <div key={key} className="relative flex-1 border-l border-surface-100">
+            <div key={key} className="relative flex-1 border-l border-white/5">
               {/* Hour rows */}
               {HOURS.map((hour) => (
-                <div key={hour} className="h-[60px] border-t border-surface-100" />
+                <div key={hour} className="h-[60px] border-t border-white/5" />
               ))}
 
               {/* Appointment blocks */}

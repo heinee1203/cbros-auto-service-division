@@ -489,3 +489,89 @@ export async function getShopCapacity(startDate: Date, endDate: Date) {
     techHoursAvailable,
   };
 }
+
+// ============================================================================
+// LIVE FLOOR DATA
+// ============================================================================
+
+export async function getLiveFloorData() {
+  const bays = await prisma.bay.findMany({
+    where: { deletedAt: null, isActive: true },
+    orderBy: { sortOrder: "asc" },
+    include: {
+      assignments: {
+        where: { endDate: null },
+        take: 1,
+        orderBy: { startDate: "desc" },
+        include: {
+          jobOrder: {
+            select: {
+              id: true,
+              jobOrderNumber: true,
+              status: true,
+              priority: true,
+              createdAt: true,
+              customer: { select: { id: true, firstName: true, lastName: true } },
+              vehicle: { select: { plateNumber: true, make: true, model: true, color: true } },
+              primaryTechnician: { select: { id: true, firstName: true, lastName: true } },
+              tasks: {
+                where: { deletedAt: null },
+                select: {
+                  assignedTechnician: { select: { id: true, firstName: true } },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+
+  const [queueCount, activeCount, totalTechs, clockedInTechIds] = await Promise.all([
+    prisma.jobOrder.count({
+      where: { status: "CHECKED_IN", deletedAt: null },
+    }),
+    prisma.jobOrder.count({
+      where: { status: "IN_PROGRESS", deletedAt: null },
+    }),
+    prisma.user.count({
+      where: { role: "TECHNICIAN", isActive: true, deletedAt: null },
+    }),
+    prisma.timeEntry.findMany({
+      where: { clockOut: null },
+      select: { technicianId: true },
+      distinct: ["technicianId"],
+    }),
+  ]);
+
+  const activeJobs = await prisma.jobOrder.findMany({
+    where: {
+      status: { notIn: ["CANCELLED", "RELEASED"] },
+      deletedAt: null,
+    },
+    select: {
+      id: true,
+      jobOrderNumber: true,
+      status: true,
+      priority: true,
+      createdAt: true,
+      customer: { select: { firstName: true, lastName: true } },
+      vehicle: { select: { plateNumber: true, make: true, model: true } },
+      primaryTechnician: { select: { id: true, firstName: true } },
+      assignedBayId: true,
+    },
+    orderBy: { createdAt: "desc" },
+    take: 100,
+  });
+
+  return {
+    bays,
+    stats: {
+      queueLength: queueCount,
+      activeServices: activeCount,
+      availableTechs: totalTechs - clockedInTechIds.length,
+      totalTechs,
+    },
+    activeJobs,
+  };
+}

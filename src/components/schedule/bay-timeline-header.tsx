@@ -44,7 +44,7 @@ export function BayTimelineHeader({
         <button
           type="button"
           onClick={() => onStartDateChange(addDaysToDate(startDate, -7))}
-          className="rounded-lg border border-surface-200 p-1.5 hover:bg-surface-50 transition-colors"
+          className="rounded-lg border border-white/10 p-1.5 hover:bg-white/5 transition-colors text-slate-400"
           aria-label="Previous 7 days"
         >
           <ChevronLeft className="h-4 w-4" />
@@ -52,7 +52,7 @@ export function BayTimelineHeader({
         <button
           type="button"
           onClick={() => onStartDateChange(addDaysToDate(startDate, 7))}
-          className="rounded-lg border border-surface-200 p-1.5 hover:bg-surface-50 transition-colors"
+          className="rounded-lg border border-white/10 p-1.5 hover:bg-white/5 transition-colors text-slate-400"
           aria-label="Next 7 days"
         >
           <ChevronRight className="h-4 w-4" />
@@ -60,17 +60,17 @@ export function BayTimelineHeader({
         <button
           type="button"
           onClick={handleToday}
-          className="rounded-lg border border-surface-200 px-3 py-1.5 text-sm font-medium hover:bg-surface-50 transition-colors"
+          className="rounded-lg border border-white/10 px-3 py-1.5 text-sm font-medium hover:bg-white/5 transition-colors text-white"
         >
           Today
         </button>
-        <span className="ml-2 text-sm font-medium text-surface-700">
+        <span className="ml-2 text-sm font-medium text-slate-300">
           {formatRange()}
         </span>
       </div>
 
       {/* Right side: day range pills */}
-      <div className="flex items-center rounded-lg bg-surface-100 p-1">
+      <div className="flex items-center rounded-lg bg-white/5 p-1">
         {DAY_OPTIONS.map((option) => (
           <button
             key={option}
@@ -78,8 +78,8 @@ export function BayTimelineHeader({
             onClick={() => onDaysChange(option)}
             className={`rounded-md px-3 py-1 text-sm font-medium transition-colors ${
               days === option
-                ? "bg-white shadow-sm text-surface-900"
-                : "text-surface-500 hover:text-surface-700"
+                ? "bg-white/10 text-white"
+                : "text-slate-400 hover:text-slate-300"
             }`}
           >
             {option}d

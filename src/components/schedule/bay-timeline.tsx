@@ -126,7 +126,7 @@ export default function BayTimeline() {
       />
       <BayOccupancyBar bays={bays} onBayClick={handleBayChipClick} />
       {loading ? (
-        <div className="flex items-center justify-center py-12 text-surface-400">
+        <div className="flex items-center justify-center py-12 text-slate-400">
           Loading bay timeline...
         </div>
       ) : bays.length === 0 ? (

@@ -39,7 +39,7 @@ export default function ListView({
 }: ListViewProps) {
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center py-12 text-surface-400">
+      <div className="flex items-center justify-center py-12 text-slate-400">
         Loading appointments...
       </div>
     );
@@ -59,7 +59,7 @@ export default function ListView({
   const sortedKeys = Array.from(grouped.keys()).sort();
 
   return (
-    <div className="divide-y divide-surface-200">
+    <div className="divide-y divide-white/10">
       {sortedKeys.map((dateKey) => {
         const dayAppointments = grouped.get(dateKey)!;
         const dayOfWeek = getDayOfWeek(dateKey);
@@ -67,7 +67,7 @@ export default function ListView({
         return (
           <div key={dateKey}>
             {/* Sticky date header */}
-            <div className="sticky top-0 bg-surface-50 px-4 py-2 text-sm font-semibold text-primary border-b border-surface-200">
+            <div className="sticky top-0 bg-white/5 px-4 py-2 text-sm font-semibold text-white border-b border-white/10">
               {formatDate(dateKey)} &middot; {dayOfWeek} &middot;{" "}
               {dayAppointments.length} appointment
               {dayAppointments.length !== 1 ? "s" : ""}
@@ -88,10 +88,10 @@ export default function ListView({
                 <div
                   key={appt.id}
                   onClick={() => onAppointmentClick(appt)}
-                  className="px-4 py-3 hover:bg-surface-50 cursor-pointer border-b border-surface-100 flex items-center gap-4"
+                  className="px-4 py-3 hover:bg-white/5 cursor-pointer border-b border-white/5 flex items-center gap-4"
                 >
                   {/* Time */}
-                  <span className="text-sm font-mono text-surface-500 w-20 flex-shrink-0">
+                  <span className="text-sm font-mono text-slate-400 w-20 flex-shrink-0">
                     {formatTimeSlot(appt.scheduledTime)}
                   </span>
 
@@ -101,13 +101,13 @@ export default function ListView({
                   </Badge>
 
                   {/* Customer name */}
-                  <span className="text-sm font-medium text-primary flex-1 min-w-0 truncate">
+                  <span className="text-sm font-medium text-white flex-1 min-w-0 truncate">
                     {appt.customer.firstName} {appt.customer.lastName}
                   </span>
 
                   {/* Vehicle */}
                   {vehicle && (
-                    <span className="text-sm text-surface-400 hidden sm:block">
+                    <span className="text-sm text-slate-400 hidden sm:block">
                       {vehicle}
                     </span>
                   )}
@@ -118,7 +118,7 @@ export default function ListView({
                   </Badge>
 
                   {/* Duration */}
-                  <span className="text-xs text-surface-400 w-16 text-right">
+                  <span className="text-xs text-slate-400 w-16 text-right">
                     {appt.duration} min
                   </span>
                 </div>

@@ -66,25 +66,25 @@ export function CalendarHeader({
   }
 
   return (
-    <div className="bg-white rounded-xl border border-surface-200 p-4 space-y-3">
+    <div className="bg-white/5 rounded-xl border border-white/10 p-4 space-y-3">
       {/* Row 1: Navigation + title + actions */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <button
             type="button"
             onClick={() => navigate(-1)}
-            className="p-2 rounded-lg hover:bg-surface-100 text-surface-500 hover:text-primary transition-colors"
+            className="p-2 rounded-lg hover:bg-white/10 text-slate-400 hover:text-white transition-colors"
             aria-label="Previous"
           >
             <ChevronLeft className="h-5 w-5" />
           </button>
-          <h2 className="text-lg font-semibold text-primary min-w-[200px] text-center">
+          <h2 className="text-lg font-semibold text-white min-w-[200px] text-center">
             {getTitle()}
           </h2>
           <button
             type="button"
             onClick={() => navigate(1)}
-            className="p-2 rounded-lg hover:bg-surface-100 text-surface-500 hover:text-primary transition-colors"
+            className="p-2 rounded-lg hover:bg-white/10 text-slate-400 hover:text-white transition-colors"
             aria-label="Next"
           >
             <ChevronRight className="h-5 w-5" />
@@ -123,7 +123,7 @@ export function CalendarHeader({
               className={`px-3 py-1.5 text-sm rounded-full transition-colors ${
                 view === opt.value
                   ? "bg-accent-600 text-white"
-                  : "text-surface-500 hover:text-primary hover:bg-surface-100"
+                  : "text-slate-400 hover:text-white hover:bg-white/10"
               }`}
             >
               {opt.label}
@@ -137,7 +137,7 @@ export function CalendarHeader({
             onChange={(e) =>
               onFiltersChange({ ...filters, type: e.target.value || undefined })
             }
-            className="text-sm border border-surface-200 rounded-lg px-2 py-1.5 text-surface-600 bg-white"
+            className="text-sm border border-white/20 rounded-lg px-2 py-1.5 text-white bg-white/10"
           >
             <option value="">All Types</option>
             {Object.entries(APPOINTMENT_TYPE_LABELS).map(([value, label]) => (
@@ -152,7 +152,7 @@ export function CalendarHeader({
             onChange={(e) =>
               onFiltersChange({ ...filters, status: e.target.value || undefined })
             }
-            className="text-sm border border-surface-200 rounded-lg px-2 py-1.5 text-surface-600 bg-white"
+            className="text-sm border border-white/20 rounded-lg px-2 py-1.5 text-white bg-white/10"
           >
             <option value="">All Statuses</option>
             {Object.entries(APPOINTMENT_STATUS_LABELS).map(([value, label]) => (

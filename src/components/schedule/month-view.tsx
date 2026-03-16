@@ -46,12 +46,12 @@ export default function MonthView({
   const currentMonth = currentDate.getMonth();
 
   return (
-    <div className="grid grid-cols-7 gap-px bg-surface-200">
+    <div className="grid grid-cols-7 gap-px bg-white/10">
       {/* Header row */}
       {DAY_HEADERS.map((day) => (
         <div
           key={day}
-          className="text-xs font-medium text-surface-400 text-center py-2 bg-white"
+          className="text-xs font-medium text-slate-400 text-center py-2 bg-white/5"
         >
           {day}
         </div>
@@ -70,7 +70,7 @@ export default function MonthView({
           <div
             key={key}
             className={`min-h-[100px] p-1 ${
-              isCurrentMonth ? "bg-white" : "bg-surface-50"
+              isCurrentMonth ? "bg-white/5" : "bg-transparent"
             }`}
             onClick={() => onDateClick(date)}
           >
@@ -83,7 +83,7 @@ export default function MonthView({
               ) : (
                 <span
                   className={`text-sm font-medium cursor-pointer ${
-                    isCurrentMonth ? "text-surface-900" : "text-surface-300"
+                    isCurrentMonth ? "text-white" : "text-slate-500"
                   }`}
                 >
                   {date.getDate()}
@@ -100,7 +100,7 @@ export default function MonthView({
                     e.stopPropagation();
                     onAppointmentClick(appt);
                   }}
-                  className="w-full flex items-center gap-1 text-xs px-1 py-0.5 rounded cursor-pointer hover:bg-surface-100 truncate text-left"
+                  className="w-full flex items-center gap-1 text-xs px-1 py-0.5 rounded cursor-pointer hover:bg-white/10 truncate text-left text-slate-300"
                 >
                   <span
                     className="w-2 h-2 rounded-full flex-shrink-0"

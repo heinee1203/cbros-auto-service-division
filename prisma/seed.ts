@@ -275,18 +275,35 @@ async function main() {
   console.log(`  Created ${settingCount} default settings`);
 
   // ========================================================================
-  // Default Bays
+  // 4. Soft-delete old placeholder bays (only if no active assignments)
   // ========================================================================
-  const defaultBays = [
-    { name: "Bay 1", type: "GENERAL", color: "#3B82F6", sortOrder: 0 },
-    { name: "Bay 2", type: "GENERAL", color: "#10B981", sortOrder: 1 },
-    { name: "Bay 3", type: "GENERAL", color: "#F59E0B", sortOrder: 2 },
-    { name: "Paint Booth", type: "PAINT_BOOTH", color: "#EF4444", sortOrder: 3 },
-    { name: "Detail Bay", type: "DETAIL", color: "#8B5CF6", sortOrder: 4 },
-    { name: "PDR Station", type: "PDR", color: "#EC4899", sortOrder: 5 },
-  ];
+  const oldBayNames = ["Bay 1", "Bay 2", "Bay 3", "Paint Booth", "Detail Bay", "PDR Station"];
+  for (const name of oldBayNames) {
+    const oldBay = await prisma.bay.findFirst({
+      where: { name, deletedAt: null },
+      include: { assignments: true },
+    });
+    if (oldBay && oldBay.assignments.length === 0) {
+      await prisma.bay.update({
+        where: { id: oldBay.id },
+        data: { deletedAt: new Date(), isActive: false },
+      });
+      console.log(`  Soft-deleted old bay: ${name}`);
+    }
+  }
 
-  for (const bay of defaultBays) {
+  // ========================================================================
+  // 5. Real CBROS Bays (17 total)
+  // ========================================================================
+  const realBays: { name: string; type: string; color: string; sortOrder: number }[] = [];
+  for (let i = 1; i <= 7; i++) {
+    realBays.push({ name: `Lifter ${i}`, type: "GENERAL", color: "#3B82F6", sortOrder: i });
+  }
+  for (let i = 1; i <= 10; i++) {
+    realBays.push({ name: `Non-Lifter ${i}`, type: "GENERAL", color: "#10B981", sortOrder: 7 + i });
+  }
+
+  for (const bay of realBays) {
     const existing = await prisma.bay.findFirst({
       where: { name: bay.name, deletedAt: null },
     });
@@ -294,7 +311,76 @@ async function main() {
       await prisma.bay.create({ data: bay });
     }
   }
-  console.log(`  Created ${defaultBays.length} default bays`);
+  console.log(`  Created/verified ${realBays.length} real bays`);
+
+  // ========================================================================
+  // 6. Technicians (12)
+  // ========================================================================
+  const technicians = [
+    { firstName: "Allan", username: "allan", pin: "1001" },
+    { firstName: "Inggo", username: "inggo", pin: "1002" },
+    { firstName: "Lino", username: "lino", pin: "1003" },
+    { firstName: "Toni", username: "toni", pin: "1004" },
+    { firstName: "Jurell", username: "jurell", pin: "1005" },
+    { firstName: "Sam", username: "sam", pin: "1006" },
+    { firstName: "Nold", username: "nold", pin: "1007" },
+    { firstName: "Joy", username: "joy", pin: "1008" },
+    { firstName: "Kevin", username: "kevin", pin: "1009" },
+    { firstName: "Joseph", username: "joseph", pin: "1010" },
+    { firstName: "Roi", username: "roi", pin: "1011" },
+    { firstName: "Buban", username: "buban", pin: "1012" },
+  ];
+
+  for (const tech of technicians) {
+    const hashedPin = await bcrypt.hash(tech.pin, 12);
+    const hashedPw = await bcrypt.hash(tech.pin, 12);
+    await prisma.user.upsert({
+      where: { username: tech.username },
+      update: {},
+      create: {
+        username: tech.username,
+        passwordHash: hashedPw,
+        pinHash: hashedPin,
+        firstName: tech.firstName,
+        lastName: ".",
+        role: "TECHNICIAN",
+        isActive: true,
+      },
+    });
+  }
+  console.log(`  Created/verified ${technicians.length} technicians`);
+
+  // ========================================================================
+  // 7. Front Desk Advisors (7)
+  // ========================================================================
+  const advisors = [
+    { firstName: "Abi", username: "abi", pin: "2001" },
+    { firstName: "Kathleen", username: "kathleen", pin: "2002" },
+    { firstName: "Jelyn", username: "jelyn", pin: "2003" },
+    { firstName: "Arlene", username: "arlene", pin: "2004" },
+    { firstName: "Leslie", username: "leslie", pin: "2005" },
+    { firstName: "Ma Jelyn", username: "majelyn", pin: "2006" },
+    { firstName: "Ronna", username: "ronna", pin: "2007" },
+  ];
+
+  for (const adv of advisors) {
+    const hashedPin = await bcrypt.hash(adv.pin, 12);
+    const hashedPw = await bcrypt.hash(adv.pin, 12);
+    await prisma.user.upsert({
+      where: { username: adv.username },
+      update: {},
+      create: {
+        username: adv.username,
+        passwordHash: hashedPw,
+        pinHash: hashedPin,
+        firstName: adv.firstName,
+        lastName: ".",
+        role: "ADVISOR",
+        isActive: true,
+      },
+    });
+  }
+  console.log(`  Created/verified ${advisors.length} front desk advisors`);
 
   console.log("Seed complete!");
 }

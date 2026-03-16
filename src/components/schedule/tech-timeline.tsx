@@ -139,7 +139,7 @@ export default function TechTimeline() {
         refreshTrigger={refreshTrigger}
       />
       {loading ? (
-        <div className="flex items-center justify-center py-12 text-surface-400">
+        <div className="flex items-center justify-center py-12 text-slate-400">
           Loading technician schedule...
         </div>
       ) : techs.length === 0 ? (

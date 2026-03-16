@@ -141,55 +141,55 @@ export function TechDailyDetail({
       title={techName}
       description={formatFullDate(date)}
     >
-      <div className="space-y-6">
+      <div className="space-y-6" style={{ background: '#0F1729', margin: '-24px', padding: '24px' }}>
         {/* Day Off Badge */}
         {dayOff && (
-          <div className="flex items-center gap-2 px-3 py-2 bg-amber-50 border border-amber-200 rounded-lg">
-            <AlertTriangle className="w-4 h-4 text-amber-600" />
-            <span className="text-sm font-medium text-amber-700">Day Off</span>
+          <div className="flex items-center gap-2 px-3 py-2 bg-amber-500/10 border border-amber-500/30 rounded-lg">
+            <AlertTriangle className="w-4 h-4 text-amber-400" />
+            <span className="text-sm font-medium text-amber-400">Day Off</span>
           </div>
         )}
 
         {/* Summary Section — 2x2 grid */}
         <div className="grid grid-cols-2 gap-3">
-          <div className="p-3 bg-surface-50 rounded-lg">
+          <div className="p-3 bg-white/5 rounded-lg">
             <div className="flex items-center gap-1.5 mb-1">
-              <Briefcase className="w-3.5 h-3.5 text-surface-400" />
-              <p className="text-xs text-surface-400">Available</p>
+              <Briefcase className="w-3.5 h-3.5 text-slate-400" />
+              <p className="text-xs text-slate-400">Available</p>
             </div>
-            <p className="text-lg font-semibold text-primary">
+            <p className="text-lg font-semibold text-white">
               {availableHours}h
             </p>
           </div>
 
-          <div className="p-3 bg-surface-50 rounded-lg">
+          <div className="p-3 bg-white/5 rounded-lg">
             <div className="flex items-center gap-1.5 mb-1">
-              <Clock className="w-3.5 h-3.5 text-surface-400" />
-              <p className="text-xs text-surface-400">Scheduled</p>
+              <Clock className="w-3.5 h-3.5 text-slate-400" />
+              <p className="text-xs text-slate-400">Scheduled</p>
             </div>
-            <p className="text-lg font-semibold text-primary">
+            <p className="text-lg font-semibold text-white">
               {scheduledHours}h
             </p>
           </div>
 
-          <div className="p-3 bg-surface-50 rounded-lg">
+          <div className="p-3 bg-white/5 rounded-lg">
             <div className="flex items-center gap-1.5 mb-1">
-              <Clock className="w-3.5 h-3.5 text-surface-400" />
-              <p className="text-xs text-surface-400">Actual</p>
+              <Clock className="w-3.5 h-3.5 text-slate-400" />
+              <p className="text-xs text-slate-400">Actual</p>
             </div>
-            <p className="text-lg font-semibold text-primary">
+            <p className="text-lg font-semibold text-white">
               {actualHours.toFixed(1)}h
             </p>
           </div>
 
-          <div className="p-3 bg-surface-50 rounded-lg">
+          <div className="p-3 bg-white/5 rounded-lg">
             <div className="flex items-center gap-1.5 mb-1">
               {isOvertime ? (
                 <AlertTriangle className="w-3.5 h-3.5 text-red-500" />
               ) : (
                 <Clock className="w-3.5 h-3.5 text-green-500" />
               )}
-              <p className="text-xs text-surface-400">Status</p>
+              <p className="text-xs text-slate-400">Status</p>
             </div>
             <p
               className={`text-lg font-semibold ${
@@ -203,7 +203,7 @@ export function TechDailyDetail({
 
         {/* Hourly Timeline */}
         <div>
-          <p className="text-xs font-medium text-surface-500 uppercase mb-2">
+          <p className="text-xs font-medium text-slate-400 uppercase mb-2">
             Hourly Timeline
           </p>
           <div className="space-y-0.5">
@@ -217,9 +217,9 @@ export function TechDailyDetail({
               return (
                 <div
                   key={hour}
-                  className="flex items-start gap-3 py-1.5 border-b border-surface-100"
+                  className="flex items-start gap-3 py-1.5 border-b border-white/5"
                 >
-                  <span className="text-xs text-surface-400 w-16 flex-shrink-0 pt-0.5">
+                  <span className="text-xs text-slate-400 w-16 flex-shrink-0 pt-0.5">
                     {formatHour(hour)}
                   </span>
                   <div className="flex-1 min-w-0 space-y-1">
@@ -262,7 +262,7 @@ export function TechDailyDetail({
 
                     {/* Idle: has entry but no task */}
                     {hasEntry && !hasTask && !hasBreaks && (
-                      <div className="bg-surface-50 text-surface-400 text-xs px-2 py-0.5 rounded inline-block">
+                      <div className="bg-white/5 text-slate-400 text-xs px-2 py-0.5 rounded inline-block">
                         Idle
                       </div>
                     )}
@@ -276,7 +276,7 @@ export function TechDailyDetail({
         {/* Tasks List */}
         {activeTasks.length > 0 && (
           <div className="space-y-2">
-            <p className="text-xs font-medium text-surface-500 uppercase">
+            <p className="text-xs font-medium text-slate-400 uppercase">
               Tasks
             </p>
             {activeTasks.map((task) => (
@@ -284,11 +284,11 @@ export function TechDailyDetail({
                 <div
                   className={`w-2 h-2 rounded-full ${statusDotColor(task.status)}`}
                 />
-                <span className="font-medium">
+                <span className="font-medium text-white">
                   {task.jobOrder.jobOrderNumber}
                 </span>
-                <span className="text-surface-500">{task.name}</span>
-                <span className="ml-auto text-xs text-surface-400">
+                <span className="text-slate-400">{task.name}</span>
+                <span className="ml-auto text-xs text-slate-400">
                   {task.estimatedHours}h est
                 </span>
               </div>
@@ -298,7 +298,7 @@ export function TechDailyDetail({
 
         {/* Empty state */}
         {activeTasks.length === 0 && dayEntries.length === 0 && (
-          <div className="text-center py-8 text-surface-400">
+          <div className="text-center py-8 text-slate-400">
             <Clock className="w-8 h-8 mx-auto mb-2 opacity-50" />
             <p className="text-sm">No tasks or entries for this day</p>
           </div>

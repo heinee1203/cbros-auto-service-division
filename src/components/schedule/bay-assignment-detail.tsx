@@ -151,7 +151,7 @@ export function BayAssignmentDetail({
     setEndDate(assignment.endDate ? assignment.endDate.split("T")[0] : "");
   };
 
-  const iconClass = "w-4 h-4 text-surface-400 mt-0.5 flex-shrink-0";
+  const iconClass = "w-4 h-4 text-slate-400 mt-0.5 flex-shrink-0";
 
   // ── Footer actions ──────────────────────────────────────────────────────
   const renderFooter = () => {
@@ -160,11 +160,11 @@ export function BayAssignmentDetail({
       const otherBays = allBays.filter((b) => b.id !== assignment.bayId);
       return (
         <div className="space-y-3">
-          <p className="text-sm font-medium text-primary">Move to Bay</p>
+          <p className="text-sm font-medium text-white">Move to Bay</p>
           <select
             value={selectedBayId}
             onChange={(e) => setSelectedBayId(e.target.value)}
-            className="w-full px-3 py-2 border border-surface-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+            className="w-full px-3 py-2 border border-white/20 rounded-lg text-sm text-white bg-white/10 focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent"
           >
             <option value="">Select a bay...</option>
             {otherBays.map((bay) => (
@@ -177,7 +177,7 @@ export function BayAssignmentDetail({
             <button
               onClick={() => setActionMode("none")}
               disabled={loading}
-              className="flex-1 px-4 py-2.5 text-sm font-medium border border-surface-200 text-surface-600 hover:bg-surface-50 rounded-xl disabled:opacity-50"
+              className="flex-1 px-4 py-2.5 text-sm font-medium border border-white/10 text-slate-300 hover:bg-white/5 rounded-xl disabled:opacity-50"
             >
               Cancel
             </button>
@@ -197,28 +197,28 @@ export function BayAssignmentDetail({
     if (actionMode === "reschedule") {
       return (
         <div className="space-y-3">
-          <p className="text-sm font-medium text-primary">Reschedule</p>
+          <p className="text-sm font-medium text-white">Reschedule</p>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs text-surface-400 mb-1">
+              <label className="block text-xs text-slate-400 mb-1">
                 Start Date
               </label>
               <input
                 type="date"
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
-                className="w-full px-3 py-2 border border-surface-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-white/20 rounded-lg text-sm text-white bg-white/10 focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent"
               />
             </div>
             <div>
-              <label className="block text-xs text-surface-400 mb-1">
+              <label className="block text-xs text-slate-400 mb-1">
                 End Date
               </label>
               <input
                 type="date"
                 value={endDate}
                 onChange={(e) => setEndDate(e.target.value)}
-                className="w-full px-3 py-2 border border-surface-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-white/20 rounded-lg text-sm text-white bg-white/10 focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent"
               />
             </div>
           </div>
@@ -226,7 +226,7 @@ export function BayAssignmentDetail({
             <button
               onClick={() => setActionMode("none")}
               disabled={loading}
-              className="flex-1 px-4 py-2.5 text-sm font-medium border border-surface-200 text-surface-600 hover:bg-surface-50 rounded-xl disabled:opacity-50"
+              className="flex-1 px-4 py-2.5 text-sm font-medium border border-white/10 text-slate-300 hover:bg-white/5 rounded-xl disabled:opacity-50"
             >
               Cancel
             </button>
@@ -255,14 +255,14 @@ export function BayAssignmentDetail({
         <div className="grid grid-cols-2 gap-2">
           <button
             onClick={startMoveBay}
-            className="flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium border border-surface-200 text-surface-600 hover:bg-surface-50 rounded-xl"
+            className="flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium border border-white/10 text-slate-300 hover:bg-white/5 rounded-xl"
           >
             <ArrowRightLeft className="w-4 h-4" />
             Move Bay
           </button>
           <button
             onClick={startReschedule}
-            className="flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium border border-surface-200 text-surface-600 hover:bg-surface-50 rounded-xl"
+            className="flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium border border-white/10 text-slate-300 hover:bg-white/5 rounded-xl"
           >
             <Calendar className="w-4 h-4" />
             Reschedule
@@ -270,7 +270,7 @@ export function BayAssignmentDetail({
         </div>
         <button
           onClick={() => setReleaseDialogOpen(true)}
-          className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium border border-red-200 text-red-600 hover:bg-red-50 rounded-xl"
+          className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium border border-red-500/30 text-red-400 hover:bg-red-500/10 rounded-xl"
         >
           <LogOut className="w-4 h-4" />
           Release
@@ -288,7 +288,7 @@ export function BayAssignmentDetail({
         description={jobOrder.jobOrderNumber}
         footer={renderFooter()}
       >
-        <div className="space-y-4">
+        <div className="space-y-4" style={{ background: '#0F1729', margin: '-24px', padding: '24px' }}>
           {/* Bay info */}
           <div className="flex items-start gap-3">
             <div
@@ -296,8 +296,8 @@ export function BayAssignmentDetail({
               style={{ backgroundColor: bayColor }}
             />
             <div>
-              <p className="text-xs text-surface-400">Bay</p>
-              <p className="text-sm font-medium text-primary">{bayName}</p>
+              <p className="text-xs text-slate-400">Bay</p>
+              <p className="text-sm font-medium text-white">{bayName}</p>
             </div>
           </div>
 
@@ -305,21 +305,21 @@ export function BayAssignmentDetail({
           <div className="flex items-start gap-3">
             <Car className={iconClass} />
             <div>
-              <p className="text-xs text-surface-400">Vehicle</p>
+              <p className="text-xs text-slate-400">Vehicle</p>
               {jobOrder.vehicle ? (
                 <>
-                  <p className="text-sm font-bold text-primary">
+                  <p className="text-sm font-bold text-white">
                     {jobOrder.vehicle.plateNumber}
                   </p>
-                  <p className="text-sm text-primary">
+                  <p className="text-sm text-white">
                     {jobOrder.vehicle.make} {jobOrder.vehicle.model}
                   </p>
-                  <p className="text-sm text-primary">
+                  <p className="text-sm text-white">
                     {jobOrder.vehicle.color}
                   </p>
                 </>
               ) : (
-                <p className="text-sm text-surface-400">No vehicle</p>
+                <p className="text-sm text-slate-400">No vehicle</p>
               )}
             </div>
           </div>
@@ -328,8 +328,8 @@ export function BayAssignmentDetail({
           <div className="flex items-start gap-3">
             <User className={iconClass} />
             <div>
-              <p className="text-xs text-surface-400">Customer</p>
-              <p className="text-sm text-primary">
+              <p className="text-xs text-slate-400">Customer</p>
+              <p className="text-sm text-white">
                 {jobOrder.customer.firstName} {jobOrder.customer.lastName}
               </p>
             </div>
@@ -339,8 +339,8 @@ export function BayAssignmentDetail({
           <div className="flex items-start gap-3">
             <Wrench className={iconClass} />
             <div>
-              <p className="text-xs text-surface-400">Technician</p>
-              <p className="text-sm text-primary">
+              <p className="text-xs text-slate-400">Technician</p>
+              <p className="text-sm text-white">
                 {jobOrder.primaryTechnician
                   ? `${jobOrder.primaryTechnician.firstName} ${jobOrder.primaryTechnician.lastName}`
                   : "Unassigned"}
@@ -352,14 +352,14 @@ export function BayAssignmentDetail({
           <div className="flex items-start gap-3">
             <FileText className={iconClass} />
             <div>
-              <p className="text-xs text-surface-400">Job</p>
+              <p className="text-xs text-slate-400">Job</p>
               <a
                 href={`/jobs/${jobOrder.id}`}
                 className="text-sm text-accent-600 hover:underline font-medium"
               >
                 {jobOrder.jobOrderNumber}
               </a>
-              <p className="text-xs text-surface-400 mt-0.5">
+              <p className="text-xs text-slate-400 mt-0.5">
                 {jobOrder.status} &middot; {jobOrder.priority}
               </p>
             </div>
@@ -369,11 +369,11 @@ export function BayAssignmentDetail({
           <div className="flex items-start gap-3">
             <Calendar className={iconClass} />
             <div>
-              <p className="text-xs text-surface-400">Schedule</p>
-              <p className="text-sm text-primary">
+              <p className="text-xs text-slate-400">Schedule</p>
+              <p className="text-sm text-white">
                 {formatDate(assignment.startDate)}
               </p>
-              <p className="text-sm text-primary">
+              <p className="text-sm text-white">
                 {assignment.endDate
                   ? formatDate(assignment.endDate)
                   : "Ongoing"}
@@ -386,8 +386,8 @@ export function BayAssignmentDetail({
             <div className="flex items-start gap-3">
               <StickyNote className={iconClass} />
               <div>
-                <p className="text-xs text-surface-400">Notes</p>
-                <p className="text-sm text-primary">{assignment.notes}</p>
+                <p className="text-xs text-slate-400">Notes</p>
+                <p className="text-sm text-white">{assignment.notes}</p>
               </div>
             </div>
           )}

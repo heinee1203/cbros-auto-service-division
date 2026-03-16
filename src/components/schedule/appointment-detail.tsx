@@ -114,7 +114,7 @@ export function AppointmentDetail({
         key="edit"
         onClick={handleOpenEdit}
         disabled={updating}
-        className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium border border-surface-200 text-surface-600 hover:bg-surface-50 rounded-xl disabled:opacity-50"
+        className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium border border-white/10 text-slate-300 hover:bg-white/5 rounded-xl disabled:opacity-50"
       >
         <Pencil className="w-4 h-4" />
         Edit
@@ -126,7 +126,7 @@ export function AppointmentDetail({
         key="reschedule"
         onClick={handleOpenEdit}
         disabled={updating}
-        className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium border border-surface-200 text-surface-600 hover:bg-surface-50 rounded-xl disabled:opacity-50"
+        className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium border border-white/10 text-slate-300 hover:bg-white/5 rounded-xl disabled:opacity-50"
       >
         <Calendar className="w-4 h-4" />
         Reschedule
@@ -138,7 +138,7 @@ export function AppointmentDetail({
         key="cancel"
         onClick={() => setCancelDialogOpen(true)}
         disabled={updating}
-        className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium border border-red-200 text-red-600 hover:bg-red-50 rounded-xl disabled:opacity-50"
+        className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium border border-red-500/30 text-red-400 hover:bg-red-500/10 rounded-xl disabled:opacity-50"
       >
         <X className="w-4 h-4" />
         Cancel
@@ -199,7 +199,7 @@ export function AppointmentDetail({
   };
 
   // ── Icon row helper ────────────────────────────────────────────────────
-  const iconClass = "w-4 h-4 text-surface-400 mt-0.5 flex-shrink-0";
+  const iconClass = "w-4 h-4 text-slate-400 mt-0.5 flex-shrink-0";
 
   return (
     <>
@@ -209,7 +209,7 @@ export function AppointmentDetail({
         title={`${customer.firstName} ${customer.lastName}`}
         footer={renderActions()}
       >
-        <div className="space-y-4">
+        <div className="space-y-4" style={{ background: '#0F1729', margin: '-24px', padding: '24px' }}>
           {/* Header badges */}
           <div className="flex items-center gap-2">
             <Badge
@@ -240,7 +240,7 @@ export function AppointmentDetail({
           <div className="flex items-start gap-3">
             <Phone className={iconClass} />
             <div>
-              <p className="text-xs text-surface-400">Customer</p>
+              <p className="text-xs text-slate-400">Customer</p>
               <a
                 href={`tel:${customer.phone}`}
                 className="text-sm text-accent-600 hover:underline"
@@ -248,7 +248,7 @@ export function AppointmentDetail({
                 {customer.phone}
               </a>
               {customer.company && (
-                <p className="text-sm text-primary">{customer.company}</p>
+                <p className="text-sm text-white">{customer.company}</p>
               )}
             </div>
           </div>
@@ -257,18 +257,18 @@ export function AppointmentDetail({
           <div className="flex items-start gap-3">
             <Car className={iconClass} />
             <div>
-              <p className="text-xs text-surface-400">Vehicle</p>
+              <p className="text-xs text-slate-400">Vehicle</p>
               {vehicle ? (
                 <>
-                  <p className="text-sm text-primary">
+                  <p className="text-sm text-white">
                     {vehicle.make} {vehicle.model}
                     {vehicle.year ? ` (${vehicle.year})` : ""}
                   </p>
-                  <p className="text-sm text-primary">{vehicle.plateNumber}</p>
-                  <p className="text-sm text-primary">{vehicle.color}</p>
+                  <p className="text-sm text-white">{vehicle.plateNumber}</p>
+                  <p className="text-sm text-white">{vehicle.color}</p>
                 </>
               ) : (
-                <p className="text-sm text-surface-400">No vehicle</p>
+                <p className="text-sm text-slate-400">No vehicle</p>
               )}
             </div>
           </div>
@@ -277,14 +277,14 @@ export function AppointmentDetail({
           <div className="flex items-start gap-3">
             <Calendar className={iconClass} />
             <div>
-              <p className="text-xs text-surface-400">Schedule</p>
-              <p className="text-sm text-primary">
+              <p className="text-xs text-slate-400">Schedule</p>
+              <p className="text-sm text-white">
                 {formatDate(appointment.scheduledDate)}
               </p>
-              <p className="text-sm text-primary">
+              <p className="text-sm text-white">
                 {formatTimeSlot(appointment.scheduledTime)}
               </p>
-              <p className="text-sm text-primary">
+              <p className="text-sm text-white">
                 {appointment.duration} min
               </p>
             </div>
@@ -295,7 +295,7 @@ export function AppointmentDetail({
             <div className="flex items-start gap-3">
               <FileText className={iconClass} />
               <div>
-                <p className="text-xs text-surface-400">Linked Estimate</p>
+                <p className="text-xs text-slate-400">Linked Estimate</p>
                 <a
                   href={`/estimates/${estimate.id}`}
                   className="text-sm text-accent-600 hover:underline"
@@ -311,8 +311,8 @@ export function AppointmentDetail({
             <div className="flex items-start gap-3">
               <AlertTriangle className={iconClass} />
               <div>
-                <p className="text-xs text-surface-400">Notes</p>
-                <p className="text-sm text-primary">{appointment.notes}</p>
+                <p className="text-xs text-slate-400">Notes</p>
+                <p className="text-sm text-white">{appointment.notes}</p>
               </div>
             </div>
           )}
@@ -321,11 +321,11 @@ export function AppointmentDetail({
           <div className="flex items-start gap-3">
             <User className={iconClass} />
             <div>
-              <p className="text-xs text-surface-400">Created by</p>
-              <p className="text-sm text-primary">
+              <p className="text-xs text-slate-400">Created by</p>
+              <p className="text-sm text-white">
                 {createdByUser.firstName} {createdByUser.lastName}
               </p>
-              <p className="text-sm text-primary">
+              <p className="text-sm text-white">
                 {formatDate(appointment.createdAt)}
               </p>
             </div>
@@ -350,7 +350,7 @@ export function AppointmentDetail({
               onChange={(e) => setCancelReason(e.target.value)}
               placeholder="Reason for cancellation (optional)"
               rows={3}
-              className="w-full px-3 py-2 border border-surface-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-white/20 rounded-lg text-sm text-white bg-white/10 focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent"
             />
           </div>
         }

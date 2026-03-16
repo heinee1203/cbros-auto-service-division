@@ -86,7 +86,7 @@ const BayTimelineGrid = forwardRef<BayTimelineGridHandle, BayTimelineGridProps>(
     return (
       <div
         ref={containerRef}
-        className="overflow-x-auto border border-surface-200 rounded-lg bg-white min-h-[400px] max-h-[70vh]"
+        className="overflow-x-auto border border-white/10 rounded-lg bg-white/5 min-h-[400px] max-h-[70vh]"
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
       >
@@ -97,15 +97,15 @@ const BayTimelineGrid = forwardRef<BayTimelineGridHandle, BayTimelineGridProps>(
           }}
         >
           {/* Header row */}
-          <div className="sticky top-0 z-10 bg-surface-50 border-b border-surface-200 border-r border-r-surface-100 px-3 py-2" />
+          <div className="sticky top-0 z-10 bg-white/5 border-b border-white/10 border-r border-r-white/5 px-3 py-2" />
           {timelineDays.map((day) => {
             const key = getDateKey(day);
             const isToday = key === todayKey;
             return (
               <div
                 key={key}
-                className={`sticky top-0 z-10 border-b border-surface-200 px-1 py-2 text-center text-xs ${
-                  isToday ? "bg-amber-50 font-semibold" : "bg-surface-50"
+                className={`sticky top-0 z-10 border-b border-white/10 px-1 py-2 text-center text-xs text-slate-400 ${
+                  isToday ? "bg-amber-500/10 font-semibold text-amber-400" : "bg-white/5"
                 }`}
               >
                 {formatShortDate(day)}
@@ -125,23 +125,23 @@ const BayTimelineGrid = forwardRef<BayTimelineGridHandle, BayTimelineGridProps>(
                 ref={(el) => {
                   if (el) rowRefs.current.set(bay.id, el);
                 }}
-                className="grid col-span-full border-t border-surface-100"
+                className="grid col-span-full border-t border-white/5"
                 style={{
                   gridTemplateColumns: `180px repeat(${days}, minmax(60px, 1fr))`,
                   gridTemplateRows: "1fr",
                 }}
               >
                 {/* Bay label cell */}
-                <div className="border-r border-surface-100 px-3 py-2 flex items-center gap-2 row-start-1 col-start-1">
+                <div className="border-r border-white/5 px-3 py-2 flex items-center gap-2 row-start-1 col-start-1">
                   <span
                     className="inline-block h-3 w-3 rounded-full flex-shrink-0"
                     style={{ backgroundColor: bayColor }}
                   />
                   <div className="min-w-0">
-                    <div className="text-sm font-medium truncate">
+                    <div className="text-sm font-medium truncate text-white">
                       {bay.name}
                     </div>
-                    <div className="text-xs text-surface-400">{typeLabel}</div>
+                    <div className="text-xs text-slate-400">{typeLabel}</div>
                   </div>
                 </div>
 
@@ -154,8 +154,8 @@ const BayTimelineGrid = forwardRef<BayTimelineGridHandle, BayTimelineGridProps>(
                       key={key}
                       type="button"
                       onClick={() => onEmptyCellClick(bay.id, day)}
-                      className={`row-start-1 border-r border-surface-50 hover:bg-surface-50 transition-colors ${
-                        isToday ? "bg-amber-50/50" : ""
+                      className={`row-start-1 border-r border-white/5 hover:bg-white/5 transition-colors ${
+                        isToday ? "bg-amber-500/5" : ""
                       }`}
                       style={{ gridColumn: i + 2 }}
                       aria-label={`Assign to ${bay.name} on ${formatShortDate(day)}`}

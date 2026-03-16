@@ -124,17 +124,17 @@ export default function BayUtilizationPanel({
   }, [bayUtilizations]);
 
   return (
-    <div className="border border-surface-200 rounded-lg bg-white">
+    <div className="border border-white/10 rounded-lg bg-white/5">
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between px-4 py-2.5 text-sm font-semibold text-primary hover:bg-surface-50 transition-colors rounded-lg"
+        className="w-full flex items-center justify-between px-4 py-2.5 text-sm font-semibold text-white hover:bg-white/5 transition-colors rounded-lg"
       >
         <span>Utilization</span>
         {isOpen ? (
-          <ChevronUp className="h-4 w-4 text-surface-400" />
+          <ChevronUp className="h-4 w-4 text-slate-400" />
         ) : (
-          <ChevronDown className="h-4 w-4 text-surface-400" />
+          <ChevronDown className="h-4 w-4 text-slate-400" />
         )}
       </button>
 
@@ -142,23 +142,23 @@ export default function BayUtilizationPanel({
         <div className="px-4 pb-4 space-y-3">
           {/* Shop Average */}
           <div className="flex items-center gap-3">
-            <span className="text-sm font-medium text-surface-500 w-36 shrink-0">
+            <span className="text-sm font-medium text-slate-400 w-36 shrink-0">
               Shop Average
             </span>
-            <div className="flex-1 bg-surface-100 rounded-full h-2">
+            <div className="flex-1 bg-white/5 rounded-full h-2">
               <div
                 className="bg-emerald-500 h-2 rounded-full transition-all"
                 style={{ width: `${Math.min(shopAverage, 100)}%` }}
               />
             </div>
-            <span className="text-sm font-semibold text-primary w-12 text-right">
+            <span className="text-sm font-semibold text-white w-12 text-right">
               {formatPercent(shopAverage)}
             </span>
             {/* Spacer to align with next-available column */}
             <span className="w-28 shrink-0" />
           </div>
 
-          <div className="border-t border-surface-100" />
+          <div className="border-t border-white/5" />
 
           {/* Per-bay rows */}
           {bayUtilizations.map(({ bay, utilization, nextAvailable, nextAvailableColor }) => (
@@ -168,26 +168,26 @@ export default function BayUtilizationPanel({
                   className="inline-block h-3 w-3 rounded-full shrink-0"
                   style={{ backgroundColor: bay.color || DEFAULT_BAY_COLOR }}
                 />
-                <span className="text-sm font-medium text-primary truncate">
+                <span className="text-sm font-medium text-white truncate">
                   {bay.name}
                 </span>
               </div>
-              <div className="flex-1 bg-surface-100 rounded-full h-2">
+              <div className="flex-1 bg-white/5 rounded-full h-2">
                 <div
                   className="bg-emerald-500 h-2 rounded-full transition-all"
                   style={{ width: `${Math.min(utilization, 100)}%` }}
                 />
               </div>
-              <span className="text-sm font-semibold text-primary w-12 text-right">
+              <span className="text-sm font-semibold text-white w-12 text-right">
                 {formatPercent(utilization)}
               </span>
               <span
                 className={`text-xs w-28 shrink-0 text-right ${
                   nextAvailableColor === "green"
-                    ? "text-emerald-600"
+                    ? "text-emerald-400"
                     : nextAvailableColor === "red"
-                      ? "text-red-500"
-                      : "text-surface-500"
+                      ? "text-red-400"
+                      : "text-slate-400"
                 }`}
               >
                 {nextAvailable}

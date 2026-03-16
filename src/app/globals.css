@@ -43,3 +43,37 @@
     background: white !important;
   }
 }
+
+/* ============================================================
+   Schedule Dark Theme — scoped to /schedule/* pages only
+   ============================================================ */
+.schedule-dark {
+  --sd-bg: #0F1729;
+  --sd-bg-card: rgba(255, 255, 255, 0.05);
+  --sd-bg-card-hover: rgba(255, 255, 255, 0.08);
+  --sd-border: rgba(255, 255, 255, 0.1);
+  --sd-text: #F1F5F9;
+  --sd-text-muted: #94A3B8;
+  --sd-text-dim: #64748B;
+  background-color: var(--sd-bg);
+  color: var(--sd-text);
+  min-height: 100%;
+}
+
+.schedule-dark .sd-card {
+  background: var(--sd-bg-card);
+  border: 1px solid var(--sd-border);
+  border-radius: 12px;
+}
+
+.schedule-dark .sd-card:hover {
+  background: var(--sd-bg-card-hover);
+}
+
+.schedule-dark .sd-text-muted {
+  color: var(--sd-text-muted);
+}
+
+.schedule-dark .sd-text-dim {
+  color: var(--sd-text-dim);
+}

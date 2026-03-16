@@ -13,7 +13,7 @@ export function ScheduleNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="flex gap-1 bg-surface-100 rounded-lg p-1 w-fit">
+    <nav className="flex gap-1 rounded-lg p-1 w-fit" style={{ background: "rgba(255,255,255,0.08)" }}>
       {TABS.map((tab) => {
         const isActive = pathname.startsWith(tab.href);
         return (
@@ -22,8 +22,8 @@ export function ScheduleNav() {
             href={tab.href}
             className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
               isActive
-                ? "bg-white text-primary shadow-sm"
-                : "text-surface-500 hover:text-primary"
+                ? "bg-white/15 text-white shadow-sm"
+                : "text-slate-400 hover:text-white"
             }`}
           >
             {tab.label}

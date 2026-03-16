@@ -146,7 +146,7 @@ export function BayAssignModal({
       <button
         onClick={onClose}
         disabled={submitting}
-        className="flex-1 px-4 py-2.5 text-sm font-medium border border-surface-200 text-surface-600 hover:bg-surface-50 rounded-xl disabled:opacity-50"
+        className="flex-1 px-4 py-2.5 text-sm font-medium border border-white/10 text-slate-300 hover:bg-white/5 rounded-xl disabled:opacity-50"
       >
         Cancel
       </button>
@@ -169,16 +169,16 @@ export function BayAssignModal({
       footer={footer}
       wide
     >
-      <div className="space-y-5">
+      <div className="space-y-5" style={{ background: '#0F1729', margin: '-24px', padding: '24px' }}>
         {/* Bay select */}
         <div>
-          <label className="block text-sm font-medium text-primary mb-1.5">
+          <label className="block text-sm font-medium text-white mb-1.5">
             Bay
           </label>
           <select
             value={bayId}
             onChange={(e) => setBayId(e.target.value)}
-            className="w-full px-3 py-2 border border-surface-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+            className="w-full px-3 py-2 border border-white/20 rounded-lg text-sm text-white bg-white/10 focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent"
           >
             <option value="">Select a bay...</option>
             {allBays.map((bay) => (
@@ -191,16 +191,16 @@ export function BayAssignModal({
 
         {/* Job search */}
         <div ref={searchRef}>
-          <label className="block text-sm font-medium text-primary mb-1.5">
+          <label className="block text-sm font-medium text-white mb-1.5">
             Job
           </label>
           {selectedJob ? (
-            <div className="flex items-center gap-2 px-3 py-2 bg-accent-50 border border-accent-200 rounded-lg">
+            <div className="flex items-center gap-2 px-3 py-2 bg-accent-600/20 border border-accent-500/30 rounded-lg">
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-primary truncate">
+                <p className="text-sm font-medium text-white truncate">
                   {selectedJob.jobOrderNumber}
                 </p>
-                <p className="text-xs text-surface-400 truncate">
+                <p className="text-xs text-slate-400 truncate">
                   {selectedJob.customer.firstName}{" "}
                   {selectedJob.customer.lastName}
                   {selectedJob.vehicle &&
@@ -212,7 +212,7 @@ export function BayAssignModal({
                   setSelectedJob(null);
                   setSearchText("");
                 }}
-                className="p-1 rounded hover:bg-accent-100"
+                className="p-1 rounded hover:bg-white/10"
               >
                 <X className="w-4 h-4 text-accent-600" />
               </button>
@@ -220,7 +220,7 @@ export function BayAssignModal({
           ) : (
             <div className="relative">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-400" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                 <input
                   type="text"
                   value={searchText}
@@ -230,18 +230,18 @@ export function BayAssignModal({
                   }}
                   onFocus={() => setShowDropdown(true)}
                   placeholder="Search by job number, customer, or plate..."
-                  className="w-full pl-9 pr-3 py-2 border border-surface-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+                  className="w-full pl-9 pr-3 py-2 border border-white/20 rounded-lg text-sm text-white bg-white/10 focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent placeholder:text-slate-500"
                 />
                 {loadingJobs && (
-                  <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-400 animate-spin" />
+                  <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 animate-spin" />
                 )}
               </div>
 
               {/* Dropdown results */}
               {showDropdown && (
-                <div className="absolute z-10 mt-1 w-full max-h-60 overflow-y-auto bg-white border border-surface-200 rounded-lg shadow-lg">
+                <div className="absolute z-10 mt-1 w-full max-h-60 overflow-y-auto bg-[#1a2340] border border-white/10 rounded-lg shadow-lg">
                   {jobs.length === 0 && !loadingJobs && (
-                    <p className="px-3 py-3 text-sm text-surface-400 text-center">
+                    <p className="px-3 py-3 text-sm text-slate-400 text-center">
                       No unassigned jobs found
                     </p>
                   )}
@@ -253,12 +253,12 @@ export function BayAssignModal({
                         setShowDropdown(false);
                         setSearchText("");
                       }}
-                      className="w-full text-left px-3 py-2.5 hover:bg-surface-50 border-b border-surface-100 last:border-b-0"
+                      className="w-full text-left px-3 py-2.5 hover:bg-white/5 border-b border-white/5 last:border-b-0"
                     >
-                      <p className="text-sm font-medium text-primary">
+                      <p className="text-sm font-medium text-white">
                         {job.jobOrderNumber}
                       </p>
-                      <p className="text-xs text-surface-400">
+                      <p className="text-xs text-slate-400">
                         {job.customer.firstName} {job.customer.lastName}
                         {job.vehicle &&
                           ` \u00B7 ${job.vehicle.plateNumber} \u00B7 ${job.vehicle.make} ${job.vehicle.model}`}
@@ -273,46 +273,46 @@ export function BayAssignModal({
 
         {/* Start date */}
         <div>
-          <label className="block text-sm font-medium text-primary mb-1.5">
+          <label className="block text-sm font-medium text-white mb-1.5">
             Start Date
           </label>
           <input
             type="date"
             value={startDate}
             onChange={(e) => setStartDate(e.target.value)}
-            className="w-full px-3 py-2 border border-surface-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+            className="w-full px-3 py-2 border border-white/20 rounded-lg text-sm text-white bg-white/10 focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent"
           />
         </div>
 
         {/* End date */}
         <div>
-          <label className="block text-sm font-medium text-primary mb-1.5">
+          <label className="block text-sm font-medium text-white mb-1.5">
             End Date{" "}
-            <span className="font-normal text-surface-400">(optional)</span>
+            <span className="font-normal text-slate-400">(optional)</span>
           </label>
           <input
             type="date"
             value={endDate}
             onChange={(e) => setEndDate(e.target.value)}
-            className="w-full px-3 py-2 border border-surface-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+            className="w-full px-3 py-2 border border-white/20 rounded-lg text-sm text-white bg-white/10 focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent"
           />
-          <p className="text-xs text-surface-400 mt-1">
+          <p className="text-xs text-slate-400 mt-1">
             Leave blank for ongoing assignment
           </p>
         </div>
 
         {/* Notes */}
         <div>
-          <label className="block text-sm font-medium text-primary mb-1.5">
+          <label className="block text-sm font-medium text-white mb-1.5">
             Notes{" "}
-            <span className="font-normal text-surface-400">(optional)</span>
+            <span className="font-normal text-slate-400">(optional)</span>
           </label>
           <textarea
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             placeholder="Any notes about this assignment..."
             rows={3}
-            className="w-full px-3 py-2 border border-surface-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent resize-none"
+            className="w-full px-3 py-2 border border-white/20 rounded-lg text-sm text-white bg-white/10 focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent resize-none placeholder:text-slate-500"
           />
         </div>
       </div>

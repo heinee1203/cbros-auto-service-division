@@ -44,7 +44,7 @@ interface TechTimelineGridProps {
 /** Diagonal stripe pattern for day-off cells */
 const DAY_OFF_STRIPE_STYLE: React.CSSProperties = {
   backgroundImage:
-    "repeating-linear-gradient(135deg, transparent, transparent 4px, rgba(0,0,0,0.04) 4px, rgba(0,0,0,0.04) 5px)",
+    "repeating-linear-gradient(135deg, transparent, transparent 4px, rgba(255,255,255,0.04) 4px, rgba(255,255,255,0.04) 5px)",
 };
 
 /** Load bar color based on percentage */
@@ -107,7 +107,7 @@ const TechTimelineGrid = forwardRef<TechTimelineGridHandle, TechTimelineGridProp
     return (
       <div
         ref={containerRef}
-        className="overflow-x-auto border border-surface-200 rounded-lg bg-white min-h-[400px] max-h-[70vh]"
+        className="overflow-x-auto border border-white/10 rounded-lg bg-white/5 min-h-[400px] max-h-[70vh]"
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
       >
@@ -118,15 +118,15 @@ const TechTimelineGrid = forwardRef<TechTimelineGridHandle, TechTimelineGridProp
           }}
         >
           {/* Header row — empty label cell + day columns */}
-          <div className="sticky top-0 z-10 bg-surface-50 border-b border-surface-200 border-r border-r-surface-100 px-3 py-2" />
+          <div className="sticky top-0 z-10 bg-white/5 border-b border-white/10 border-r border-r-white/5 px-3 py-2" />
           {timelineDays.map((day) => {
             const key = getDateKey(day);
             const isToday = key === todayKey;
             return (
               <div
                 key={key}
-                className={`sticky top-0 z-10 border-b border-surface-200 px-1 py-2 text-center text-xs ${
-                  isToday ? "bg-amber-50 font-semibold" : "bg-surface-50"
+                className={`sticky top-0 z-10 border-b border-white/10 px-1 py-2 text-center text-xs text-slate-400 ${
+                  isToday ? "bg-amber-500/10 font-semibold text-amber-400" : "bg-white/5"
                 }`}
               >
                 {formatShortDate(day)}
@@ -150,7 +150,7 @@ const TechTimelineGrid = forwardRef<TechTimelineGridHandle, TechTimelineGridProp
                 ref={(el) => {
                   if (el) rowRefs.current.set(tech.id, el);
                 }}
-                className="grid col-span-full border-t border-surface-100"
+                className="grid col-span-full border-t border-white/5"
                 style={{
                   gridTemplateColumns: `200px repeat(${days}, minmax(60px, 1fr))`,
                   gridTemplateRows: "1fr",
@@ -158,7 +158,7 @@ const TechTimelineGrid = forwardRef<TechTimelineGridHandle, TechTimelineGridProp
                 }}
               >
                 {/* Tech label cell */}
-                <div className="border-r border-surface-100 px-3 py-2 flex items-center gap-2 row-start-1 col-start-1">
+                <div className="border-r border-white/5 px-3 py-2 flex items-center gap-2 row-start-1 col-start-1">
                   {/* Avatar circle */}
                   <div
                     className="flex-shrink-0 h-8 w-8 rounded-full flex items-center justify-center text-white text-xs font-bold"
@@ -168,7 +168,7 @@ const TechTimelineGrid = forwardRef<TechTimelineGridHandle, TechTimelineGridProp
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-1">
-                      <span className="text-sm font-bold truncate">
+                      <span className="text-sm font-bold truncate text-white">
                         {tech.firstName} {tech.lastName}
                       </span>
                       {/* Active clock indicator */}
@@ -178,7 +178,7 @@ const TechTimelineGrid = forwardRef<TechTimelineGridHandle, TechTimelineGridProp
                     </div>
                     {/* Load progress bar */}
                     <div className="flex items-center gap-1.5 mt-0.5">
-                      <div className="w-10 h-1 rounded-full bg-surface-200 overflow-hidden">
+                      <div className="w-10 h-1 rounded-full bg-white/10 overflow-hidden">
                         <div
                           className="h-full rounded-full transition-all"
                           style={{
@@ -187,7 +187,7 @@ const TechTimelineGrid = forwardRef<TechTimelineGridHandle, TechTimelineGridProp
                           }}
                         />
                       </div>
-                      <span className="text-xs text-surface-400">
+                      <span className="text-xs text-slate-400">
                         {loadPercent}%
                       </span>
                     </div>
@@ -204,9 +204,9 @@ const TechTimelineGrid = forwardRef<TechTimelineGridHandle, TechTimelineGridProp
                       key={key}
                       type="button"
                       onClick={() => onEmptyCellClick?.(tech.id, day)}
-                      className={`row-start-1 border-r border-surface-50 hover:bg-surface-50 transition-colors ${
-                        isToday ? "bg-amber-50/50" : ""
-                      } ${dayOff ? "bg-surface-50" : ""}`}
+                      className={`row-start-1 border-r border-white/5 hover:bg-white/5 transition-colors ${
+                        isToday ? "bg-amber-500/5" : ""
+                      } ${dayOff ? "bg-white/5" : ""}`}
                       style={{
                         gridColumn: i + 2,
                         ...(dayOff ? DAY_OFF_STRIPE_STYLE : {}),
@@ -260,7 +260,7 @@ const TechTimelineGrid = forwardRef<TechTimelineGridHandle, TechTimelineGridProp
                       <div className="text-xs truncate">
                         {task.jobOrder.vehicle?.plateNumber ?? "—"}
                       </div>
-                      <div className="text-xs text-surface-400 truncate">
+                      <div className="text-xs text-slate-400 truncate">
                         {task.name}
                       </div>
                     </div>
