@@ -46,12 +46,12 @@ export default function MonthView({
   const currentMonth = currentDate.getMonth();
 
   return (
-    <div className="grid grid-cols-7 gap-px bg-white/10">
+    <div className="grid grid-cols-7 gap-px" style={{ background: 'var(--sch-border)' }}>
       {/* Header row */}
       {DAY_HEADERS.map((day) => (
         <div
           key={day}
-          className="text-xs font-medium text-slate-400 text-center py-2 bg-white/5"
+          className="text-xs font-medium text-center py-2" style={{ color: 'var(--sch-text-muted)', background: 'var(--sch-surface)' }}
         >
           {day}
         </div>
@@ -69,9 +69,8 @@ export default function MonthView({
         return (
           <div
             key={key}
-            className={`min-h-[100px] p-1 ${
-              isCurrentMonth ? "bg-white/5" : "bg-transparent"
-            }`}
+            className="min-h-[100px] p-1"
+            style={isCurrentMonth ? { background: 'var(--sch-surface)' } : { background: 'var(--sch-bg)' }}
             onClick={() => onDateClick(date)}
           >
             {/* Day number */}
@@ -82,9 +81,8 @@ export default function MonthView({
                 </span>
               ) : (
                 <span
-                  className={`text-sm font-medium cursor-pointer ${
-                    isCurrentMonth ? "text-white" : "text-slate-500"
-                  }`}
+                  className="text-sm font-medium cursor-pointer"
+                  style={{ color: isCurrentMonth ? 'var(--sch-text)' : 'var(--sch-text-dim)' }}
                 >
                   {date.getDate()}
                 </span>
@@ -100,7 +98,7 @@ export default function MonthView({
                     e.stopPropagation();
                     onAppointmentClick(appt);
                   }}
-                  className="w-full flex items-center gap-1 text-xs px-1 py-0.5 rounded cursor-pointer hover:bg-white/10 truncate text-left text-slate-300"
+                  className="w-full flex items-center gap-1 text-xs px-1 py-0.5 rounded cursor-pointer truncate text-left" style={{ color: 'var(--sch-text-muted)' }}
                 >
                   <span
                     className="w-2 h-2 rounded-full flex-shrink-0"

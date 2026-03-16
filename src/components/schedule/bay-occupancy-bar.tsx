@@ -20,16 +20,17 @@ export default function BayOccupancyBar({ bays, onBayClick }: BayOccupancyBarPro
             key={bay.id}
             type="button"
             onClick={() => onBayClick(bay.id)}
-            className="bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 flex items-center gap-2 cursor-pointer hover:bg-white/10 transition-colors"
+            className="border rounded-lg px-3 py-1.5 flex items-center gap-2 cursor-pointer transition-colors"
+            style={{ background: 'var(--sch-surface)', borderColor: 'var(--sch-border)' }}
           >
             <span
               className={`inline-block h-2 w-2 rounded-full shrink-0 ${
                 isOccupied ? "bg-red-500" : "bg-emerald-500"
               }`}
             />
-            <span className="text-sm font-medium text-white">{bay.name}</span>
+            <span className="text-sm font-medium" style={{ color: 'var(--sch-text)' }}>{bay.name}</span>
             {isOccupied && vehicle && (
-              <span className="text-xs text-slate-400">
+              <span className="text-xs" style={{ color: 'var(--sch-text-muted)' }}>
                 {vehicle.plateNumber} &middot; {vehicle.make} {vehicle.model}
               </span>
             )}

@@ -19,13 +19,13 @@ export function LiveFloorBayCard({ bay, onClick }: BayCardProps) {
         onClick={onClick}
         className="flex flex-col items-center justify-center gap-2 p-4 min-w-[160px] min-h-[120px] opacity-60 hover:opacity-80 transition-opacity cursor-pointer text-left"
         style={{
-          background: "rgba(255,255,255,0.03)",
-          border: "1px solid rgba(255,255,255,0.1)",
+          background: "var(--sch-surface)",
+          border: "1px solid var(--sch-border)",
           borderRadius: 12,
         }}
       >
-        <span className="text-sm font-bold text-white/50">{bay.name}</span>
-        <span className="text-xs text-white/30 uppercase tracking-wider">Available</span>
+        <span className="text-sm font-bold" style={{ color: 'var(--sch-text-dim)' }}>{bay.name}</span>
+        <span className="text-xs uppercase tracking-wider" style={{ color: 'var(--sch-text-dim)' }}>Available</span>
       </button>
     );
   }
@@ -45,13 +45,13 @@ export function LiveFloorBayCard({ bay, onClick }: BayCardProps) {
       onClick={onClick}
       className="flex flex-col gap-1.5 p-4 min-w-[160px] min-h-[120px] transition-all hover:brightness-110 cursor-pointer text-left"
       style={{
-        background: "rgba(255,255,255,0.05)",
+        background: "var(--sch-surface)",
         border: `2px solid ${borderColor}`,
         borderRadius: 12,
       }}
     >
       <div className="flex items-center justify-between w-full">
-        <span className="text-sm font-bold text-white">{bay.name}</span>
+        <span className="text-sm font-bold" style={{ color: 'var(--sch-text)' }}>{bay.name}</span>
         <span
           className="text-[10px] font-semibold px-2 py-0.5 rounded-full"
           style={{ background: `${borderColor}30`, color: borderColor }}
@@ -59,11 +59,11 @@ export function LiveFloorBayCard({ bay, onClick }: BayCardProps) {
           {jo.jobOrderNumber}
         </span>
       </div>
-      <div className="text-sm font-bold text-white truncate w-full">
+      <div className="text-sm font-bold truncate w-full" style={{ color: 'var(--sch-text)' }}>
         {jo.vehicle.make} {jo.vehicle.model}
       </div>
-      <div className="text-xs text-slate-400">{jo.vehicle.plateNumber}</div>
-      <div className="flex items-center gap-1 text-xs text-slate-400 mt-auto">
+      <div className="text-xs" style={{ color: 'var(--sch-text-muted)' }}>{jo.vehicle.plateNumber}</div>
+      <div className="flex items-center gap-1 text-xs mt-auto" style={{ color: 'var(--sch-text-muted)' }}>
         <Wrench className="h-3 w-3" />
         <span className={techNames.size === 0 ? "text-red-400" : ""}>
           {techNames.size === 0 ? "⚠ Unassigned" : mechDisplay}

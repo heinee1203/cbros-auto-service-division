@@ -230,8 +230,9 @@ export function AppointmentForm({
 
   // ── Input classes ───────────────────────────────────────────────────────
   const inputClass =
-    "w-full px-3 py-2 border border-white/20 rounded-lg text-sm text-white bg-white/10 focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent";
-  const labelClass = "text-sm font-medium text-slate-300 mb-1";
+    "w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent";
+  const inputStyle: React.CSSProperties = { backgroundColor: 'var(--sch-input-bg)', borderColor: 'var(--sch-input-border)', color: 'var(--sch-text)' };
+  const labelClass = "text-sm font-medium mb-1";
 
   return (
     <SlideOver
@@ -242,7 +243,7 @@ export function AppointmentForm({
         <div className="flex justify-end gap-3">
           <button
             onClick={onClose}
-            className="px-4 py-2 text-sm font-medium text-slate-300 hover:text-white"
+            className="px-4 py-2 text-sm font-medium" style={{ color: 'var(--sch-text-muted)' }}
           >
             Cancel
           </button>
@@ -260,13 +261,13 @@ export function AppointmentForm({
         </div>
       }
     >
-      <div className="space-y-5" style={{ background: '#0F1729', margin: '-24px', padding: '24px' }}>
+      <div className="space-y-5" style={{ background: 'var(--sch-bg)', margin: '-24px', padding: '24px' }}>
         {/* Customer Search */}
         <div>
-          <label className={labelClass}>Customer</label>
+          <label className={labelClass} style={{ color: 'var(--sch-text-muted)' }}>Customer</label>
           {selectedCustomer ? (
-            <div className="flex items-center justify-between px-3 py-2 bg-white/5 border border-white/10 rounded-lg">
-              <span className="text-sm font-medium text-white">
+            <div className="flex items-center justify-between px-3 py-2 border rounded-lg" style={{ background: 'var(--sch-surface)', borderColor: 'var(--sch-border)' }}>
+              <span className="text-sm font-medium" style={{ color: 'var(--sch-text)' }}>
                 {selectedCustomer.firstName} {selectedCustomer.lastName}
               </span>
               <button
@@ -289,7 +290,7 @@ export function AppointmentForm({
                 value={customerQuery}
                 onChange={(e) => setCustomerQuery(e.target.value)}
                 placeholder="Search by name or phone..."
-                className={inputClass}
+                className={inputClass} style={inputStyle}
               />
               {isSearching && (
                 <div className="absolute right-3 top-2.5 text-xs text-slate-400">
@@ -297,14 +298,14 @@ export function AppointmentForm({
                 </div>
               )}
               {showResults && customerResults.length > 0 && (
-                <div className="absolute z-50 w-full mt-1 bg-[#1a2340] border border-white/10 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                <div className="absolute z-50 w-full mt-1 border rounded-lg shadow-lg max-h-48 overflow-y-auto" style={{ backgroundColor: 'var(--sch-card)', borderColor: 'var(--sch-border)' }}>
                   {customerResults.map((cust) => (
                     <div
                       key={cust.id}
                       onClick={() => handleSelectCustomer(cust)}
-                      className="px-3 py-2 hover:bg-white/5 cursor-pointer text-sm"
+                      className="px-3 py-2 cursor-pointer text-sm"
                     >
-                      <span className="font-medium text-white">
+                      <span className="font-medium" style={{ color: 'var(--sch-text)' }}>
                         {cust.firstName} {cust.lastName}
                       </span>
                       <span className="ml-2 text-slate-400">
@@ -315,8 +316,8 @@ export function AppointmentForm({
                 </div>
               )}
               {showResults && customerResults.length === 0 && !isSearching && (
-                <div className="absolute z-50 w-full mt-1 bg-[#1a2340] border border-white/10 rounded-lg shadow-lg">
-                  <div className="px-3 py-2 text-sm text-slate-400">
+                <div className="absolute z-50 w-full mt-1 border rounded-lg shadow-lg" style={{ backgroundColor: 'var(--sch-card)', borderColor: 'var(--sch-border)' }}>
+                  <div className="px-3 py-2 text-sm" style={{ color: 'var(--sch-text-muted)' }}>
                     No customers found
                   </div>
                 </div>
@@ -327,12 +328,12 @@ export function AppointmentForm({
 
         {/* Vehicle */}
         <div>
-          <label className={labelClass}>Vehicle</label>
+          <label className={labelClass} style={{ color: 'var(--sch-text-muted)' }}>Vehicle</label>
           <select
             value={vehicleId}
             onChange={(e) => setVehicleId(e.target.value)}
             disabled={!selectedCustomer || loadingVehicles}
-            className={inputClass}
+            className={inputClass} style={inputStyle}
           >
             <option value="">
               {loadingVehicles
@@ -351,11 +352,11 @@ export function AppointmentForm({
 
         {/* Type */}
         <div>
-          <label className={labelClass}>Type</label>
+          <label className={labelClass} style={{ color: 'var(--sch-text-muted)' }}>Type</label>
           <select
             value={type}
             onChange={(e) => setType(e.target.value)}
-            className={inputClass}
+            className={inputClass} style={inputStyle}
           >
             {Object.entries(APPOINTMENT_TYPE_LABELS).map(([key, label]) => (
               <option key={key} value={key}>
@@ -367,34 +368,34 @@ export function AppointmentForm({
 
         {/* Date */}
         <div>
-          <label className={labelClass}>Date</label>
+          <label className={labelClass} style={{ color: 'var(--sch-text-muted)' }}>Date</label>
           <input
             type="date"
             value={date}
             onChange={(e) => setDate(e.target.value)}
-            className={inputClass}
+            className={inputClass} style={inputStyle}
           />
         </div>
 
         {/* Time */}
         <div>
-          <label className={labelClass}>Time</label>
+          <label className={labelClass} style={{ color: 'var(--sch-text-muted)' }}>Time</label>
           <input
             type="time"
             step="900"
             value={time}
             onChange={(e) => setTime(e.target.value)}
-            className={inputClass}
+            className={inputClass} style={inputStyle}
           />
         </div>
 
         {/* Duration */}
         <div>
-          <label className={labelClass}>Duration</label>
+          <label className={labelClass} style={{ color: 'var(--sch-text-muted)' }}>Duration</label>
           <select
             value={duration}
             onChange={(e) => setDuration(e.target.value)}
-            className={inputClass}
+            className={inputClass} style={inputStyle}
           >
             <option value="15">15 minutes</option>
             <option value="30">30 minutes</option>
@@ -408,13 +409,13 @@ export function AppointmentForm({
 
         {/* Notes */}
         <div>
-          <label className={labelClass}>Notes</label>
+          <label className={labelClass} style={{ color: 'var(--sch-text-muted)' }}>Notes</label>
           <textarea
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             rows={3}
             placeholder="Optional notes..."
-            className={inputClass}
+            className={inputClass} style={inputStyle}
           />
         </div>
       </div>

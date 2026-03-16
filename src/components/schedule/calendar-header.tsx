@@ -66,25 +66,25 @@ export function CalendarHeader({
   }
 
   return (
-    <div className="bg-white/5 rounded-xl border border-white/10 p-4 space-y-3">
+    <div className="rounded-xl border p-4 space-y-3" style={{ background: 'var(--sch-surface)', borderColor: 'var(--sch-border)' }}>
       {/* Row 1: Navigation + title + actions */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <button
             type="button"
             onClick={() => navigate(-1)}
-            className="p-2 rounded-lg hover:bg-white/10 text-slate-400 hover:text-white transition-colors"
+            className="p-2 rounded-lg transition-colors" style={{ color: 'var(--sch-text-muted)' }}
             aria-label="Previous"
           >
             <ChevronLeft className="h-5 w-5" />
           </button>
-          <h2 className="text-lg font-semibold text-white min-w-[200px] text-center">
+          <h2 className="text-lg font-semibold min-w-[200px] text-center" style={{ color: 'var(--sch-text)' }}>
             {getTitle()}
           </h2>
           <button
             type="button"
             onClick={() => navigate(1)}
-            className="p-2 rounded-lg hover:bg-white/10 text-slate-400 hover:text-white transition-colors"
+            className="p-2 rounded-lg transition-colors" style={{ color: 'var(--sch-text-muted)' }}
             aria-label="Next"
           >
             <ChevronRight className="h-5 w-5" />
@@ -123,8 +123,9 @@ export function CalendarHeader({
               className={`px-3 py-1.5 text-sm rounded-full transition-colors ${
                 view === opt.value
                   ? "bg-accent-600 text-white"
-                  : "text-slate-400 hover:text-white hover:bg-white/10"
+                  : ""
               }`}
+              style={view !== opt.value ? { color: 'var(--sch-text-muted)' } : undefined}
             >
               {opt.label}
             </button>
@@ -137,7 +138,7 @@ export function CalendarHeader({
             onChange={(e) =>
               onFiltersChange({ ...filters, type: e.target.value || undefined })
             }
-            className="text-sm border border-white/20 rounded-lg px-2 py-1.5 text-white bg-white/10"
+            className="text-sm border rounded-lg px-2 py-1.5" style={{ borderColor: 'var(--sch-input-border)', color: 'var(--sch-text)', backgroundColor: 'var(--sch-input-bg)' }}
           >
             <option value="">All Types</option>
             {Object.entries(APPOINTMENT_TYPE_LABELS).map(([value, label]) => (
@@ -152,7 +153,7 @@ export function CalendarHeader({
             onChange={(e) =>
               onFiltersChange({ ...filters, status: e.target.value || undefined })
             }
-            className="text-sm border border-white/20 rounded-lg px-2 py-1.5 text-white bg-white/10"
+            className="text-sm border rounded-lg px-2 py-1.5" style={{ borderColor: 'var(--sch-input-border)', color: 'var(--sch-text)', backgroundColor: 'var(--sch-input-bg)' }}
           >
             <option value="">All Statuses</option>
             {Object.entries(APPOINTMENT_STATUS_LABELS).map(([value, label]) => (

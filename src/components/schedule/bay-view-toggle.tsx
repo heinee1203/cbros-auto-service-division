@@ -12,24 +12,18 @@ export function BayViewToggle() {
 
   return (
     <div className="space-y-4">
-      <div className="flex gap-1 w-fit" style={{ background: "rgba(255,255,255,0.08)", borderRadius: 8, padding: 4 }}>
+      <div className="flex gap-1 w-fit" style={{ background: "var(--sch-surface-hover)", borderRadius: 8, padding: 4 }}>
         <button
           onClick={() => setView("floor")}
-          className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md transition-colors ${
-            view === "floor"
-              ? "bg-white/15 text-white"
-              : "text-slate-400 hover:text-white"
-          }`}
+          className="flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md transition-colors"
+          style={view === "floor" ? { background: 'var(--sch-surface-hover)', color: 'var(--sch-text)' } : { color: 'var(--sch-text-muted)' }}
         >
           <Factory className="h-4 w-4" /> Live Floor
         </button>
         <button
           onClick={() => setView("timeline")}
-          className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md transition-colors ${
-            view === "timeline"
-              ? "bg-white/15 text-white"
-              : "text-slate-400 hover:text-white"
-          }`}
+          className="flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md transition-colors"
+          style={view === "timeline" ? { background: 'var(--sch-surface-hover)', color: 'var(--sch-text)' } : { color: 'var(--sch-text-muted)' }}
         >
           <BarChart3 className="h-4 w-4" /> Timeline
         </button>

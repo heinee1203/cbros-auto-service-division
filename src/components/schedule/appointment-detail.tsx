@@ -114,7 +114,7 @@ export function AppointmentDetail({
         key="edit"
         onClick={handleOpenEdit}
         disabled={updating}
-        className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium border border-white/10 text-slate-300 hover:bg-white/5 rounded-xl disabled:opacity-50"
+        className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium border rounded-xl disabled:opacity-50" style={{ borderColor: 'var(--sch-border)', color: 'var(--sch-text-muted)' }}
       >
         <Pencil className="w-4 h-4" />
         Edit
@@ -126,7 +126,7 @@ export function AppointmentDetail({
         key="reschedule"
         onClick={handleOpenEdit}
         disabled={updating}
-        className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium border border-white/10 text-slate-300 hover:bg-white/5 rounded-xl disabled:opacity-50"
+        className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium border rounded-xl disabled:opacity-50" style={{ borderColor: 'var(--sch-border)', color: 'var(--sch-text-muted)' }}
       >
         <Calendar className="w-4 h-4" />
         Reschedule
@@ -209,7 +209,7 @@ export function AppointmentDetail({
         title={`${customer.firstName} ${customer.lastName}`}
         footer={renderActions()}
       >
-        <div className="space-y-4" style={{ background: '#0F1729', margin: '-24px', padding: '24px' }}>
+        <div className="space-y-4" style={{ background: 'var(--sch-bg)', margin: '-24px', padding: '24px' }}>
           {/* Header badges */}
           <div className="flex items-center gap-2">
             <Badge
@@ -248,7 +248,7 @@ export function AppointmentDetail({
                 {customer.phone}
               </a>
               {customer.company && (
-                <p className="text-sm text-white">{customer.company}</p>
+                <p className="text-sm" style={{ color: 'var(--sch-text)' }}>{customer.company}</p>
               )}
             </div>
           </div>
@@ -260,12 +260,12 @@ export function AppointmentDetail({
               <p className="text-xs text-slate-400">Vehicle</p>
               {vehicle ? (
                 <>
-                  <p className="text-sm text-white">
+                  <p className="text-sm" style={{ color: 'var(--sch-text)' }}>
                     {vehicle.make} {vehicle.model}
                     {vehicle.year ? ` (${vehicle.year})` : ""}
                   </p>
-                  <p className="text-sm text-white">{vehicle.plateNumber}</p>
-                  <p className="text-sm text-white">{vehicle.color}</p>
+                  <p className="text-sm" style={{ color: 'var(--sch-text)' }}>{vehicle.plateNumber}</p>
+                  <p className="text-sm" style={{ color: 'var(--sch-text)' }}>{vehicle.color}</p>
                 </>
               ) : (
                 <p className="text-sm text-slate-400">No vehicle</p>
@@ -278,13 +278,13 @@ export function AppointmentDetail({
             <Calendar className={iconClass} />
             <div>
               <p className="text-xs text-slate-400">Schedule</p>
-              <p className="text-sm text-white">
+              <p className="text-sm" style={{ color: 'var(--sch-text)' }}>
                 {formatDate(appointment.scheduledDate)}
               </p>
-              <p className="text-sm text-white">
+              <p className="text-sm" style={{ color: 'var(--sch-text)' }}>
                 {formatTimeSlot(appointment.scheduledTime)}
               </p>
-              <p className="text-sm text-white">
+              <p className="text-sm" style={{ color: 'var(--sch-text)' }}>
                 {appointment.duration} min
               </p>
             </div>
@@ -312,7 +312,7 @@ export function AppointmentDetail({
               <AlertTriangle className={iconClass} />
               <div>
                 <p className="text-xs text-slate-400">Notes</p>
-                <p className="text-sm text-white">{appointment.notes}</p>
+                <p className="text-sm" style={{ color: 'var(--sch-text)' }}>{appointment.notes}</p>
               </div>
             </div>
           )}
@@ -322,10 +322,10 @@ export function AppointmentDetail({
             <User className={iconClass} />
             <div>
               <p className="text-xs text-slate-400">Created by</p>
-              <p className="text-sm text-white">
+              <p className="text-sm" style={{ color: 'var(--sch-text)' }}>
                 {createdByUser.firstName} {createdByUser.lastName}
               </p>
-              <p className="text-sm text-white">
+              <p className="text-sm" style={{ color: 'var(--sch-text)' }}>
                 {formatDate(appointment.createdAt)}
               </p>
             </div>
@@ -350,7 +350,7 @@ export function AppointmentDetail({
               onChange={(e) => setCancelReason(e.target.value)}
               placeholder="Reason for cancellation (optional)"
               rows={3}
-              className="w-full px-3 py-2 border border-white/20 rounded-lg text-sm text-white bg-white/10 focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+              className="w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent" style={{ backgroundColor: 'var(--sch-input-bg)', borderColor: 'var(--sch-input-border)', color: 'var(--sch-text)' }}
             />
           </div>
         }

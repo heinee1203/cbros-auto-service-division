@@ -107,7 +107,8 @@ const TechTimelineGrid = forwardRef<TechTimelineGridHandle, TechTimelineGridProp
     return (
       <div
         ref={containerRef}
-        className="overflow-x-auto border border-white/10 rounded-lg bg-white/5 min-h-[400px] max-h-[70vh]"
+        className="overflow-x-auto border rounded-lg min-h-[400px] max-h-[70vh]"
+        style={{ borderColor: 'var(--sch-border)', background: 'var(--sch-surface)' }}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
       >
@@ -118,16 +119,17 @@ const TechTimelineGrid = forwardRef<TechTimelineGridHandle, TechTimelineGridProp
           }}
         >
           {/* Header row — empty label cell + day columns */}
-          <div className="sticky top-0 z-10 bg-white/5 border-b border-white/10 border-r border-r-white/5 px-3 py-2" />
+          <div className="sticky top-0 z-10 border-b border-r px-3 py-2" style={{ background: 'var(--sch-surface)', borderColor: 'var(--sch-border)' }} />
           {timelineDays.map((day) => {
             const key = getDateKey(day);
             const isToday = key === todayKey;
             return (
               <div
                 key={key}
-                className={`sticky top-0 z-10 border-b border-white/10 px-1 py-2 text-center text-xs text-slate-400 ${
-                  isToday ? "bg-amber-500/10 font-semibold text-amber-400" : "bg-white/5"
+                className={`sticky top-0 z-10 border-b px-1 py-2 text-center text-xs ${
+                  isToday ? "bg-amber-500/10 font-semibold text-amber-400" : ""
                 }`}
+                style={{ borderColor: 'var(--sch-border)', ...(!isToday ? { background: 'var(--sch-surface)', color: 'var(--sch-text-muted)' } : {}) }}
               >
                 {formatShortDate(day)}
               </div>
@@ -150,15 +152,16 @@ const TechTimelineGrid = forwardRef<TechTimelineGridHandle, TechTimelineGridProp
                 ref={(el) => {
                   if (el) rowRefs.current.set(tech.id, el);
                 }}
-                className="grid col-span-full border-t border-white/5"
+                className="grid col-span-full border-t"
                 style={{
+                  borderColor: 'var(--sch-border)',
                   gridTemplateColumns: `200px repeat(${days}, minmax(60px, 1fr))`,
                   gridTemplateRows: "1fr",
                   minHeight: "64px",
                 }}
               >
                 {/* Tech label cell */}
-                <div className="border-r border-white/5 px-3 py-2 flex items-center gap-2 row-start-1 col-start-1">
+                <div className="border-r px-3 py-2 flex items-center gap-2 row-start-1 col-start-1" style={{ borderColor: 'var(--sch-border)' }}>
                   {/* Avatar circle */}
                   <div
                     className="flex-shrink-0 h-8 w-8 rounded-full flex items-center justify-center text-white text-xs font-bold"
@@ -168,7 +171,7 @@ const TechTimelineGrid = forwardRef<TechTimelineGridHandle, TechTimelineGridProp
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-1">
-                      <span className="text-sm font-bold truncate text-white">
+                      <span className="text-sm font-bold truncate" style={{ color: 'var(--sch-text)' }}>
                         {tech.firstName} {tech.lastName}
                       </span>
                       {/* Active clock indicator */}
@@ -178,7 +181,7 @@ const TechTimelineGrid = forwardRef<TechTimelineGridHandle, TechTimelineGridProp
                     </div>
                     {/* Load progress bar */}
                     <div className="flex items-center gap-1.5 mt-0.5">
-                      <div className="w-10 h-1 rounded-full bg-white/10 overflow-hidden">
+                      <div className="w-10 h-1 rounded-full overflow-hidden" style={{ background: 'var(--sch-border)' }}>
                         <div
                           className="h-full rounded-full transition-all"
                           style={{
@@ -204,10 +207,11 @@ const TechTimelineGrid = forwardRef<TechTimelineGridHandle, TechTimelineGridProp
                       key={key}
                       type="button"
                       onClick={() => onEmptyCellClick?.(tech.id, day)}
-                      className={`row-start-1 border-r border-white/5 hover:bg-white/5 transition-colors ${
+                      className={`row-start-1 border-r transition-colors ${
                         isToday ? "bg-amber-500/5" : ""
-                      } ${dayOff ? "bg-white/5" : ""}`}
+                      }`}
                       style={{
+                        borderColor: 'var(--sch-border)',
                         gridColumn: i + 2,
                         ...(dayOff ? DAY_OFF_STRIPE_STYLE : {}),
                       }}

@@ -160,11 +160,12 @@ export function BayAssignmentDetail({
       const otherBays = allBays.filter((b) => b.id !== assignment.bayId);
       return (
         <div className="space-y-3">
-          <p className="text-sm font-medium text-white">Move to Bay</p>
+          <p className="text-sm font-medium" style={{ color: 'var(--sch-text)' }}>Move to Bay</p>
           <select
             value={selectedBayId}
             onChange={(e) => setSelectedBayId(e.target.value)}
-            className="w-full px-3 py-2 border border-white/20 rounded-lg text-sm text-white bg-white/10 focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+            className="w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+            style={{ backgroundColor: 'var(--sch-input-bg)', borderColor: 'var(--sch-input-border)', color: 'var(--sch-text)' }}
           >
             <option value="">Select a bay...</option>
             {otherBays.map((bay) => (
@@ -177,7 +178,7 @@ export function BayAssignmentDetail({
             <button
               onClick={() => setActionMode("none")}
               disabled={loading}
-              className="flex-1 px-4 py-2.5 text-sm font-medium border border-white/10 text-slate-300 hover:bg-white/5 rounded-xl disabled:opacity-50"
+              className="flex-1 px-4 py-2.5 text-sm font-medium border rounded-xl disabled:opacity-50" style={{ borderColor: 'var(--sch-border)', color: 'var(--sch-text-muted)' }}
             >
               Cancel
             </button>
@@ -197,7 +198,7 @@ export function BayAssignmentDetail({
     if (actionMode === "reschedule") {
       return (
         <div className="space-y-3">
-          <p className="text-sm font-medium text-white">Reschedule</p>
+          <p className="text-sm font-medium" style={{ color: 'var(--sch-text)' }}>Reschedule</p>
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-xs text-slate-400 mb-1">
@@ -207,7 +208,7 @@ export function BayAssignmentDetail({
                 type="date"
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
-                className="w-full px-3 py-2 border border-white/20 rounded-lg text-sm text-white bg-white/10 focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+                className="w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent" style={{ backgroundColor: 'var(--sch-input-bg)', borderColor: 'var(--sch-input-border)', color: 'var(--sch-text)' }}
               />
             </div>
             <div>
@@ -218,7 +219,7 @@ export function BayAssignmentDetail({
                 type="date"
                 value={endDate}
                 onChange={(e) => setEndDate(e.target.value)}
-                className="w-full px-3 py-2 border border-white/20 rounded-lg text-sm text-white bg-white/10 focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+                className="w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent" style={{ backgroundColor: 'var(--sch-input-bg)', borderColor: 'var(--sch-input-border)', color: 'var(--sch-text)' }}
               />
             </div>
           </div>
@@ -226,7 +227,7 @@ export function BayAssignmentDetail({
             <button
               onClick={() => setActionMode("none")}
               disabled={loading}
-              className="flex-1 px-4 py-2.5 text-sm font-medium border border-white/10 text-slate-300 hover:bg-white/5 rounded-xl disabled:opacity-50"
+              className="flex-1 px-4 py-2.5 text-sm font-medium border rounded-xl disabled:opacity-50" style={{ borderColor: 'var(--sch-border)', color: 'var(--sch-text-muted)' }}
             >
               Cancel
             </button>
@@ -255,14 +256,14 @@ export function BayAssignmentDetail({
         <div className="grid grid-cols-2 gap-2">
           <button
             onClick={startMoveBay}
-            className="flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium border border-white/10 text-slate-300 hover:bg-white/5 rounded-xl"
+            className="flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium border rounded-xl" style={{ borderColor: 'var(--sch-border)', color: 'var(--sch-text-muted)' }}
           >
             <ArrowRightLeft className="w-4 h-4" />
             Move Bay
           </button>
           <button
             onClick={startReschedule}
-            className="flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium border border-white/10 text-slate-300 hover:bg-white/5 rounded-xl"
+            className="flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium border rounded-xl" style={{ borderColor: 'var(--sch-border)', color: 'var(--sch-text-muted)' }}
           >
             <Calendar className="w-4 h-4" />
             Reschedule
@@ -288,7 +289,7 @@ export function BayAssignmentDetail({
         description={jobOrder.jobOrderNumber}
         footer={renderFooter()}
       >
-        <div className="space-y-4" style={{ background: '#0F1729', margin: '-24px', padding: '24px' }}>
+        <div className="space-y-4" style={{ background: 'var(--sch-bg)', margin: '-24px', padding: '24px' }}>
           {/* Bay info */}
           <div className="flex items-start gap-3">
             <div
@@ -297,7 +298,7 @@ export function BayAssignmentDetail({
             />
             <div>
               <p className="text-xs text-slate-400">Bay</p>
-              <p className="text-sm font-medium text-white">{bayName}</p>
+              <p className="text-sm font-medium" style={{ color: 'var(--sch-text)' }}>{bayName}</p>
             </div>
           </div>
 
@@ -308,13 +309,13 @@ export function BayAssignmentDetail({
               <p className="text-xs text-slate-400">Vehicle</p>
               {jobOrder.vehicle ? (
                 <>
-                  <p className="text-sm font-bold text-white">
+                  <p className="text-sm font-bold" style={{ color: 'var(--sch-text)' }}>
                     {jobOrder.vehicle.plateNumber}
                   </p>
-                  <p className="text-sm text-white">
+                  <p className="text-sm" style={{ color: 'var(--sch-text)' }}>
                     {jobOrder.vehicle.make} {jobOrder.vehicle.model}
                   </p>
-                  <p className="text-sm text-white">
+                  <p className="text-sm" style={{ color: 'var(--sch-text)' }}>
                     {jobOrder.vehicle.color}
                   </p>
                 </>
@@ -329,7 +330,7 @@ export function BayAssignmentDetail({
             <User className={iconClass} />
             <div>
               <p className="text-xs text-slate-400">Customer</p>
-              <p className="text-sm text-white">
+              <p className="text-sm" style={{ color: 'var(--sch-text)' }}>
                 {jobOrder.customer.firstName} {jobOrder.customer.lastName}
               </p>
             </div>
@@ -340,7 +341,7 @@ export function BayAssignmentDetail({
             <Wrench className={iconClass} />
             <div>
               <p className="text-xs text-slate-400">Technician</p>
-              <p className="text-sm text-white">
+              <p className="text-sm" style={{ color: 'var(--sch-text)' }}>
                 {jobOrder.primaryTechnician
                   ? `${jobOrder.primaryTechnician.firstName} ${jobOrder.primaryTechnician.lastName}`
                   : "Unassigned"}
@@ -370,10 +371,10 @@ export function BayAssignmentDetail({
             <Calendar className={iconClass} />
             <div>
               <p className="text-xs text-slate-400">Schedule</p>
-              <p className="text-sm text-white">
+              <p className="text-sm" style={{ color: 'var(--sch-text)' }}>
                 {formatDate(assignment.startDate)}
               </p>
-              <p className="text-sm text-white">
+              <p className="text-sm" style={{ color: 'var(--sch-text)' }}>
                 {assignment.endDate
                   ? formatDate(assignment.endDate)
                   : "Ongoing"}
@@ -387,7 +388,7 @@ export function BayAssignmentDetail({
               <StickyNote className={iconClass} />
               <div>
                 <p className="text-xs text-slate-400">Notes</p>
-                <p className="text-sm text-white">{assignment.notes}</p>
+                <p className="text-sm" style={{ color: 'var(--sch-text)' }}>{assignment.notes}</p>
               </div>
             </div>
           )}

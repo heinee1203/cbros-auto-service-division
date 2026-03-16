@@ -146,7 +146,7 @@ export function BayAssignModal({
       <button
         onClick={onClose}
         disabled={submitting}
-        className="flex-1 px-4 py-2.5 text-sm font-medium border border-white/10 text-slate-300 hover:bg-white/5 rounded-xl disabled:opacity-50"
+        className="flex-1 px-4 py-2.5 text-sm font-medium border rounded-xl disabled:opacity-50" style={{ borderColor: 'var(--sch-border)', color: 'var(--sch-text-muted)' }}
       >
         Cancel
       </button>
@@ -169,16 +169,16 @@ export function BayAssignModal({
       footer={footer}
       wide
     >
-      <div className="space-y-5" style={{ background: '#0F1729', margin: '-24px', padding: '24px' }}>
+      <div className="space-y-5" style={{ background: 'var(--sch-bg)', margin: '-24px', padding: '24px' }}>
         {/* Bay select */}
         <div>
-          <label className="block text-sm font-medium text-white mb-1.5">
+          <label className="block text-sm font-medium mb-1.5" style={{ color: 'var(--sch-text)' }}>
             Bay
           </label>
           <select
             value={bayId}
             onChange={(e) => setBayId(e.target.value)}
-            className="w-full px-3 py-2 border border-white/20 rounded-lg text-sm text-white bg-white/10 focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+            className="w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent" style={{ backgroundColor: 'var(--sch-input-bg)', borderColor: 'var(--sch-input-border)', color: 'var(--sch-text)' }}
           >
             <option value="">Select a bay...</option>
             {allBays.map((bay) => (
@@ -191,13 +191,13 @@ export function BayAssignModal({
 
         {/* Job search */}
         <div ref={searchRef}>
-          <label className="block text-sm font-medium text-white mb-1.5">
+          <label className="block text-sm font-medium mb-1.5" style={{ color: 'var(--sch-text)' }}>
             Job
           </label>
           {selectedJob ? (
             <div className="flex items-center gap-2 px-3 py-2 bg-accent-600/20 border border-accent-500/30 rounded-lg">
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-white truncate">
+                <p className="text-sm font-medium truncate" style={{ color: 'var(--sch-text)' }}>
                   {selectedJob.jobOrderNumber}
                 </p>
                 <p className="text-xs text-slate-400 truncate">
@@ -212,7 +212,7 @@ export function BayAssignModal({
                   setSelectedJob(null);
                   setSearchText("");
                 }}
-                className="p-1 rounded hover:bg-white/10"
+                className="p-1 rounded"
               >
                 <X className="w-4 h-4 text-accent-600" />
               </button>
@@ -230,7 +230,8 @@ export function BayAssignModal({
                   }}
                   onFocus={() => setShowDropdown(true)}
                   placeholder="Search by job number, customer, or plate..."
-                  className="w-full pl-9 pr-3 py-2 border border-white/20 rounded-lg text-sm text-white bg-white/10 focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent placeholder:text-slate-500"
+                  className="w-full pl-9 pr-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent placeholder:text-slate-500"
+                  style={{ backgroundColor: 'var(--sch-input-bg)', borderColor: 'var(--sch-input-border)', color: 'var(--sch-text)' }}
                 />
                 {loadingJobs && (
                   <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 animate-spin" />
@@ -239,7 +240,7 @@ export function BayAssignModal({
 
               {/* Dropdown results */}
               {showDropdown && (
-                <div className="absolute z-10 mt-1 w-full max-h-60 overflow-y-auto bg-[#1a2340] border border-white/10 rounded-lg shadow-lg">
+                <div className="absolute z-10 mt-1 w-full max-h-60 overflow-y-auto border rounded-lg shadow-lg" style={{ backgroundColor: 'var(--sch-card)', borderColor: 'var(--sch-border)' }}>
                   {jobs.length === 0 && !loadingJobs && (
                     <p className="px-3 py-3 text-sm text-slate-400 text-center">
                       No unassigned jobs found
@@ -253,9 +254,9 @@ export function BayAssignModal({
                         setShowDropdown(false);
                         setSearchText("");
                       }}
-                      className="w-full text-left px-3 py-2.5 hover:bg-white/5 border-b border-white/5 last:border-b-0"
+                      className="w-full text-left px-3 py-2.5 border-b last:border-b-0" style={{ borderColor: 'var(--sch-border)' }}
                     >
-                      <p className="text-sm font-medium text-white">
+                      <p className="text-sm font-medium" style={{ color: 'var(--sch-text)' }}>
                         {job.jobOrderNumber}
                       </p>
                       <p className="text-xs text-slate-400">
@@ -273,20 +274,20 @@ export function BayAssignModal({
 
         {/* Start date */}
         <div>
-          <label className="block text-sm font-medium text-white mb-1.5">
+          <label className="block text-sm font-medium mb-1.5" style={{ color: 'var(--sch-text)' }}>
             Start Date
           </label>
           <input
             type="date"
             value={startDate}
             onChange={(e) => setStartDate(e.target.value)}
-            className="w-full px-3 py-2 border border-white/20 rounded-lg text-sm text-white bg-white/10 focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+            className="w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent" style={{ backgroundColor: 'var(--sch-input-bg)', borderColor: 'var(--sch-input-border)', color: 'var(--sch-text)' }}
           />
         </div>
 
         {/* End date */}
         <div>
-          <label className="block text-sm font-medium text-white mb-1.5">
+          <label className="block text-sm font-medium mb-1.5" style={{ color: 'var(--sch-text)' }}>
             End Date{" "}
             <span className="font-normal text-slate-400">(optional)</span>
           </label>
@@ -294,7 +295,7 @@ export function BayAssignModal({
             type="date"
             value={endDate}
             onChange={(e) => setEndDate(e.target.value)}
-            className="w-full px-3 py-2 border border-white/20 rounded-lg text-sm text-white bg-white/10 focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+            className="w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent" style={{ backgroundColor: 'var(--sch-input-bg)', borderColor: 'var(--sch-input-border)', color: 'var(--sch-text)' }}
           />
           <p className="text-xs text-slate-400 mt-1">
             Leave blank for ongoing assignment
@@ -303,7 +304,7 @@ export function BayAssignModal({
 
         {/* Notes */}
         <div>
-          <label className="block text-sm font-medium text-white mb-1.5">
+          <label className="block text-sm font-medium mb-1.5" style={{ color: 'var(--sch-text)' }}>
             Notes{" "}
             <span className="font-normal text-slate-400">(optional)</span>
           </label>
@@ -312,7 +313,8 @@ export function BayAssignModal({
             onChange={(e) => setNotes(e.target.value)}
             placeholder="Any notes about this assignment..."
             rows={3}
-            className="w-full px-3 py-2 border border-white/20 rounded-lg text-sm text-white bg-white/10 focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent resize-none placeholder:text-slate-500"
+            className="w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent resize-none placeholder:text-slate-500"
+            style={{ backgroundColor: 'var(--sch-input-bg)', borderColor: 'var(--sch-input-border)', color: 'var(--sch-text)' }}
           />
         </div>
       </div>

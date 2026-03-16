@@ -141,7 +141,7 @@ export function TechDailyDetail({
       title={techName}
       description={formatFullDate(date)}
     >
-      <div className="space-y-6" style={{ background: '#0F1729', margin: '-24px', padding: '24px' }}>
+      <div className="space-y-6" style={{ background: 'var(--sch-bg)', margin: '-24px', padding: '24px' }}>
         {/* Day Off Badge */}
         {dayOff && (
           <div className="flex items-center gap-2 px-3 py-2 bg-amber-500/10 border border-amber-500/30 rounded-lg">
@@ -152,37 +152,37 @@ export function TechDailyDetail({
 
         {/* Summary Section — 2x2 grid */}
         <div className="grid grid-cols-2 gap-3">
-          <div className="p-3 bg-white/5 rounded-lg">
+          <div className="p-3 rounded-lg" style={{ background: 'var(--sch-surface)' }}>
             <div className="flex items-center gap-1.5 mb-1">
               <Briefcase className="w-3.5 h-3.5 text-slate-400" />
               <p className="text-xs text-slate-400">Available</p>
             </div>
-            <p className="text-lg font-semibold text-white">
+            <p className="text-lg font-semibold" style={{ color: 'var(--sch-text)' }}>
               {availableHours}h
             </p>
           </div>
 
-          <div className="p-3 bg-white/5 rounded-lg">
+          <div className="p-3 rounded-lg" style={{ background: 'var(--sch-surface)' }}>
             <div className="flex items-center gap-1.5 mb-1">
               <Clock className="w-3.5 h-3.5 text-slate-400" />
               <p className="text-xs text-slate-400">Scheduled</p>
             </div>
-            <p className="text-lg font-semibold text-white">
+            <p className="text-lg font-semibold" style={{ color: 'var(--sch-text)' }}>
               {scheduledHours}h
             </p>
           </div>
 
-          <div className="p-3 bg-white/5 rounded-lg">
+          <div className="p-3 rounded-lg" style={{ background: 'var(--sch-surface)' }}>
             <div className="flex items-center gap-1.5 mb-1">
               <Clock className="w-3.5 h-3.5 text-slate-400" />
               <p className="text-xs text-slate-400">Actual</p>
             </div>
-            <p className="text-lg font-semibold text-white">
+            <p className="text-lg font-semibold" style={{ color: 'var(--sch-text)' }}>
               {actualHours.toFixed(1)}h
             </p>
           </div>
 
-          <div className="p-3 bg-white/5 rounded-lg">
+          <div className="p-3 rounded-lg" style={{ background: 'var(--sch-surface)' }}>
             <div className="flex items-center gap-1.5 mb-1">
               {isOvertime ? (
                 <AlertTriangle className="w-3.5 h-3.5 text-red-500" />
@@ -217,7 +217,7 @@ export function TechDailyDetail({
               return (
                 <div
                   key={hour}
-                  className="flex items-start gap-3 py-1.5 border-b border-white/5"
+                  className="flex items-start gap-3 py-1.5 border-b" style={{ borderColor: 'var(--sch-border)' }}
                 >
                   <span className="text-xs text-slate-400 w-16 flex-shrink-0 pt-0.5">
                     {formatHour(hour)}
@@ -262,7 +262,7 @@ export function TechDailyDetail({
 
                     {/* Idle: has entry but no task */}
                     {hasEntry && !hasTask && !hasBreaks && (
-                      <div className="bg-white/5 text-slate-400 text-xs px-2 py-0.5 rounded inline-block">
+                      <div className="text-xs px-2 py-0.5 rounded inline-block" style={{ background: 'var(--sch-surface)', color: 'var(--sch-text-muted)' }}>
                         Idle
                       </div>
                     )}
@@ -284,7 +284,7 @@ export function TechDailyDetail({
                 <div
                   className={`w-2 h-2 rounded-full ${statusDotColor(task.status)}`}
                 />
-                <span className="font-medium text-white">
+                <span className="font-medium" style={{ color: 'var(--sch-text)' }}>
                   {task.jobOrder.jobOrderNumber}
                 </span>
                 <span className="text-slate-400">{task.name}</span>

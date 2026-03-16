@@ -76,11 +76,11 @@ function BaySection({
   return (
     <div>
       <div className="flex items-center gap-2 mb-3">
-        <span className="text-white/60">{icon}</span>
-        <h3 className="text-sm font-bold text-white tracking-wider uppercase">
+        <span style={{ color: 'var(--sch-text-dim)' }}>{icon}</span>
+        <h3 className="text-sm font-bold tracking-wider uppercase" style={{ color: 'var(--sch-text)' }}>
           {label}
         </h3>
-        <span className="text-sm font-semibold text-white/60">
+        <span className="text-sm font-semibold" style={{ color: 'var(--sch-text-dim)' }}>
           {occupied} / {total}
         </span>
       </div>

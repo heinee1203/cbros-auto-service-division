@@ -22,15 +22,15 @@ export function LiveFloorStatsBar({ stats }: { stats: LiveFloorStats }) {
           key={m.label}
           className="flex items-center gap-3 p-4"
           style={{
-            background: "rgba(255,255,255,0.05)",
-            border: "1px solid rgba(255,255,255,0.1)",
+            background: "var(--sch-surface)",
+            border: "1px solid var(--sch-border)",
             borderRadius: 12,
           }}
         >
           <m.icon className="h-5 w-5 shrink-0" style={{ color: m.color }} />
           <div>
-            <div className="text-2xl font-bold text-white">{m.value}</div>
-            <div className="text-xs text-slate-400">{m.label}</div>
+            <div className="text-2xl font-bold" style={{ color: 'var(--sch-text)' }}>{m.value}</div>
+            <div className="text-xs" style={{ color: 'var(--sch-text-muted)' }}>{m.label}</div>
           </div>
         </div>
       ))}

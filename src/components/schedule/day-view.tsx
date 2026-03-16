@@ -39,7 +39,7 @@ export default function DayView({ currentDate, appointments, onAppointmentClick 
   const dayAppts = appointments.filter((a) => a.scheduledDate.split("T")[0] === dateKey);
 
   return (
-    <div className="relative h-[720px] overflow-y-auto border border-white/10 rounded-lg bg-white/5">
+    <div className="relative h-[720px] overflow-y-auto border rounded-lg" style={{ borderColor: 'var(--sch-border)', background: 'var(--sch-surface)' }}>
       {/* Time grid */}
       <div className="flex">
         {/* Left gutter — time labels */}
@@ -47,7 +47,7 @@ export default function DayView({ currentDate, appointments, onAppointmentClick 
           {HOURS.map((hour) => (
             <div
               key={hour}
-              className="h-[60px] border-t border-white/5 pr-2 text-right text-xs text-slate-400 leading-none pt-1"
+              className="h-[60px] border-t pr-2 text-right text-xs leading-none pt-1" style={{ borderColor: 'var(--sch-border)', color: 'var(--sch-text-muted)' }}
             >
               {formatHourLabel(hour)}
             </div>
@@ -55,10 +55,10 @@ export default function DayView({ currentDate, appointments, onAppointmentClick 
         </div>
 
         {/* Single content column */}
-        <div className="relative flex-1 border-l border-white/5">
+        <div className="relative flex-1 border-l" style={{ borderColor: 'var(--sch-border)' }}>
           {/* Hour rows */}
           {HOURS.map((hour) => (
-            <div key={hour} className="h-[60px] border-t border-white/5" />
+            <div key={hour} className="h-[60px] border-t" style={{ borderColor: 'var(--sch-border)' }} />
           ))}
 
           {/* Appointment blocks */}

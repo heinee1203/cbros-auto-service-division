@@ -95,7 +95,7 @@ export default function LiveFloor() {
       <LiveFloorStatsBar stats={stats} />
 
       {loading ? (
-        <div className="flex items-center justify-center py-12 text-slate-400">
+        <div className="flex items-center justify-center py-12" style={{ color: 'var(--sch-text-muted)' }}>
           Loading floor status...
         </div>
       ) : bays.length === 0 ? (

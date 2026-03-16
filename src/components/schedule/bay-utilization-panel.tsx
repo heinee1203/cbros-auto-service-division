@@ -124,11 +124,11 @@ export default function BayUtilizationPanel({
   }, [bayUtilizations]);
 
   return (
-    <div className="border border-white/10 rounded-lg bg-white/5">
+    <div className="border rounded-lg" style={{ borderColor: 'var(--sch-border)', background: 'var(--sch-surface)' }}>
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between px-4 py-2.5 text-sm font-semibold text-white hover:bg-white/5 transition-colors rounded-lg"
+        className="w-full flex items-center justify-between px-4 py-2.5 text-sm font-semibold transition-colors rounded-lg" style={{ color: 'var(--sch-text)' }}
       >
         <span>Utilization</span>
         {isOpen ? (
@@ -142,23 +142,23 @@ export default function BayUtilizationPanel({
         <div className="px-4 pb-4 space-y-3">
           {/* Shop Average */}
           <div className="flex items-center gap-3">
-            <span className="text-sm font-medium text-slate-400 w-36 shrink-0">
+            <span className="text-sm font-medium w-36 shrink-0" style={{ color: 'var(--sch-text-muted)' }}>
               Shop Average
             </span>
-            <div className="flex-1 bg-white/5 rounded-full h-2">
+            <div className="flex-1 rounded-full h-2" style={{ background: 'var(--sch-surface)' }}>
               <div
                 className="bg-emerald-500 h-2 rounded-full transition-all"
                 style={{ width: `${Math.min(shopAverage, 100)}%` }}
               />
             </div>
-            <span className="text-sm font-semibold text-white w-12 text-right">
+            <span className="text-sm font-semibold w-12 text-right" style={{ color: 'var(--sch-text)' }}>
               {formatPercent(shopAverage)}
             </span>
             {/* Spacer to align with next-available column */}
             <span className="w-28 shrink-0" />
           </div>
 
-          <div className="border-t border-white/5" />
+          <div className="border-t" style={{ borderColor: 'var(--sch-border)' }} />
 
           {/* Per-bay rows */}
           {bayUtilizations.map(({ bay, utilization, nextAvailable, nextAvailableColor }) => (
@@ -168,17 +168,17 @@ export default function BayUtilizationPanel({
                   className="inline-block h-3 w-3 rounded-full shrink-0"
                   style={{ backgroundColor: bay.color || DEFAULT_BAY_COLOR }}
                 />
-                <span className="text-sm font-medium text-white truncate">
+                <span className="text-sm font-medium truncate" style={{ color: 'var(--sch-text)' }}>
                   {bay.name}
                 </span>
               </div>
-              <div className="flex-1 bg-white/5 rounded-full h-2">
+              <div className="flex-1 rounded-full h-2" style={{ background: 'var(--sch-surface)' }}>
                 <div
                   className="bg-emerald-500 h-2 rounded-full transition-all"
                   style={{ width: `${Math.min(utilization, 100)}%` }}
                 />
               </div>
-              <span className="text-sm font-semibold text-white w-12 text-right">
+              <span className="text-sm font-semibold w-12 text-right" style={{ color: 'var(--sch-text)' }}>
                 {formatPercent(utilization)}
               </span>
               <span

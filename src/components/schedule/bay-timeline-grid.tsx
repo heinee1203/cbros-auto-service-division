@@ -86,7 +86,8 @@ const BayTimelineGrid = forwardRef<BayTimelineGridHandle, BayTimelineGridProps>(
     return (
       <div
         ref={containerRef}
-        className="overflow-x-auto border border-white/10 rounded-lg bg-white/5 min-h-[400px] max-h-[70vh]"
+        className="overflow-x-auto border rounded-lg min-h-[400px] max-h-[70vh]"
+        style={{ borderColor: 'var(--sch-border)', background: 'var(--sch-surface)' }}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
       >
@@ -97,16 +98,17 @@ const BayTimelineGrid = forwardRef<BayTimelineGridHandle, BayTimelineGridProps>(
           }}
         >
           {/* Header row */}
-          <div className="sticky top-0 z-10 bg-white/5 border-b border-white/10 border-r border-r-white/5 px-3 py-2" />
+          <div className="sticky top-0 z-10 border-b border-r px-3 py-2" style={{ background: 'var(--sch-surface)', borderColor: 'var(--sch-border)' }} />
           {timelineDays.map((day) => {
             const key = getDateKey(day);
             const isToday = key === todayKey;
             return (
               <div
                 key={key}
-                className={`sticky top-0 z-10 border-b border-white/10 px-1 py-2 text-center text-xs text-slate-400 ${
-                  isToday ? "bg-amber-500/10 font-semibold text-amber-400" : "bg-white/5"
+                className={`sticky top-0 z-10 border-b px-1 py-2 text-center text-xs ${
+                  isToday ? "bg-amber-500/10 font-semibold text-amber-400" : ""
                 }`}
+                style={{ borderColor: 'var(--sch-border)', ...(!isToday ? { background: 'var(--sch-surface)', color: 'var(--sch-text-muted)' } : {}) }}
               >
                 {formatShortDate(day)}
               </div>
@@ -125,23 +127,24 @@ const BayTimelineGrid = forwardRef<BayTimelineGridHandle, BayTimelineGridProps>(
                 ref={(el) => {
                   if (el) rowRefs.current.set(bay.id, el);
                 }}
-                className="grid col-span-full border-t border-white/5"
+                className="grid col-span-full border-t"
                 style={{
+                  borderColor: 'var(--sch-border)',
                   gridTemplateColumns: `180px repeat(${days}, minmax(60px, 1fr))`,
                   gridTemplateRows: "1fr",
                 }}
               >
                 {/* Bay label cell */}
-                <div className="border-r border-white/5 px-3 py-2 flex items-center gap-2 row-start-1 col-start-1">
+                <div className="border-r px-3 py-2 flex items-center gap-2 row-start-1 col-start-1" style={{ borderColor: 'var(--sch-border)' }}>
                   <span
                     className="inline-block h-3 w-3 rounded-full flex-shrink-0"
                     style={{ backgroundColor: bayColor }}
                   />
                   <div className="min-w-0">
-                    <div className="text-sm font-medium truncate text-white">
+                    <div className="text-sm font-medium truncate" style={{ color: 'var(--sch-text)' }}>
                       {bay.name}
                     </div>
-                    <div className="text-xs text-slate-400">{typeLabel}</div>
+                    <div className="text-xs" style={{ color: 'var(--sch-text-muted)' }}>{typeLabel}</div>
                   </div>
                 </div>
 
@@ -154,10 +157,10 @@ const BayTimelineGrid = forwardRef<BayTimelineGridHandle, BayTimelineGridProps>(
                       key={key}
                       type="button"
                       onClick={() => onEmptyCellClick(bay.id, day)}
-                      className={`row-start-1 border-r border-white/5 hover:bg-white/5 transition-colors ${
+                      className={`row-start-1 border-r transition-colors ${
                         isToday ? "bg-amber-500/5" : ""
                       }`}
-                      style={{ gridColumn: i + 2 }}
+                      style={{ borderColor: 'var(--sch-border)', gridColumn: i + 2 }}
                       aria-label={`Assign to ${bay.name} on ${formatShortDate(day)}`}
                     />
                   );

@@ -10,7 +10,7 @@ interface TechCapacityBarProps {
 }
 
 function Divider() {
-  return <div className="h-8 w-px bg-white/10" />;
+  return <div className="h-8 w-px" style={{ background: 'var(--sch-border)' }} />;
 }
 
 export default function TechCapacityBar({ techs, startDate, days }: TechCapacityBarProps) {
@@ -42,11 +42,11 @@ export default function TechCapacityBar({ techs, startDate, days }: TechCapacity
   const committedWarning = totalScheduledHours > totalAvailableHours;
 
   return (
-    <div className="bg-white/5 border border-white/10 rounded-lg px-4 py-3 flex items-center gap-6 flex-wrap">
+    <div className="border rounded-lg px-4 py-3 flex items-center gap-6 flex-wrap" style={{ background: 'var(--sch-surface)', borderColor: 'var(--sch-border)' }}>
       {/* Technicians */}
       <div className="flex flex-col items-center">
-        <p className="text-xs text-slate-400">Technicians</p>
-        <p className="text-sm font-semibold text-white flex items-center gap-1">
+        <p className="text-xs" style={{ color: 'var(--sch-text-muted)' }}>Technicians</p>
+        <p className="text-sm font-semibold flex items-center gap-1" style={{ color: 'var(--sch-text)' }}>
           <Users className="h-3.5 w-3.5" />
           {techs.length}
         </p>
@@ -56,8 +56,8 @@ export default function TechCapacityBar({ techs, startDate, days }: TechCapacity
 
       {/* Available */}
       <div className="flex flex-col items-center">
-        <p className="text-xs text-slate-400">Available</p>
-        <p className="text-sm font-semibold text-white flex items-center gap-1">
+        <p className="text-xs" style={{ color: 'var(--sch-text-muted)' }}>Available</p>
+        <p className="text-sm font-semibold flex items-center gap-1" style={{ color: 'var(--sch-text)' }}>
           <Clock className="h-3.5 w-3.5" />
           {Math.round(totalAvailableHours)} hrs
         </p>
@@ -67,8 +67,8 @@ export default function TechCapacityBar({ techs, startDate, days }: TechCapacity
 
       {/* Committed */}
       <div className="flex flex-col items-center">
-        <p className="text-xs text-slate-400">Committed</p>
-        <p className={`text-sm font-semibold flex items-center gap-1 ${committedWarning ? "text-amber-400" : "text-white"}`}>
+        <p className="text-xs" style={{ color: 'var(--sch-text-muted)' }}>Committed</p>
+        <p className={`text-sm font-semibold flex items-center gap-1 ${committedWarning ? "text-amber-400" : ""}`} style={!committedWarning ? { color: 'var(--sch-text)' } : undefined}>
           {Math.round(totalScheduledHours)} hrs
         </p>
       </div>
@@ -77,8 +77,8 @@ export default function TechCapacityBar({ techs, startDate, days }: TechCapacity
 
       {/* Logged */}
       <div className="flex flex-col items-center">
-        <p className="text-xs text-slate-400">Logged</p>
-        <p className="text-sm font-semibold text-white">
+        <p className="text-xs" style={{ color: 'var(--sch-text-muted)' }}>Logged</p>
+        <p className="text-sm font-semibold" style={{ color: 'var(--sch-text)' }}>
           {totalActualHours.toFixed(1)} hrs
         </p>
       </div>
@@ -87,15 +87,15 @@ export default function TechCapacityBar({ techs, startDate, days }: TechCapacity
 
       {/* Utilization */}
       <div className="flex flex-col items-center gap-1">
-        <p className="text-xs text-slate-400">Utilization</p>
+        <p className="text-xs" style={{ color: 'var(--sch-text-muted)' }}>Utilization</p>
         <div className="flex items-center gap-2">
-          <div className="w-20 h-2 bg-white/5 rounded-full overflow-hidden">
+          <div className="w-20 h-2 rounded-full overflow-hidden" style={{ background: 'var(--sch-surface)' }}>
             <div
               className={`h-full rounded-full ${utilizationColor}`}
               style={{ width: `${Math.min(shopUtilization, 100)}%` }}
             />
           </div>
-          <p className="text-sm font-semibold text-white">{shopUtilization}%</p>
+          <p className="text-sm font-semibold" style={{ color: 'var(--sch-text)' }}>{shopUtilization}%</p>
         </div>
       </div>
 
@@ -104,7 +104,7 @@ export default function TechCapacityBar({ techs, startDate, days }: TechCapacity
         <>
           <Divider />
           <div className="flex flex-col items-center">
-            <p className="text-xs text-slate-400">Overloaded</p>
+            <p className="text-xs" style={{ color: 'var(--sch-text-muted)' }}>Overloaded</p>
             <p className="text-sm font-semibold text-red-600 flex items-center gap-1">
               <AlertTriangle className="h-3.5 w-3.5" />
               {overloadedCount}

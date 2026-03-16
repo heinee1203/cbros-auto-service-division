@@ -45,9 +45,9 @@ export default function WeekView({ currentDate, appointments, onAppointmentClick
   const grouped = groupByDate(appointments);
 
   return (
-    <div className="relative h-[720px] overflow-y-auto border border-white/10 rounded-lg bg-white/5">
+    <div className="relative h-[720px] overflow-y-auto border rounded-lg" style={{ borderColor: 'var(--sch-border)', background: 'var(--sch-surface)' }}>
       {/* Sticky header row */}
-      <div className="sticky top-0 z-10 flex border-b border-white/10 bg-[#0F1729]">
+      <div className="sticky top-0 z-10 flex border-b" style={{ borderColor: 'var(--sch-border)', background: 'var(--sch-bg)' }}>
         {/* Time gutter label */}
         <div className="w-[60px] shrink-0" />
         {/* Day headers */}
@@ -56,9 +56,10 @@ export default function WeekView({ currentDate, appointments, onAppointmentClick
           return (
             <div
               key={day.toISOString()}
-              className={`flex-1 text-center text-sm py-2 border-l border-white/5 ${
-                today ? "text-accent-400 font-bold" : "text-slate-400"
+              className={`flex-1 text-center text-sm py-2 border-l ${
+                today ? "text-accent-400 font-bold" : ""
               }`}
+              style={{ borderColor: 'var(--sch-border)', ...(!today ? { color: 'var(--sch-text-muted)' } : {}) }}
             >
               {day.toLocaleDateString("en-PH", { weekday: "short" })}{" "}
               {day.getDate()}
@@ -74,7 +75,7 @@ export default function WeekView({ currentDate, appointments, onAppointmentClick
           {HOURS.map((hour) => (
             <div
               key={hour}
-              className="h-[60px] border-t border-white/5 pr-2 text-right text-xs text-slate-400 leading-none pt-1"
+              className="h-[60px] border-t pr-2 text-right text-xs leading-none pt-1" style={{ borderColor: 'var(--sch-border)', color: 'var(--sch-text-muted)' }}
             >
               {formatHourLabel(hour)}
             </div>
@@ -87,10 +88,10 @@ export default function WeekView({ currentDate, appointments, onAppointmentClick
           const dayAppts = grouped.get(key) || [];
 
           return (
-            <div key={key} className="relative flex-1 border-l border-white/5">
+            <div key={key} className="relative flex-1 border-l" style={{ borderColor: 'var(--sch-border)' }}>
               {/* Hour rows */}
               {HOURS.map((hour) => (
-                <div key={hour} className="h-[60px] border-t border-white/5" />
+                <div key={hour} className="h-[60px] border-t" style={{ borderColor: 'var(--sch-border)' }} />
               ))}
 
               {/* Appointment blocks */}
