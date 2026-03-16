@@ -1,15 +1,18 @@
 import { getSession } from "@/lib/auth";
 import { can } from "@/lib/permissions";
 import { notFound } from "next/navigation";
+import TechTimeline from "@/components/schedule/tech-timeline";
+import { ScheduleNav } from "@/components/schedule/schedule-nav";
 
 export default async function TechSchedulePage() {
   const session = await getSession();
-  if (!session?.user || !can(session.user.role, "schedule:view")) return notFound();
+  if (!session?.user || !can(session.user.role, "schedule:tech_view"))
+    return notFound();
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold text-primary">Technician Schedule</h1>
-      <p className="text-surface-500 mt-1">Technician timeline coming in Phase D.</p>
+    <div className="space-y-4">
+      <ScheduleNav />
+      <TechTimeline />
     </div>
   );
 }
