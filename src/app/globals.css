@@ -58,6 +58,8 @@
   --sch-card: #1E293B;
   --sch-input-bg: rgba(255, 255, 255, 0.1);
   --sch-input-border: rgba(255, 255, 255, 0.2);
+  --sch-accent: #F59E0B;
+  --sch-accent-hover: #D97706;
 }
 
 [data-schedule-theme="light"] {
@@ -71,4 +73,6 @@
   --sch-card: #FFFFFF;
   --sch-input-bg: #FFFFFF;
   --sch-input-border: #E2E8F0;
+  --sch-accent: #D97706;
+  --sch-accent-hover: #B45309;
 }

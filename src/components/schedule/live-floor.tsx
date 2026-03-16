@@ -5,7 +5,7 @@ import { Wrench } from "lucide-react";
 import { toast } from "sonner";
 import { LiveFloorGrid } from "./live-floor-grid";
 import { LiveFloorStatsBar } from "./live-floor-stats";
-import { LiveFloorJobsTable } from "./live-floor-jobs-table";
+import { FloorJobSection } from "./floor-job-section";
 import { BayAssignmentDetail } from "./bay-assignment-detail";
 import { BayAssignModal } from "./bay-assign-modal";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -108,7 +108,7 @@ export default function LiveFloor() {
         <LiveFloorGrid bays={bays} onBayClick={handleBayClick} />
       )}
 
-      {!loading && jobs.length > 0 && <LiveFloorJobsTable jobs={jobs} />}
+      {!loading && jobs.length > 0 && <FloorJobSection jobs={jobs} />}
 
       <BayAssignmentDetail
         open={detailOpen}
