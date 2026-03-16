@@ -4,6 +4,7 @@ import { can } from "@/lib/permissions";
 import { getAllSettings } from "@/lib/services/settings";
 import { SettingsClient } from "./settings-client";
 import BayManagement from "@/components/schedule/bay-management";
+import { TechWorkSchedule } from "@/components/schedule/tech-work-schedule";
 import type { UserRole } from "@/types/enums";
 
 export default async function SettingsPage() {
@@ -24,6 +25,9 @@ export default async function SettingsPage() {
       <SettingsClient initialSettings={grouped} />
       {can(session.user.role as UserRole, "schedule:bays_manage") && (
         <BayManagement />
+      )}
+      {can(session.user.role as UserRole, "schedule:tech_manage") && (
+        <TechWorkSchedule />
       )}
     </div>
   );
