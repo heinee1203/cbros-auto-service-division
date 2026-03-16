@@ -429,3 +429,59 @@ export const updateWorkScheduleSchema = z.object({
 });
 
 export type UpdateWorkScheduleInput = z.infer<typeof updateWorkScheduleSchema>;
+
+// ---------------------------------------------------------------------------
+// Walk-in Intake — new vehicle + customer creation
+// ---------------------------------------------------------------------------
+export const walkInVehicleSchema = z.object({
+  plateNumber: z.string().min(1, "Plate number is required"),
+  make: z.string().min(1, "Make is required"),
+  model: z.string().min(1, "Model is required"),
+  year: z.coerce.number().int().min(1950).max(2030).optional().nullable(),
+  color: z.string().optional().nullable(),
+  vin: z.string().optional().nullable(),
+});
+export type WalkInVehicleInput = z.infer<typeof walkInVehicleSchema>;
+
+export const walkInCustomerSchema = z.object({
+  firstName: z.string().min(1, "Customer name is required"),
+  lastName: z.string().optional().default(""),
+  phone: z.string().min(1, "Phone number is required"),
+  email: z.string().email().optional().nullable(),
+});
+export type WalkInCustomerInput = z.infer<typeof walkInCustomerSchema>;
+
+export const walkInIntakeSchema = z.object({
+  vehicleId: z.string().optional().nullable(),
+  newVehicle: walkInVehicleSchema.optional().nullable(),
+  customerId: z.string().optional().nullable(),
+  newCustomer: walkInCustomerSchema.optional().nullable(),
+  serviceIds: z.array(z.string()).min(1, "At least one service is required"),
+  intakeLevel: z.coerce.number().int().min(1).max(3),
+  odometerReading: z.coerce.number().int().min(0).optional().nullable(),
+  fuelLevel: z.string().default("HALF"),
+  hasWarningLights: z.boolean().default(false),
+  warningLightsNote: z.string().optional().nullable(),
+  keysCount: z.coerce.number().int().min(0).default(1),
+  frontDeskLeadId: z.string().optional().nullable(),
+  primaryTechnicianId: z.string().optional().nullable(),
+  assistantTechnicianId: z.string().optional().nullable(),
+  assignedBayId: z.string().optional().nullable(),
+  priority: z.string().default("NORMAL"),
+  internalNotes: z.string().optional().nullable(),
+  customerSignature: z.string().optional().nullable(),
+  advisorSignature: z.string().optional().nullable(),
+  estimateRequestId: z.string().optional().nullable(),
+  appointmentId: z.string().optional().nullable(),
+});
+export type WalkInIntakeInput = z.infer<typeof walkInIntakeSchema>;
+
+export const quickJobSchema = z.object({
+  plateNumber: z.string().min(1, "Plate number is required"),
+  customerName: z.string().min(1, "Customer name is required"),
+  customerPhone: z.string().min(1, "Phone number is required"),
+  reason: z.string().min(1, "Reason is required"),
+  vehicleId: z.string().optional().nullable(),
+  customerId: z.string().optional().nullable(),
+});
+export type QuickJobInput = z.infer<typeof quickJobSchema>;

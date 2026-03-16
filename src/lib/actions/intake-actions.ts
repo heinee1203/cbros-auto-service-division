@@ -7,6 +7,8 @@ import {
   belongingSchema,
   intakeRecordSchema,
   jobOrderConfigSchema,
+  walkInIntakeSchema,
+  quickJobSchema,
   type DamageEntryInput,
   type BelongingInput,
   type IntakeRecordInput,
@@ -22,6 +24,7 @@ import {
   updateIntakeRecord,
   completeIntake,
 } from "@/lib/services/intake";
+import { createWalkInJob, createQuickJob } from "@/lib/services/walk-in-intake";
 import type { ActionResult } from "@/lib/actions/estimate-actions";
 
 // ---------------------------------------------------------------------------
@@ -189,4 +192,67 @@ export async function completeIntakeAction(
   revalidatePath("/jobs");
   revalidatePath("/estimates");
   return { success: true, data: { jobOrderId: result.id } };
+}
+
+// ---------------------------------------------------------------------------
+// 9. createWalkInIntakeAction
+// ---------------------------------------------------------------------------
+export async function createWalkInIntakeAction(
+  input: unknown
+): Promise<ActionResult> {
+  const session = await getSession();
+  if (!session?.user) return { success: false, error: "Unauthorized" };
+
+  const parsed = walkInIntakeSchema.safeParse(input);
+  if (!parsed.success) {
+    return { success: false, error: parsed.error.issues[0].message };
+  }
+
+  try {
+    const result = await createWalkInJob(parsed.data, session.user.id);
+    revalidatePath("/schedule/floor");
+    revalidatePath("/jobs");
+    return {
+      success: true,
+      data: {
+        jobOrderId: result.jobOrder.id,
+        intakeRecordId: result.intakeRecord.id,
+        jobOrderNumber: result.jobOrder.jobOrderNumber,
+      },
+    };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Failed to create job";
+    return { success: false, error: message };
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 10. createQuickJobAction
+// ---------------------------------------------------------------------------
+export async function createQuickJobAction(
+  input: unknown
+): Promise<ActionResult> {
+  const session = await getSession();
+  if (!session?.user) return { success: false, error: "Unauthorized" };
+
+  const parsed = quickJobSchema.safeParse(input);
+  if (!parsed.success) {
+    return { success: false, error: parsed.error.issues[0].message };
+  }
+
+  try {
+    const jobOrder = await createQuickJob(parsed.data, session.user.id);
+    revalidatePath("/schedule/floor");
+    revalidatePath("/jobs");
+    return {
+      success: true,
+      data: {
+        jobOrderId: jobOrder.id,
+        jobOrderNumber: jobOrder.jobOrderNumber,
+      },
+    };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Failed to create quick job";
+    return { success: false, error: message };
+  }
 }

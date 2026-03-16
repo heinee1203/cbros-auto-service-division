@@ -291,6 +291,7 @@ model JobOrder {
 
   // Insurance fields
   isInsuranceJob    Boolean   @default(false)
+  incompleteIntake  Boolean   @default(false)
   claimNumber       String?
   dateOfLoss        DateTime?
   adjusterName      String?
