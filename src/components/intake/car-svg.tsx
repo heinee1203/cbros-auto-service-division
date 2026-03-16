@@ -15,6 +15,7 @@ interface CarSvgProps {
   view: View;
   damageEntries: DamageMarker[];
   onZoneClick: (zoneId: string) => void;
+  darkMode?: boolean;
 }
 
 // Severity → SVG fill color
@@ -127,7 +128,7 @@ const WHEEL_POSITIONS: Record<View, { cx: number; cy: number; r: number }[]> = {
   ],
 };
 
-export function CarSvg({ view, damageEntries, onZoneClick }: CarSvgProps) {
+export function CarSvg({ view, damageEntries, onZoneClick, darkMode }: CarSvgProps) {
   const zones = VIEW_ZONES[view];
   const outline = CAR_OUTLINES[view];
   const wheels = WHEEL_POSITIONS[view];
@@ -159,7 +160,7 @@ export function CarSvg({ view, damageEntries, onZoneClick }: CarSvgProps) {
       <path
         d={outline}
         fill="none"
-        stroke={STROKE_COLOR}
+        stroke={darkMode ? "var(--sch-text-dim)" : STROKE_COLOR}
         strokeWidth="2"
         opacity={0.4}
       />
@@ -171,7 +172,7 @@ export function CarSvg({ view, damageEntries, onZoneClick }: CarSvgProps) {
           cx={w.cx}
           cy={w.cy}
           r={w.r}
-          fill="#334155"
+          fill={darkMode ? "var(--sch-text-dim)" : "#334155"}
           opacity={0.25}
         />
       ))}
@@ -205,8 +206,8 @@ export function CarSvg({ view, damageEntries, onZoneClick }: CarSvgProps) {
               width={rect.w}
               height={rect.h}
               rx={rect.rx || 2}
-              fill={fill}
-              stroke={damage ? "#d97706" : STROKE_COLOR}
+              fill={darkMode && !damage ? "rgba(148,163,184,0.12)" : fill}
+              stroke={damage ? "#d97706" : darkMode ? "var(--sch-text-dim)" : STROKE_COLOR}
               strokeWidth={damage ? 2 : 1}
               className="transition-colors group-hover:opacity-80"
             />
@@ -217,7 +218,7 @@ export function CarSvg({ view, damageEntries, onZoneClick }: CarSvgProps) {
               textAnchor="middle"
               dominantBaseline="central"
               fontSize={Math.min(rect.w / 5, 10)}
-              fill="#475569"
+              fill={darkMode ? "var(--sch-text)" : "#475569"}
               className="pointer-events-none select-none"
             >
               {label.length > 12 ? label.slice(0, 10) + ".." : label}
@@ -255,9 +256,9 @@ export function CarSvg({ view, damageEntries, onZoneClick }: CarSvgProps) {
               width={rect.w}
               height={rect.h}
               rx={rect.rx || 2}
-              fill={HOVER_FILL}
+              fill={darkMode ? "rgba(255,255,255,0.15)" : HOVER_FILL}
               opacity={0}
-              className="group-hover:opacity-40 transition-opacity"
+              className={darkMode ? "group-hover:opacity-60 transition-opacity" : "group-hover:opacity-40 transition-opacity"}
             />
           </g>
         );

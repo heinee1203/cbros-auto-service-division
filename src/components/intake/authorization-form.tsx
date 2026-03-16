@@ -13,6 +13,7 @@ import type { JobOrderConfigInput } from "@/lib/validators";
 
 interface AuthorizationFormProps {
   intakeRecordId: string;
+  darkMode?: boolean;
   vehicle: {
     plateNumber: string;
     make: string;
@@ -39,6 +40,7 @@ interface AuthorizationFormProps {
 
 export function AuthorizationForm({
   intakeRecordId,
+  darkMode,
   vehicle,
   customer,
   estimateTotal,
@@ -98,18 +100,24 @@ export function AuthorizationForm({
     <div className="space-y-6">
       {/* SUMMARY SECTION */}
       <div>
-        <h3 className="text-lg font-semibold text-primary mb-4 flex items-center gap-2">
-          <FileText className="h-5 w-5 text-accent-500" />
+        <h3
+          className={darkMode ? "text-lg font-semibold mb-4 flex items-center gap-2" : "text-lg font-semibold text-primary mb-4 flex items-center gap-2"}
+          style={darkMode ? { color: "var(--sch-text)" } : undefined}
+        >
+          <FileText className="h-5 w-5 text-accent-500" style={darkMode ? { color: "var(--sch-accent)" } : undefined} />
           Check-In Summary
         </h3>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {/* Vehicle Info */}
-          <div className="rounded-lg border border-surface-200 bg-white p-4">
-            <p className="text-xs font-medium text-surface-500 uppercase tracking-wider mb-2">
+          <div
+            className={darkMode ? "rounded-lg border p-4" : "rounded-lg border border-surface-200 bg-white p-4"}
+            style={darkMode ? { background: "var(--sch-surface)", borderColor: "var(--sch-border)" } : undefined}
+          >
+            <p className={darkMode ? "text-xs font-medium uppercase tracking-wider mb-2" : "text-xs font-medium text-surface-500 uppercase tracking-wider mb-2"} style={darkMode ? { color: "var(--sch-text-muted)" } : undefined}>
               Vehicle
             </p>
-            <p className="font-mono font-bold text-lg text-primary">
+            <p className={darkMode ? "font-mono font-bold text-lg" : "font-mono font-bold text-lg text-primary"} style={darkMode ? { color: "var(--sch-text)" } : undefined}>
               {formatPlateNumber(vehicle.plateNumber)}
             </p>
             <p className="text-sm text-surface-600">
@@ -125,32 +133,41 @@ export function AuthorizationForm({
           </div>
 
           {/* Customer */}
-          <div className="rounded-lg border border-surface-200 bg-white p-4">
-            <p className="text-xs font-medium text-surface-500 uppercase tracking-wider mb-2">
+          <div
+            className={darkMode ? "rounded-lg border p-4" : "rounded-lg border border-surface-200 bg-white p-4"}
+            style={darkMode ? { background: "var(--sch-surface)", borderColor: "var(--sch-border)" } : undefined}
+          >
+            <p className={darkMode ? "text-xs font-medium uppercase tracking-wider mb-2" : "text-xs font-medium text-surface-500 uppercase tracking-wider mb-2"} style={darkMode ? { color: "var(--sch-text-muted)" } : undefined}>
               Customer
             </p>
-            <p className="font-semibold text-primary">
+            <p className={darkMode ? "font-semibold" : "font-semibold text-primary"} style={darkMode ? { color: "var(--sch-text)" } : undefined}>
               {customer.firstName} {customer.lastName}
             </p>
             <p className="text-sm text-surface-500">{customer.phone}</p>
           </div>
 
           {/* Estimated Cost */}
-          <div className="rounded-lg border border-surface-200 bg-white p-4">
-            <p className="text-xs font-medium text-surface-500 uppercase tracking-wider mb-2">
+          <div
+            className={darkMode ? "rounded-lg border p-4" : "rounded-lg border border-surface-200 bg-white p-4"}
+            style={darkMode ? { background: "var(--sch-surface)", borderColor: "var(--sch-border)" } : undefined}
+          >
+            <p className={darkMode ? "text-xs font-medium uppercase tracking-wider mb-2" : "text-xs font-medium text-surface-500 uppercase tracking-wider mb-2"} style={darkMode ? { color: "var(--sch-text-muted)" } : undefined}>
               Estimated Cost
             </p>
-            <p className="text-2xl font-bold text-primary">
+            <p className={darkMode ? "text-2xl font-bold" : "text-2xl font-bold text-primary"} style={darkMode ? { color: "var(--sch-text)" } : undefined}>
               {formatPeso(estimateTotal)}
             </p>
           </div>
 
           {/* Estimated Completion */}
-          <div className="rounded-lg border border-surface-200 bg-white p-4">
-            <p className="text-xs font-medium text-surface-500 uppercase tracking-wider mb-2">
+          <div
+            className={darkMode ? "rounded-lg border p-4" : "rounded-lg border border-surface-200 bg-white p-4"}
+            style={darkMode ? { background: "var(--sch-surface)", borderColor: "var(--sch-border)" } : undefined}
+          >
+            <p className={darkMode ? "text-xs font-medium uppercase tracking-wider mb-2" : "text-xs font-medium text-surface-500 uppercase tracking-wider mb-2"} style={darkMode ? { color: "var(--sch-text-muted)" } : undefined}>
               Target Completion
             </p>
-            <p className="font-semibold text-primary">
+            <p className={darkMode ? "font-semibold" : "font-semibold text-primary"} style={darkMode ? { color: "var(--sch-text)" } : undefined}>
               {jobConfig.targetCompletionDate
                 ? formatDate(jobConfig.targetCompletionDate)
                 : "Not set"}
@@ -166,8 +183,11 @@ export function AuthorizationForm({
         {/* Second row */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
           {/* Scope of Work */}
-          <div className="rounded-lg border border-surface-200 bg-white p-4 sm:col-span-2">
-            <p className="text-xs font-medium text-surface-500 uppercase tracking-wider mb-2">
+          <div
+            className={darkMode ? "rounded-lg border p-4 sm:col-span-2" : "rounded-lg border border-surface-200 bg-white p-4 sm:col-span-2"}
+            style={darkMode ? { background: "var(--sch-surface)", borderColor: "var(--sch-border)" } : undefined}
+          >
+            <p className={darkMode ? "text-xs font-medium uppercase tracking-wider mb-2" : "text-xs font-medium text-surface-500 uppercase tracking-wider mb-2"} style={darkMode ? { color: "var(--sch-text-muted)" } : undefined}>
               Scope of Work
             </p>
             {services.length > 0 ? (
@@ -190,13 +210,16 @@ export function AuthorizationForm({
           </div>
 
           {/* Pre-Existing Damage */}
-          <div className="rounded-lg border border-surface-200 bg-white p-4">
-            <p className="text-xs font-medium text-surface-500 uppercase tracking-wider mb-2">
+          <div
+            className={darkMode ? "rounded-lg border p-4" : "rounded-lg border border-surface-200 bg-white p-4"}
+            style={darkMode ? { background: "var(--sch-surface)", borderColor: "var(--sch-border)" } : undefined}
+          >
+            <p className={darkMode ? "text-xs font-medium uppercase tracking-wider mb-2" : "text-xs font-medium text-surface-500 uppercase tracking-wider mb-2"} style={darkMode ? { color: "var(--sch-text-muted)" } : undefined}>
               Pre-Existing Damage
             </p>
             {damageCount > 0 ? (
               <>
-                <p className="text-sm font-medium text-primary mb-2">
+                <p className={darkMode ? "text-sm font-medium mb-2" : "text-sm font-medium text-primary mb-2"} style={darkMode ? { color: "var(--sch-text)" } : undefined}>
                   {damageCount} damage mark{damageCount !== 1 ? "s" : ""}{" "}
                   recorded
                 </p>
@@ -233,22 +256,25 @@ export function AuthorizationForm({
           </div>
 
           {/* Belongings & Fuel */}
-          <div className="rounded-lg border border-surface-200 bg-white p-4 space-y-3">
+          <div
+            className={darkMode ? "rounded-lg border p-4 space-y-3" : "rounded-lg border border-surface-200 bg-white p-4 space-y-3"}
+            style={darkMode ? { background: "var(--sch-surface)", borderColor: "var(--sch-border)" } : undefined}
+          >
             <div>
-              <p className="text-xs font-medium text-surface-500 uppercase tracking-wider mb-1">
+              <p className={darkMode ? "text-xs font-medium uppercase tracking-wider mb-1" : "text-xs font-medium text-surface-500 uppercase tracking-wider mb-1"} style={darkMode ? { color: "var(--sch-text-muted)" } : undefined}>
                 Belongings
               </p>
-              <p className="text-sm text-primary">
+              <p className={darkMode ? "text-sm" : "text-sm text-primary"} style={darkMode ? { color: "var(--sch-text)" } : undefined}>
                 {belongingsCount > 0
                   ? `${belongingsCount} item${belongingsCount !== 1 ? "s" : ""} inventoried`
                   : "No items left in vehicle"}
               </p>
             </div>
             <div>
-              <p className="text-xs font-medium text-surface-500 uppercase tracking-wider mb-1">
+              <p className={darkMode ? "text-xs font-medium uppercase tracking-wider mb-1" : "text-xs font-medium text-surface-500 uppercase tracking-wider mb-1"} style={darkMode ? { color: "var(--sch-text-muted)" } : undefined}>
                 Fuel Level
               </p>
-              <p className="text-sm text-primary">
+              <p className={darkMode ? "text-sm" : "text-sm text-primary"} style={darkMode ? { color: "var(--sch-text)" } : undefined}>
                 {FUEL_LEVEL_DISPLAY[
                   fuelLevel as keyof typeof FUEL_LEVEL_DISPLAY
                 ] ?? fuelLevel}
@@ -260,11 +286,20 @@ export function AuthorizationForm({
 
       {/* TERMS AND CONDITIONS */}
       <div>
-        <h3 className="text-lg font-semibold text-primary mb-3">
+        <h3
+          className={darkMode ? "text-lg font-semibold mb-3" : "text-lg font-semibold text-primary mb-3"}
+          style={darkMode ? { color: "var(--sch-text)" } : undefined}
+        >
           Terms &amp; Conditions
         </h3>
-        <div className="max-h-40 overflow-y-auto rounded-lg border border-surface-200 bg-surface-50 p-4">
-          <p className="text-sm text-surface-600 whitespace-pre-wrap">
+        <div
+          className={darkMode ? "max-h-40 overflow-y-auto rounded-lg border p-4" : "max-h-40 overflow-y-auto rounded-lg border border-surface-200 bg-surface-50 p-4"}
+          style={darkMode ? { background: "var(--sch-surface)", borderColor: "var(--sch-border)" } : undefined}
+        >
+          <p
+            className={darkMode ? "text-sm whitespace-pre-wrap" : "text-sm text-surface-600 whitespace-pre-wrap"}
+            style={darkMode ? { color: "var(--sch-text-muted)" } : undefined}
+          >
             {authorizationTerms}
           </p>
         </div>
@@ -272,7 +307,10 @@ export function AuthorizationForm({
 
       {/* SIGNATURES */}
       <div>
-        <h3 className="text-lg font-semibold text-primary mb-4">Signatures</h3>
+        <h3
+          className={darkMode ? "text-lg font-semibold mb-4" : "text-lg font-semibold text-primary mb-4"}
+          style={darkMode ? { color: "var(--sch-text)" } : undefined}
+        >Signatures</h3>
 
         {/* Customer Not Present Toggle */}
         <label className="flex items-center gap-3 mb-4 cursor-pointer select-none">
@@ -287,13 +325,19 @@ export function AuthorizationForm({
             }}
             className="h-4 w-4 rounded border-surface-300 text-accent-500 focus:ring-accent-500"
           />
-          <span className="text-sm font-medium text-surface-700">
+          <span
+            className={darkMode ? "text-sm font-medium" : "text-sm font-medium text-surface-700"}
+            style={darkMode ? { color: "var(--sch-text)" } : undefined}
+          >
             Customer not present
           </span>
         </label>
 
         {customerNotPresent && (
-          <div className="mb-4 flex items-start gap-3 rounded-lg border border-amber-300 bg-amber-50 p-4">
+          <div
+            className={darkMode ? "mb-4 flex items-start gap-3 rounded-lg border p-4" : "mb-4 flex items-start gap-3 rounded-lg border border-amber-300 bg-amber-50 p-4"}
+            style={darkMode ? { borderColor: "var(--sch-accent)", background: "rgba(245,158,11,0.1)" } : undefined}
+          >
             <AlertTriangle className="h-5 w-5 text-amber-500 flex-shrink-0 mt-0.5" />
             <p className="text-sm text-amber-700">
               Vehicle received without customer present. Authorization pending.
@@ -305,7 +349,10 @@ export function AuthorizationForm({
           {/* Customer Signature */}
           {!customerNotPresent && (
             <div>
-              <p className="text-sm font-medium text-surface-700 mb-2">
+              <p
+                className={darkMode ? "text-sm font-medium mb-2" : "text-sm font-medium text-surface-700 mb-2"}
+                style={darkMode ? { color: "var(--sch-text)" } : undefined}
+              >
                 Customer Signature
               </p>
               <SignaturePad
@@ -333,9 +380,15 @@ export function AuthorizationForm({
       </div>
 
       {/* COMPLETE CHECK-IN BUTTON */}
-      <div className="border-t border-surface-200 pt-6">
+      <div
+        className={darkMode ? "border-t pt-6" : "border-t border-surface-200 pt-6"}
+        style={darkMode ? { borderColor: "var(--sch-border)" } : undefined}
+      >
         {!canSubmit && (
-          <p className="text-sm text-surface-500 mb-3">
+          <p
+            className={darkMode ? "text-sm mb-3" : "text-sm text-surface-500 mb-3"}
+            style={darkMode ? { color: "var(--sch-text-muted)" } : undefined}
+          >
             {getMissingMessage()}
           </p>
         )}
@@ -345,10 +398,14 @@ export function AuthorizationForm({
           onClick={handleSubmit}
           className={cn(
             "w-full flex items-center justify-center gap-2 rounded-lg px-6 py-3 text-base font-semibold transition-colors min-h-touch",
-            canSubmit && !submitting
-              ? "bg-success text-white hover:bg-success/90"
-              : "bg-surface-200 text-surface-400 cursor-not-allowed"
+            !darkMode && canSubmit && !submitting && "bg-success text-white hover:bg-success/90",
+            !darkMode && !(canSubmit && !submitting) && "bg-surface-200 text-surface-400 cursor-not-allowed",
+            darkMode && !(canSubmit && !submitting) && "cursor-not-allowed",
           )}
+          style={darkMode ? {
+            background: canSubmit && !submitting ? "var(--sch-accent)" : "var(--sch-border)",
+            color: canSubmit && !submitting ? "white" : "var(--sch-text-dim)",
+          } : undefined}
         >
           {submitting ? (
             <>
