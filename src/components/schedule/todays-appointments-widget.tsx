@@ -70,7 +70,7 @@ export function TodaysAppointmentsWidget({
 
           {hasMore && (
             <button
-              onClick={() => router.push("/schedule/appointments")}
+              onClick={() => router.push("/schedule/calendar")}
               className="text-sm font-medium text-indigo-600 hover:text-indigo-700 transition-colors mt-1"
             >
               View all &rarr;

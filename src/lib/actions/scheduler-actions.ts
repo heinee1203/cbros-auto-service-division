@@ -54,7 +54,7 @@ export async function createBayAction(input: unknown): Promise<ActionResult> {
   try {
     const bay = await scheduler.createBay(parsed.data);
     revalidatePath("/settings");
-    revalidatePath("/schedule/bays");
+    revalidatePath("/schedule/floor");
     return { success: true, data: bay };
   } catch (err) {
     return { success: false, error: err instanceof Error ? err.message : "Failed to create bay" };
@@ -73,7 +73,7 @@ export async function updateBayAction(id: string, input: unknown): Promise<Actio
   try {
     const bay = await scheduler.updateBay(id, parsed.data);
     revalidatePath("/settings");
-    revalidatePath("/schedule/bays");
+    revalidatePath("/schedule/floor");
     return { success: true, data: bay };
   } catch (err) {
     return { success: false, error: err instanceof Error ? err.message : "Failed to update bay" };
@@ -89,7 +89,7 @@ export async function deleteBayAction(id: string): Promise<ActionResult> {
   try {
     await scheduler.deleteBay(id);
     revalidatePath("/settings");
-    revalidatePath("/schedule/bays");
+    revalidatePath("/schedule/floor");
     return { success: true };
   } catch (err) {
     return { success: false, error: err instanceof Error ? err.message : "Failed to delete bay" };
@@ -115,7 +115,7 @@ export async function createAppointmentAction(input: unknown): Promise<ActionRes
       scheduledDate: new Date(parsed.data.scheduledDate),
       createdBy: session.user.id,
     });
-    revalidatePath("/schedule/appointments");
+    revalidatePath("/schedule/calendar");
     revalidatePath("/");
     return { success: true, data: appointment };
   } catch (err) {
@@ -136,7 +136,7 @@ export async function updateAppointmentAction(id: string, input: unknown): Promi
     const data: any = { ...parsed.data };
     if (data.scheduledDate) data.scheduledDate = new Date(data.scheduledDate);
     const appointment = await scheduler.updateAppointment(id, data);
-    revalidatePath("/schedule/appointments");
+    revalidatePath("/schedule/calendar");
     revalidatePath("/");
     return { success: true, data: appointment };
   } catch (err) {
@@ -155,7 +155,7 @@ export async function updateAppointmentStatusAction(id: string, input: unknown):
 
   try {
     const appointment = await scheduler.updateAppointmentStatus(id, parsed.data.status, parsed.data.notes);
-    revalidatePath("/schedule/appointments");
+    revalidatePath("/schedule/calendar");
     revalidatePath("/");
     return { success: true, data: appointment };
   } catch (err) {
@@ -171,7 +171,7 @@ export async function cancelAppointmentAction(id: string, reason?: string): Prom
 
   try {
     await scheduler.cancelAppointment(id, reason);
-    revalidatePath("/schedule/appointments");
+    revalidatePath("/schedule/calendar");
     revalidatePath("/");
     return { success: true };
   } catch (err) {
@@ -199,7 +199,7 @@ export async function assignJobToBayAction(input: unknown): Promise<ActionResult
       endDate: parsed.data.endDate ? new Date(parsed.data.endDate) : null,
       createdBy: session.user.id,
     });
-    revalidatePath("/schedule/bays");
+    revalidatePath("/schedule/floor");
     revalidatePath("/jobs");
     return { success: true, data: assignment };
   } catch (err) {
@@ -231,7 +231,7 @@ export async function updateBayAssignmentAction(id: string, input: unknown): Pro
     if (parsed.data.notes !== undefined) data.notes = parsed.data.notes;
 
     const assignment = await scheduler.updateBayAssignment(id, data);
-    revalidatePath("/schedule/bays");
+    revalidatePath("/schedule/floor");
     revalidatePath("/jobs");
     return { success: true, data: assignment };
   } catch (err) {
@@ -251,7 +251,7 @@ export async function reorderBaysAction(input: unknown): Promise<ActionResult> {
   try {
     await scheduler.reorderBays(parsed.data.orderedIds);
     revalidatePath("/settings");
-    revalidatePath("/schedule/bays");
+    revalidatePath("/schedule/floor");
     return { success: true };
   } catch (err) {
     return { success: false, error: err instanceof Error ? err.message : "Failed to reorder bays" };
@@ -266,7 +266,7 @@ export async function releaseFromBayAction(assignmentId: string): Promise<Action
 
   try {
     await scheduler.releaseFromBay(assignmentId);
-    revalidatePath("/schedule/bays");
+    revalidatePath("/schedule/floor");
     revalidatePath("/jobs");
     return { success: true };
   } catch (err) {
@@ -294,7 +294,7 @@ export async function reassignTaskAction(input: { taskId: string; newTechnicianI
     await updateTask(parsed.data.taskId, {
       assignedTechnicianId: parsed.data.newTechnicianId,
     });
-    revalidatePath("/schedule/technicians");
+    revalidatePath("/schedule/admin");
     return { success: true };
   } catch (err) {
     return { success: false, error: err instanceof Error ? err.message : "Failed to reassign task" };
@@ -320,7 +320,7 @@ export async function updateWorkScheduleAction(input: { technicianId: string; wo
       where: { id: parsed.data.technicianId },
       data: { workSchedule: parsed.data.workSchedule },
     });
-    revalidatePath("/schedule/technicians");
+    revalidatePath("/schedule/admin");
     revalidatePath("/settings");
     return { success: true };
   } catch (err) {
