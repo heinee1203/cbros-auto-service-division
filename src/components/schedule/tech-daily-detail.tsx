@@ -8,7 +8,7 @@ import {
   getWorkingHours,
   isDayOff,
   getTaskDateRange,
-  TASK_STATUS_BLOCK_COLORS,
+  getDateKey,
 } from "./tech-timeline-types";
 import { Clock, Coffee, AlertTriangle, Briefcase } from "lucide-react";
 
@@ -47,18 +47,17 @@ function getEntriesForHour(
   });
 }
 
-function getTasksForHour(
+/** Get tasks active on this date (hour param reserved for future per-hour scheduling) */
+function getTasksForDate(
   tasks: TechTask[],
-  hour: number,
   date: Date
 ): TechTask[] {
-  const dateKey = date.toISOString().split("T")[0];
+  const dk = getDateKey(date);
   return tasks.filter((task) => {
     const { start, end } = getTaskDateRange(task);
-    const startKey = start.toISOString().split("T")[0];
-    const endKey = end.toISOString().split("T")[0];
-    // Task is active on this date
-    return dateKey >= startKey && dateKey <= endKey;
+    const startKey = getDateKey(start);
+    const endKey = getDateKey(end);
+    return dk >= startKey && dk <= endKey;
   });
 }
 
@@ -114,23 +113,17 @@ export function TechDailyDetail({
   const availableHours = getWorkingHours(schedule, date);
 
   // Scheduled hours: sum of estimatedHours for tasks active on this date
-  const activeTasks = tasks.filter((task) => {
-    const { start, end } = getTaskDateRange(task);
-    const dateKey = date.toISOString().split("T")[0];
-    const startKey = start.toISOString().split("T")[0];
-    const endKey = end.toISOString().split("T")[0];
-    return dateKey >= startKey && dateKey <= endKey;
-  });
+  const activeTasks = getTasksForDate(tasks, date);
   const scheduledHours = activeTasks.reduce(
     (sum, t) => sum + t.estimatedHours,
     0
   );
 
   // Actual hours from time entries on this date
-  const dateKey = date.toISOString().split("T")[0];
+  const dk = getDateKey(date);
   const dayEntries = timeEntries.filter((e) => {
-    const entryDate = new Date(e.clockIn).toISOString().split("T")[0];
-    return entryDate === dateKey;
+    const entryDate = getDateKey(new Date(e.clockIn));
+    return entryDate === dk;
   });
   const actualMinutes = dayEntries.reduce((sum, e) => sum + e.netMinutes, 0);
   const actualHours = actualMinutes / 60;
@@ -215,7 +208,7 @@ export function TechDailyDetail({
           </p>
           <div className="space-y-0.5">
             {hourSlots.map((hour) => {
-              const hourTasks = getTasksForHour(activeTasks, hour, date);
+              const hourTasks = getTasksForDate(activeTasks, date);
               const hourEntries = getEntriesForHour(dayEntries, hour, date);
               const hasBreaks = hourEntries.some((e) => e.breakMinutes > 0);
               const hasTask = hourTasks.length > 0;

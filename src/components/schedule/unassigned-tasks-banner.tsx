@@ -23,7 +23,7 @@ export default function UnassignedTasksBanner({
         if (!res.ok) return;
         const data = await res.json();
         if (!cancelled) {
-          setCount(typeof data.count === "number" ? data.count : 0);
+          setCount(Array.isArray(data) ? data.length : 0);
         }
       } catch {
         // silently ignore fetch errors

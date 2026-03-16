@@ -449,17 +449,43 @@ export async function reorderBays(orderedIds: string[]) {
 
 export async function getShopCapacity(startDate: Date, endDate: Date) {
   const bays = await prisma.bay.count({ where: { isActive: true, deletedAt: null } });
-  const techs = await prisma.user.count({
+  const techs = await prisma.user.findMany({
     where: { role: "TECHNICIAN", isActive: true, deletedAt: null },
+    select: { workSchedule: true },
   });
 
   const dayCount = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
   const hoursPerDay = 8;
 
+  // Calculate tech hours from actual work schedules
+  const DAY_KEYS = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"] as const;
+  let techHoursAvailable = 0;
+  for (const tech of techs) {
+    let schedule: Record<string, { start?: string; end?: string; off?: boolean }> | null = null;
+    if (tech.workSchedule) {
+      try { schedule = JSON.parse(tech.workSchedule); } catch { /* use default */ }
+    }
+    for (let d = 0; d < dayCount; d++) {
+      const day = new Date(startDate.getTime() + d * 86400000);
+      if (!schedule) {
+        // Default: 8 hours on weekdays
+        const dow = day.getDay();
+        techHoursAvailable += (dow === 0 || dow === 6) ? 0 : hoursPerDay;
+      } else {
+        const dayKey = DAY_KEYS[day.getDay()];
+        const ds = schedule[dayKey];
+        if (!ds || ds.off) continue;
+        const [sh, sm] = (ds.start || "08:00").split(":").map(Number);
+        const [eh, em] = (ds.end || "17:00").split(":").map(Number);
+        techHoursAvailable += Math.max(0, (eh + em / 60) - (sh + sm / 60));
+      }
+    }
+  }
+
   return {
     totalBays: bays,
-    totalTechs: techs,
+    totalTechs: techs.length,
     bayHoursAvailable: bays * dayCount * hoursPerDay,
-    techHoursAvailable: techs * dayCount * hoursPerDay,
+    techHoursAvailable,
   };
 }

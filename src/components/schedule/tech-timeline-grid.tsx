@@ -238,6 +238,7 @@ const TechTimelineGrid = forwardRef<TechTimelineGridHandle, TechTimelineGridProp
                           onTaskClick(task, tech.id);
                         }
                       }}
+                      aria-label={`${task.name} – ${task.jobOrder.jobOrderNumber}`}
                       onPointerDown={(e) =>
                         onBlockPointerDown(
                           e,

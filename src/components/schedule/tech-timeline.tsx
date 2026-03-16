@@ -17,6 +17,7 @@ import {
   addDaysToDate,
 } from "./tech-timeline-types";
 import { EmptyState } from "@/components/ui/empty-state";
+import { reassignTaskAction } from "@/lib/actions/scheduler-actions";
 
 export default function TechTimeline() {
   const [startDate, setStartDate] = useState(() => {
@@ -46,15 +47,20 @@ export default function TechTimeline() {
   // Data fetching
   const fetchTimeline = useCallback(async () => {
     setLoading(true);
-    const endDate = addDaysToDate(startDate, days);
-    const res = await fetch(
-      `/api/technicians/timeline?start=${startDate.toISOString()}&end=${endDate.toISOString()}`
-    );
-    if (res.ok) {
-      const data = await res.json();
-      setTechs(data);
+    try {
+      const endDate = addDaysToDate(startDate, days);
+      const res = await fetch(
+        `/api/technicians/timeline?start=${startDate.toISOString()}&end=${endDate.toISOString()}`
+      );
+      if (res.ok) {
+        const data = await res.json();
+        setTechs(data);
+      }
+    } catch {
+      toast.error("Failed to load technician schedules");
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }, [startDate, days]);
 
   useEffect(() => {
@@ -72,9 +78,6 @@ export default function TechTimeline() {
     rowHeight: 64,
     techIds: techs.map((t) => t.id),
     onDragEnd: async (result) => {
-      const { reassignTaskAction } = await import(
-        "@/lib/actions/scheduler-actions"
-      );
       const res = await reassignTaskAction({
         taskId: result.taskId,
         newTechnicianId: result.newTechId,

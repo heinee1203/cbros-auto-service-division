@@ -1,5 +1,3 @@
-"use client";
-
 import { addDaysToDate, getDateKey, getTimelineDays, formatShortDate, hexToRgba } from "./bay-timeline-types";
 
 // Re-export bay timeline utilities
