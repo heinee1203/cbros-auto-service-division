@@ -99,6 +99,69 @@ async function main() {
     { category: "Accessories & Add-ons", name: "Emblem / Badge Installation", defaultEstimatedHours: 0.5, defaultLaborRate: 30000, sortOrder: 5, milestones: ["before", "after"] },
     { category: "Accessories & Add-ons", name: "Window Tinting (Film)", defaultEstimatedHours: 3, defaultLaborRate: 40000, sortOrder: 6, milestones: ["before", "after"] },
     { category: "Accessories & Add-ons", name: "Dashcam Installation", defaultEstimatedHours: 1, defaultLaborRate: 35000, sortOrder: 7, milestones: ["before", "after"] },
+
+    // --- Preventive Maintenance ---
+    { category: "Preventive Maintenance", name: "PMS Basic Package", description: "Oil, filter, basic inspection", defaultEstimatedHours: 1.5, defaultLaborRate: 40000, sortOrder: 1, milestones: ["before", "after"] },
+    { category: "Preventive Maintenance", name: "PMS Intermediate Package", description: "Fluids, filters, brakes check, belt inspection", defaultEstimatedHours: 3, defaultLaborRate: 45000, sortOrder: 2, milestones: ["before", "after"] },
+    { category: "Preventive Maintenance", name: "PMS Major Package", description: "Full fluid change, timing belt check, suspension check", defaultEstimatedHours: 5, defaultLaborRate: 50000, sortOrder: 3, milestones: ["before", "after"] },
+    { category: "Preventive Maintenance", name: "Change Oil & Filter", defaultEstimatedHours: 0.75, defaultLaborRate: 35000, sortOrder: 4, milestones: ["before", "after"] },
+    { category: "Preventive Maintenance", name: "Coolant Flush", defaultEstimatedHours: 1, defaultLaborRate: 35000, sortOrder: 5, milestones: ["before", "after"] },
+    { category: "Preventive Maintenance", name: "Transmission Fluid Service", defaultEstimatedHours: 1.5, defaultLaborRate: 40000, sortOrder: 6, milestones: ["before", "after"] },
+    { category: "Preventive Maintenance", name: "Differential Fluid Change", defaultEstimatedHours: 1, defaultLaborRate: 35000, sortOrder: 7, milestones: ["before", "after"] },
+    { category: "Preventive Maintenance", name: "Brake Fluid Flush", defaultEstimatedHours: 0.75, defaultLaborRate: 35000, sortOrder: 8, milestones: ["before", "after"] },
+    { category: "Preventive Maintenance", name: "Power Steering Fluid Flush", defaultEstimatedHours: 0.75, defaultLaborRate: 35000, sortOrder: 9, milestones: ["before", "after"] },
+    { category: "Preventive Maintenance", name: "Spark Plug Replacement", defaultEstimatedHours: 1.5, defaultLaborRate: 40000, sortOrder: 10, milestones: ["before", "after"] },
+    { category: "Preventive Maintenance", name: "Drive Belt Replacement", defaultEstimatedHours: 1, defaultLaborRate: 40000, sortOrder: 11, milestones: ["before", "after"] },
+
+    // --- Mechanical Repair ---
+    { category: "Mechanical Repair", name: "Brake Pad/Shoe Replacement", defaultEstimatedHours: 1.5, defaultLaborRate: 40000, sortOrder: 1, milestones: ["before", "after"] },
+    { category: "Mechanical Repair", name: "Brake Rotor Resurfacing/Replacement", defaultEstimatedHours: 2, defaultLaborRate: 45000, sortOrder: 2, milestones: ["before", "after"] },
+    { category: "Mechanical Repair", name: "Brake Caliper Service", defaultEstimatedHours: 2, defaultLaborRate: 45000, sortOrder: 3, milestones: ["before", "after"] },
+    { category: "Mechanical Repair", name: "Steering Rack Replacement", defaultEstimatedHours: 4, defaultLaborRate: 50000, sortOrder: 4, milestones: ["before", "in_progress", "after"] },
+    { category: "Mechanical Repair", name: "Power Steering Pump Replacement", defaultEstimatedHours: 3, defaultLaborRate: 45000, sortOrder: 5, milestones: ["before", "after"] },
+    { category: "Mechanical Repair", name: "Shock Absorber/Strut Replacement", defaultEstimatedHours: 3, defaultLaborRate: 45000, sortOrder: 6, milestones: ["before", "after"] },
+    { category: "Mechanical Repair", name: "Control Arm Replacement", defaultEstimatedHours: 3, defaultLaborRate: 45000, sortOrder: 7, milestones: ["before", "after"] },
+    { category: "Mechanical Repair", name: "Ball Joint Replacement", defaultEstimatedHours: 2.5, defaultLaborRate: 45000, sortOrder: 8, milestones: ["before", "after"] },
+    { category: "Mechanical Repair", name: "Tie Rod End Replacement", defaultEstimatedHours: 2, defaultLaborRate: 40000, sortOrder: 9, milestones: ["before", "after"] },
+    { category: "Mechanical Repair", name: "CV Joint/Axle Replacement", defaultEstimatedHours: 3, defaultLaborRate: 45000, sortOrder: 10, milestones: ["before", "after"] },
+    { category: "Mechanical Repair", name: "Water Pump Replacement", defaultEstimatedHours: 3, defaultLaborRate: 45000, sortOrder: 11, milestones: ["before", "after"] },
+    { category: "Mechanical Repair", name: "Radiator Replacement", defaultEstimatedHours: 3, defaultLaborRate: 45000, sortOrder: 12, milestones: ["before", "after"] },
+    { category: "Mechanical Repair", name: "Thermostat Replacement", defaultEstimatedHours: 1.5, defaultLaborRate: 35000, sortOrder: 13, milestones: ["before", "after"] },
+    { category: "Mechanical Repair", name: "Clutch Replacement", defaultEstimatedHours: 6, defaultLaborRate: 50000, sortOrder: 14, milestones: ["before", "in_progress", "after"] },
+    { category: "Mechanical Repair", name: "Timing Belt/Chain Replacement", defaultEstimatedHours: 5, defaultLaborRate: 50000, sortOrder: 15, milestones: ["before", "in_progress", "after"] },
+    { category: "Mechanical Repair", name: "Engine Mount Replacement", defaultEstimatedHours: 3, defaultLaborRate: 45000, sortOrder: 16, milestones: ["before", "after"] },
+    { category: "Mechanical Repair", name: "Exhaust System Repair", defaultEstimatedHours: 2.5, defaultLaborRate: 40000, sortOrder: 17, milestones: ["before", "after"] },
+
+    // --- Tire & Alignment ---
+    { category: "Tire & Alignment", name: "Tire Rotation", defaultEstimatedHours: 0.5, defaultLaborRate: 30000, sortOrder: 1, milestones: ["before", "after"] },
+    { category: "Tire & Alignment", name: "Wheel Alignment", defaultEstimatedHours: 1, defaultLaborRate: 40000, sortOrder: 2, milestones: ["before", "after"] },
+    { category: "Tire & Alignment", name: "Wheel Balancing", defaultEstimatedHours: 0.75, defaultLaborRate: 35000, sortOrder: 3, milestones: ["before", "after"] },
+    { category: "Tire & Alignment", name: "Tire Replacement", defaultEstimatedHours: 1, defaultLaborRate: 35000, sortOrder: 4, milestones: ["before", "after"] },
+    { category: "Tire & Alignment", name: "Tire Repair/Patch", defaultEstimatedHours: 0.5, defaultLaborRate: 25000, sortOrder: 5, milestones: ["before", "after"] },
+    { category: "Tire & Alignment", name: "TPMS Sensor Service", defaultEstimatedHours: 1, defaultLaborRate: 40000, sortOrder: 6, milestones: ["before", "after"] },
+
+    // --- Electrical ---
+    { category: "Electrical", name: "Battery Replacement", defaultEstimatedHours: 0.5, defaultLaborRate: 30000, sortOrder: 1, milestones: ["before", "after"] },
+    { category: "Electrical", name: "Alternator Replacement", defaultEstimatedHours: 2.5, defaultLaborRate: 45000, sortOrder: 2, milestones: ["before", "after"] },
+    { category: "Electrical", name: "Starter Motor Replacement", defaultEstimatedHours: 2.5, defaultLaborRate: 45000, sortOrder: 3, milestones: ["before", "after"] },
+    { category: "Electrical", name: "Wiring Repair/Harness", defaultEstimatedHours: 3, defaultLaborRate: 45000, sortOrder: 4, milestones: ["before", "in_progress", "after"] },
+    { category: "Electrical", name: "Light Bulb/LED Replacement", defaultEstimatedHours: 0.5, defaultLaborRate: 25000, sortOrder: 5, milestones: ["before", "after"] },
+    { category: "Electrical", name: "Fuse Diagnosis & Replacement", defaultEstimatedHours: 1, defaultLaborRate: 35000, sortOrder: 6, milestones: ["before", "after"] },
+    { category: "Electrical", name: "ECU Diagnostic/Reset", defaultEstimatedHours: 1.5, defaultLaborRate: 50000, sortOrder: 7, milestones: ["before", "after"] },
+
+    // --- Air Conditioning ---
+    { category: "Air Conditioning", name: "A/C Recharge/Refill", defaultEstimatedHours: 1, defaultLaborRate: 35000, sortOrder: 1, milestones: ["before", "after"] },
+    { category: "Air Conditioning", name: "A/C Compressor Replacement", defaultEstimatedHours: 4, defaultLaborRate: 50000, sortOrder: 2, milestones: ["before", "in_progress", "after"] },
+    { category: "Air Conditioning", name: "A/C Condenser Replacement", defaultEstimatedHours: 3, defaultLaborRate: 45000, sortOrder: 3, milestones: ["before", "after"] },
+    { category: "Air Conditioning", name: "Evaporator Service", defaultEstimatedHours: 4, defaultLaborRate: 50000, sortOrder: 4, milestones: ["before", "in_progress", "after"] },
+    { category: "Air Conditioning", name: "A/C Leak Detection & Repair", defaultEstimatedHours: 2, defaultLaborRate: 40000, sortOrder: 5, milestones: ["before", "after"] },
+
+    // --- Diagnostics & Inspection ---
+    { category: "Diagnostics & Inspection", name: "Engine Diagnostic/Scanning", defaultEstimatedHours: 1, defaultLaborRate: 40000, sortOrder: 1, milestones: ["before", "after"] },
+    { category: "Diagnostics & Inspection", name: "Pre-Purchase Inspection", defaultEstimatedHours: 2, defaultLaborRate: 45000, sortOrder: 2, milestones: ["before", "after"] },
+    { category: "Diagnostics & Inspection", name: "Emission Test Preparation", defaultEstimatedHours: 1.5, defaultLaborRate: 40000, sortOrder: 3, milestones: ["before", "after"] },
+    { category: "Diagnostics & Inspection", name: "Underbody Inspection", defaultEstimatedHours: 1, defaultLaborRate: 35000, sortOrder: 4, milestones: ["before", "after"] },
+    { category: "Diagnostics & Inspection", name: "Check-Up Only", description: "General inspection — no specific service needed", defaultEstimatedHours: 0.5, defaultLaborRate: 25000, sortOrder: 5, milestones: ["before", "after"] },
   ];
 
   let serviceCount = 0;
@@ -256,6 +319,11 @@ async function main() {
 
     // Discount threshold
     { key: "discount_approval_threshold", value: "500000", category: "invoicing", description: "Discount amount (centavos) requiring OWNER/MANAGER approval" },
+
+    // Intake Estimate Tolerance
+    { key: "intake_tolerance_percentage", value: "10", category: "intake", description: "Max % change at intake without formal re-approval" },
+    { key: "intake_tolerance_amount", value: "100000", category: "intake", description: "Max absolute change (centavos) at intake without formal re-approval" },
+    { key: "intake_tolerance_mode", value: '"higher"', category: "intake", description: "Which threshold applies: higher, lower, or both" },
   ];
 
   let settingCount = 0;
