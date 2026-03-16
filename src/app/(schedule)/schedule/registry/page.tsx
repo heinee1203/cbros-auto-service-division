@@ -1,7 +1,15 @@
+"use client";
+
+import dynamic from "next/dynamic";
+
+const RegistryView = dynamic(
+  () =>
+    import("@/components/schedule/registry-view").then((m) => ({
+      default: m.RegistryView,
+    })),
+  { ssr: false }
+);
+
 export default function RegistryPage() {
-  return (
-    <div style={{ color: "var(--sch-text-muted)" }}>
-      Registry — coming soon
-    </div>
-  );
+  return <RegistryView />;
 }
