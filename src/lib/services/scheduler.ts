@@ -544,10 +544,16 @@ export async function getLiveFloorData() {
     }),
   ]);
 
+  const startOfToday = new Date();
+  startOfToday.setHours(0, 0, 0, 0);
+
   const activeJobs = await prisma.jobOrder.findMany({
     where: {
-      status: { notIn: ["CANCELLED", "RELEASED"] },
       deletedAt: null,
+      OR: [
+        { status: { notIn: ["CANCELLED", "RELEASED"] } },
+        { status: "RELEASED", actualCompletionDate: { gte: startOfToday } },
+      ],
     },
     select: {
       id: true,
@@ -559,10 +565,33 @@ export async function getLiveFloorData() {
       vehicle: { select: { plateNumber: true, make: true, model: true } },
       primaryTechnician: { select: { id: true, firstName: true } },
       assignedBayId: true,
+      incompleteIntake: true,
+      tasks: {
+        where: { deletedAt: null },
+        select: {
+          serviceCatalog: { select: { name: true } },
+        },
+      },
+      bayAssignments: {
+        where: { endDate: null },
+        take: 1,
+        select: {
+          bay: { select: { name: true } },
+        },
+      },
     },
     orderBy: { createdAt: "desc" },
     take: 100,
   });
+
+  const mappedJobs = activeJobs.map((j) => ({
+    ...j,
+    bayName: j.bayAssignments?.[0]?.bay?.name ?? null,
+    services: j.tasks?.map((t) => t.serviceCatalog?.name).filter(Boolean) as string[] ?? [],
+    incompleteIntake: j.incompleteIntake ?? false,
+    tasks: undefined,
+    bayAssignments: undefined,
+  }));
 
   return {
     bays,
@@ -572,6 +601,6 @@ export async function getLiveFloorData() {
       availableTechs: totalTechs - clockedInTechIds.length,
       totalTechs,
     },
-    activeJobs,
+    activeJobs: mappedJobs,
   };
 }

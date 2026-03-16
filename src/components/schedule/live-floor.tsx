@@ -108,7 +108,7 @@ export default function LiveFloor() {
         <LiveFloorGrid bays={bays} onBayClick={handleBayClick} />
       )}
 
-      {!loading && jobs.length > 0 && <FloorJobSection jobs={jobs} />}
+      {!loading && jobs.length > 0 && <FloorJobSection jobs={jobs} onRefresh={fetchData} />}
 
       <BayAssignmentDetail
         open={detailOpen}

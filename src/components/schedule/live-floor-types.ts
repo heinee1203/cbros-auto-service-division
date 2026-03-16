@@ -40,6 +40,9 @@ export interface LiveFloorJob {
   vehicle: { plateNumber: string; make: string; model: string };
   primaryTechnician: { id: string; firstName: string } | null;
   assignedBayId: string | null;
+  bayName: string | null;
+  services: string[];
+  incompleteIntake: boolean;
 }
 
 export const BAY_STATUS_COLORS: Record<string, string> = {

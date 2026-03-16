@@ -10,7 +10,7 @@ type ViewMode = "board" | "list";
 
 const STORAGE_KEY = "floor-job-view";
 
-export function FloorJobSection({ jobs }: { jobs: LiveFloorJob[] }) {
+export function FloorJobSection({ jobs, onRefresh }: { jobs: LiveFloorJob[]; onRefresh?: () => void }) {
   const [view, setView] = useState<ViewMode>("board");
 
   // Restore persisted view preference
@@ -78,9 +78,9 @@ export function FloorJobSection({ jobs }: { jobs: LiveFloorJob[] }) {
 
       {/* View content */}
       {view === "board" ? (
-        <JobBoard jobs={jobs} />
+        <JobBoard jobs={jobs} onRefresh={onRefresh} />
       ) : (
-        <LiveFloorJobsTable jobs={jobs} />
+        <LiveFloorJobsTable jobs={jobs} onRefresh={onRefresh} />
       )}
     </div>
   );

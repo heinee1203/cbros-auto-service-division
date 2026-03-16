@@ -44,7 +44,7 @@ const COLUMNS: BoardColumn[] = [
   },
 ];
 
-export function JobBoard({ jobs }: { jobs: LiveFloorJob[] }) {
+export function JobBoard({ jobs, onRefresh }: { jobs: LiveFloorJob[]; onRefresh?: () => void }) {
   const columnJobs = useMemo(() => {
     const map: Record<string, LiveFloorJob[]> = {};
     for (const col of COLUMNS) {
@@ -114,6 +114,7 @@ export function JobBoard({ jobs }: { jobs: LiveFloorJob[] }) {
                     key={job.id}
                     job={job}
                     borderColor={col.color}
+                    onRefresh={onRefresh}
                   />
                 ))
               )}
