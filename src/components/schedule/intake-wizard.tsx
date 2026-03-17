@@ -108,7 +108,12 @@ interface CreationResult {
 /*  IntakeWizard                                                       */
 /* ------------------------------------------------------------------ */
 
-export function IntakeWizard() {
+interface IntakeWizardProps {
+  variant?: "schedule" | "frontliner";
+  onComplete?: (jobId: string) => void;
+}
+
+export function IntakeWizard({ variant = "schedule", onComplete }: IntakeWizardProps = {}) {
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -277,6 +282,9 @@ export function IntakeWizard() {
             jobOrderNumber: d.jobOrderNumber,
           });
           toast.success("Job order created!");
+          if (variant === "frontliner" && onComplete) {
+            onComplete(d.jobOrderId);
+          }
         } else {
           toast.error(res.error ?? "Failed to create job order");
         }
@@ -286,7 +294,7 @@ export function IntakeWizard() {
         setSubmitting(false);
       }
     },
-    [data, intakeLevel, _estimateId, _appointmentId]
+    [data, intakeLevel, _estimateId, _appointmentId, variant, onComplete]
   );
 
   // ── Build signoff summary ─────────────────────────────────────────
@@ -529,15 +537,17 @@ export function IntakeWizard() {
           borderBottom: "1px solid var(--sch-border)",
         }}
       >
-        {/* Cancel */}
-        <button
-          onClick={handleCancel}
-          className="flex-shrink-0 rounded-lg p-2 transition-opacity hover:opacity-80"
-          style={{ color: "var(--sch-text-muted)" }}
-          aria-label="Cancel intake"
-        >
-          <X size={20} />
-        </button>
+        {/* Cancel — hidden in frontliner mode where the wizard IS the page */}
+        {variant !== "frontliner" && (
+          <button
+            onClick={handleCancel}
+            className="flex-shrink-0 rounded-lg p-2 transition-opacity hover:opacity-80"
+            style={{ color: "var(--sch-text-muted)" }}
+            aria-label="Cancel intake"
+          >
+            <X size={20} />
+          </button>
+        )}
 
         {/* Progress bar */}
         <div className="flex-1 flex flex-col gap-1">
