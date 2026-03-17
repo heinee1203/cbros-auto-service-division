@@ -13,7 +13,7 @@ import {
 import { createWalkInIntakeAction } from "@/lib/actions/intake-actions";
 
 import { IntakePlateLookup, type PlateLookupResult } from "./intake-plate-lookup";
-import { IntakeServiceSelect } from "./intake-service-select";
+import { IntakeServiceSelect } from "./service-select";
 import { IntakeQuickPhotos } from "./intake-quick-photos";
 import { IntakeDetailsForm } from "./intake-details-form";
 import { IntakeAssignment } from "./intake-assignment";
@@ -528,10 +528,13 @@ export function IntakeWizard({ variant = "schedule", onComplete }: IntakeWizardP
   // ── Main layout ────────────────────────────────────────────────────
 
   return (
-    <div className="flex flex-col h-full">
+    <div
+      className="fixed inset-0 z-50 flex flex-col"
+      style={{ background: "var(--sch-bg)" }}
+    >
       {/* ── Top bar: cancel + progress ── */}
       <div
-        className="flex items-center gap-3 px-4 py-3"
+        className="flex-shrink-0 flex items-center gap-3 px-4 py-3"
         style={{
           background: "var(--sch-card)",
           borderBottom: "1px solid var(--sch-border)",
@@ -592,7 +595,7 @@ export function IntakeWizard({ variant = "schedule", onComplete }: IntakeWizardP
       </div>
 
       {/* ── Step content ── */}
-      <div className="flex-1 overflow-y-auto p-4">{renderStep()}</div>
+      <div className="flex-1 min-h-0 flex flex-col p-4">{renderStep()}</div>
     </div>
   );
 }
