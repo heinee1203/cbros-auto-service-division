@@ -150,7 +150,7 @@ export function GlobalSearch({ open, onOpenChange }: GlobalSearchProps) {
             {query && (
               <button
                 onClick={() => setQuery("")}
-                className="p-1 rounded hover:bg-surface-100"
+                className="p-2 rounded hover:bg-surface-100"
               >
                 <X className="w-4 h-4 text-surface-400" />
               </button>
@@ -180,7 +180,7 @@ export function GlobalSearch({ open, onOpenChange }: GlobalSearchProps) {
                       key={`${result.type}-${result.id}`}
                       onClick={() => handleSelect(result)}
                       className={cn(
-                        "flex items-center gap-3 w-full px-4 py-2.5 text-left text-sm transition-colors",
+                        "flex items-center gap-3 w-full px-4 py-3 min-h-touch text-left text-sm transition-colors",
                         index === selectedIndex
                           ? "bg-accent-50 text-primary"
                           : "hover:bg-surface-50"

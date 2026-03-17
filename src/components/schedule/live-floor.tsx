@@ -129,7 +129,7 @@ export default function LiveFloor() {
           <Link
             href="/schedule/floor/intake"
             className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-white"
-            style={{ background: "#3B82F6" }}
+            style={{ background: "var(--sch-accent)", color: "#1A1A2E" }}
           >
             <Plus className="h-4 w-4" />
             New Intake

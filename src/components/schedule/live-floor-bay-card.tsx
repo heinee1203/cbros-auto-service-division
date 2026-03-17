@@ -53,7 +53,7 @@ export function LiveFloorBayCard({ bay, onClick }: BayCardProps) {
       <div className="flex items-center justify-between w-full">
         <span className="text-sm font-bold" style={{ color: 'var(--sch-text)' }}>{bay.name}</span>
         <span
-          className="text-[10px] font-semibold px-2 py-0.5 rounded-full"
+          className="text-[10px] font-semibold font-mono px-2 py-0.5 rounded-full"
           style={{ background: `${borderColor}30`, color: borderColor }}
         >
           {jo.jobOrderNumber}
@@ -62,7 +62,7 @@ export function LiveFloorBayCard({ bay, onClick }: BayCardProps) {
       <div className="text-sm font-bold truncate w-full" style={{ color: 'var(--sch-text)' }}>
         {jo.vehicle.make} {jo.vehicle.model}
       </div>
-      <div className="text-xs" style={{ color: 'var(--sch-text-muted)' }}>{jo.vehicle.plateNumber}</div>
+      <div className="text-xs font-mono" style={{ color: 'var(--sch-text-muted)' }}>{jo.vehicle.plateNumber}</div>
       <div className="flex items-center gap-1 text-xs mt-auto" style={{ color: 'var(--sch-text-muted)' }}>
         <Wrench className="h-3 w-3" />
         <span className={techNames.size === 0 ? "text-red-400" : ""}>

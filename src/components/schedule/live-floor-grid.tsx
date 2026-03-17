@@ -80,7 +80,7 @@ function BaySection({
         <h3 className="text-sm font-bold tracking-wider uppercase" style={{ color: 'var(--sch-text)' }}>
           {label}
         </h3>
-        <span className="text-sm font-semibold" style={{ color: 'var(--sch-text-dim)' }}>
+        <span className="text-sm font-semibold font-mono" style={{ color: 'var(--sch-text-dim)' }}>
           {occupied} / {total}
         </span>
       </div>

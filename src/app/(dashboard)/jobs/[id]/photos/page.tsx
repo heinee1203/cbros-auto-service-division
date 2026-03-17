@@ -1,6 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
 import PhotoGalleryClient from "./photo-gallery-client";
+import { EmptyState } from "@/components/ui/empty-state";
+import { AlertTriangle } from "lucide-react";
 
 export default async function JobPhotosPage({
   params,
@@ -24,7 +26,13 @@ export default async function JobPhotosPage({
     },
   });
 
-  if (!job) return <div>Job not found</div>;
+  if (!job) return (
+    <EmptyState
+      icon={AlertTriangle}
+      title="Job not found"
+      description="The job order you're looking for doesn't exist or has been removed."
+    />
+  );
 
   // Collect all entity IDs for photo queries
   const entityFilters: Array<{ entityType: string; entityId: string }> = [];

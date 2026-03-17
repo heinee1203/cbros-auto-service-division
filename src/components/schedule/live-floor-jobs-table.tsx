@@ -96,7 +96,7 @@ export function LiveFloorJobsTable({
           <button
             key={tab.key}
             onClick={() => setFilter(tab.key)}
-            className="px-3 py-1.5 text-xs font-medium rounded-md whitespace-nowrap transition-colors"
+            className="px-3 py-2 text-xs font-medium rounded-md whitespace-nowrap transition-colors min-h-touch"
             style={
               filter === tab.key
                 ? { background: "var(--sch-surface-hover)", color: "var(--sch-text)" }
@@ -166,7 +166,7 @@ export function LiveFloorJobsTable({
                           <div className="font-mono text-xs font-medium" style={{ color: "var(--sch-text)" }}>
                             {job.jobOrderNumber}
                           </div>
-                          <div className="text-[10px]" style={{ color: "var(--sch-text-dim)" }}>
+                          <div className="text-[10px] font-mono" style={{ color: "var(--sch-text-dim)" }}>
                             {new Date(job.createdAt).toLocaleDateString("en-PH", {
                               month: "short",
                               day: "numeric",
@@ -191,7 +191,7 @@ export function LiveFloorJobsTable({
                       <div className="font-medium" style={{ color: "var(--sch-text)" }}>
                         {job.vehicle.make} {job.vehicle.model}
                       </div>
-                      <div className="text-xs" style={{ color: "var(--sch-text-dim)" }}>
+                      <div className="text-xs font-mono" style={{ color: "var(--sch-text-dim)" }}>
                         {job.vehicle.plateNumber}
                       </div>
                     </td>
@@ -253,9 +253,9 @@ export function LiveFloorJobsTable({
                         <button
                           onClick={() => handleDonePaid(job.id)}
                           disabled={isPending}
-                          className="flex items-center gap-1 text-[11px] font-medium px-2.5 py-1 rounded-md transition-opacity disabled:opacity-50"
+                          className="flex items-center gap-1 text-[11px] font-medium px-3 py-2 rounded-md transition-opacity disabled:opacity-50 min-h-touch"
                           style={{
-                            background: "rgba(16,185,129,0.2)",
+                            background: "rgba(52,211,153,0.15)",
                             color: "#34D399",
                           }}
                         >

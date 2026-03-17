@@ -251,7 +251,7 @@ export function OverviewClient({
       {/* ------------------------------------------------------------------ */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {/* Customer & Vehicle */}
-        <div className="bg-white rounded-lg shadow-sm p-5 space-y-3 md:col-span-2 lg:col-span-1">
+        <div className="bg-white rounded-lg shadow-sm p-4 space-y-3 md:col-span-2 lg:col-span-1">
           <div className="flex items-center gap-2 text-sm text-surface-500 font-medium">
             <User className="w-4 h-4" />
             Customer & Vehicle
@@ -282,7 +282,7 @@ export function OverviewClient({
         </div>
 
         {/* Estimate Total */}
-        <div className="bg-white rounded-lg shadow-sm p-5 space-y-3">
+        <div className="bg-white rounded-lg shadow-sm p-4 space-y-3">
           <div className="flex items-center gap-2 text-sm text-surface-500 font-medium">
             <DollarSign className="w-4 h-4" />
             Estimate Total
@@ -293,7 +293,7 @@ export function OverviewClient({
         </div>
 
         {/* Assigned Technician */}
-        <div className="bg-white rounded-lg shadow-sm p-5 space-y-3">
+        <div className="bg-white rounded-lg shadow-sm p-4 space-y-3">
           <div className="flex items-center gap-2 text-sm text-surface-500 font-medium">
             <Wrench className="w-4 h-4" />
             Assigned Technician
@@ -306,7 +306,7 @@ export function OverviewClient({
         </div>
 
         {/* Target Date */}
-        <div className="bg-white rounded-lg shadow-sm p-5 space-y-3">
+        <div className="bg-white rounded-lg shadow-sm p-4 space-y-3">
           <div className="flex items-center gap-2 text-sm text-surface-500 font-medium">
             <Calendar className="w-4 h-4" />
             Target Date
@@ -319,7 +319,7 @@ export function OverviewClient({
         </div>
 
         {/* Priority */}
-        <div className="bg-white rounded-lg shadow-sm p-5 space-y-3">
+        <div className="bg-white rounded-lg shadow-sm p-4 space-y-3">
           <div className="flex items-center gap-2 text-sm text-surface-500 font-medium">
             <AlertTriangle className="w-4 h-4" />
             Priority
@@ -330,7 +330,7 @@ export function OverviewClient({
         </div>
 
         {/* Days in Shop */}
-        <div className="bg-white rounded-lg shadow-sm p-5 space-y-3">
+        <div className="bg-white rounded-lg shadow-sm p-4 space-y-3">
           <div className="flex items-center gap-2 text-sm text-surface-500 font-medium">
             <Clock className="w-4 h-4" />
             Days in Shop
@@ -345,7 +345,7 @@ export function OverviewClient({
       {/* Quick Stats Row */}
       {/* ------------------------------------------------------------------ */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white rounded-lg shadow-sm p-5 space-y-2">
+        <div className="bg-white rounded-lg shadow-sm p-4 space-y-2">
           <div className="flex items-center gap-2 text-sm text-surface-500 font-medium">
             <Timer className="w-4 h-4" />
             Estimated Hours
@@ -355,7 +355,7 @@ export function OverviewClient({
           </p>
         </div>
 
-        <div className="bg-white rounded-lg shadow-sm p-5 space-y-2">
+        <div className="bg-white rounded-lg shadow-sm p-4 space-y-2">
           <div className="flex items-center gap-2 text-sm text-surface-500 font-medium">
             <Clock className="w-4 h-4" />
             Actual Hours
@@ -370,7 +370,7 @@ export function OverviewClient({
           )}
         </div>
 
-        <div className="bg-white rounded-lg shadow-sm p-5 space-y-2">
+        <div className="bg-white rounded-lg shadow-sm p-4 space-y-2">
           <div className="flex items-center gap-2 text-sm text-surface-500 font-medium">
             <DollarSign className="w-4 h-4" />
             Actual Cost
@@ -387,7 +387,7 @@ export function OverviewClient({
           )}
         </div>
 
-        <div className="bg-white rounded-lg shadow-sm p-5 space-y-2">
+        <div className="bg-white rounded-lg shadow-sm p-4 space-y-2">
           <div className="flex items-center gap-2 text-sm text-surface-500 font-medium">
             <Shield className="w-4 h-4" />
             Efficiency
@@ -414,7 +414,7 @@ export function OverviewClient({
       {/* Tasks Progress */}
       {/* ------------------------------------------------------------------ */}
       {totalTasks > 0 && (
-        <div className="bg-white rounded-lg shadow-sm p-5 space-y-3">
+        <div className="bg-white rounded-lg shadow-sm p-6 space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-sm text-surface-500 font-medium">
               <ListChecks className="w-4 h-4" />
@@ -439,7 +439,7 @@ export function OverviewClient({
       {/* QC Summary */}
       {/* ------------------------------------------------------------------ */}
       {!latestQCInspection ? (
-        <div className="bg-surface-50 border border-surface-200 rounded-lg p-5">
+        <div className="bg-surface-50 border border-surface-200 rounded-lg p-6">
           <div className="flex items-center gap-3">
             <div className="flex items-center justify-center w-10 h-10 rounded-full bg-surface-100">
               <Clock className="w-5 h-5 text-surface-400" />
@@ -453,7 +453,7 @@ export function OverviewClient({
           const inspectedItems = latestQCInspection.checklistItems.filter((item) => item.inspectedAt !== null).length;
           const inspectionProgress = totalItems > 0 ? (inspectedItems / totalItems) * 100 : 0;
           return (
-            <div className="bg-amber-50 border border-amber-200 rounded-lg p-5 space-y-3">
+            <div className="bg-amber-50 border border-amber-200 rounded-lg p-6 space-y-3">
               <div className="flex items-center gap-3">
                 <div className="flex items-center justify-center w-10 h-10 rounded-full bg-amber-100">
                   <ClipboardCheck className="w-5 h-5 text-amber-600" />
@@ -485,7 +485,7 @@ export function OverviewClient({
           );
         })()
       ) : latestQCInspection.overallResult === "PASS" ? (
-        <div className="bg-green-50 border border-green-200 rounded-lg p-5">
+        <div className="bg-green-50 border border-green-200 rounded-lg p-6">
           <div className="flex items-center gap-3">
             <div className="flex items-center justify-center w-10 h-10 rounded-full bg-green-100">
               <CheckCircle2 className="w-5 h-5 text-green-600" />
@@ -509,7 +509,7 @@ export function OverviewClient({
         (() => {
           const failedItems = latestQCInspection.checklistItems.filter((item) => item.status === "FAIL");
           return (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-5 space-y-3">
+            <div className="bg-red-50 border border-red-200 rounded-lg p-6 space-y-3">
               <div className="flex items-center gap-3">
                 <div className="flex items-center justify-center w-10 h-10 rounded-full bg-red-100">
                   <XCircle className="w-5 h-5 text-red-600" />
@@ -549,7 +549,7 @@ export function OverviewClient({
       {/* Release Summary */}
       {/* ------------------------------------------------------------------ */}
       {releaseRecord ? (
-        <div className="bg-green-50 border border-green-200 rounded-lg p-5">
+        <div className="bg-green-50 border border-green-200 rounded-lg p-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="flex items-center justify-center w-10 h-10 rounded-full bg-green-100">
@@ -579,7 +579,7 @@ export function OverviewClient({
           </div>
         </div>
       ) : jobOrder.status === "FULLY_PAID" ? (
-        <div className="bg-surface-50 border border-surface-200 rounded-lg p-5">
+        <div className="bg-surface-50 border border-surface-200 rounded-lg p-6">
           <div className="flex items-center gap-3">
             <div className="flex items-center justify-center w-10 h-10 rounded-full bg-surface-100">
               <Clock className="w-5 h-5 text-surface-400" />
@@ -600,7 +600,7 @@ export function OverviewClient({
       {/* Active Timers */}
       {/* ------------------------------------------------------------------ */}
       {activeTimers.length > 0 && (
-        <div className="bg-green-50 border border-green-200 rounded-lg p-5 space-y-3">
+        <div className="bg-green-50 border border-green-200 rounded-lg p-6 space-y-3">
           <div className="flex items-center gap-2 text-sm font-medium text-green-700">
             <span className="relative flex h-3 w-3">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
@@ -629,7 +629,7 @@ export function OverviewClient({
       {/* Supplemental Estimates */}
       {/* ------------------------------------------------------------------ */}
       {supplementsSummary.count > 0 && (
-        <div className="bg-purple-50 border border-purple-200 rounded-lg p-5">
+        <div className="bg-purple-50 border border-purple-200 rounded-lg p-6">
           <div className="flex items-center gap-3">
             <div className="flex items-center justify-center w-10 h-10 rounded-full bg-purple-100">
               <FileText className="w-5 h-5 text-purple-600" />
@@ -649,7 +649,7 @@ export function OverviewClient({
       {/* ------------------------------------------------------------------ */}
       {/* Action Buttons */}
       {/* ------------------------------------------------------------------ */}
-      <div className="bg-white rounded-lg shadow-sm p-5">
+      <div className="bg-white rounded-lg shadow-sm p-6">
         {error && (
           <div className="mb-3 rounded-md bg-red-50 border border-red-200 px-4 py-2 text-sm text-red-700">
             {error}

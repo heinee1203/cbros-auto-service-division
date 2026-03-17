@@ -28,7 +28,7 @@ export function TodaysAppointmentsWidget({
         <h2 className="font-semibold text-primary">
           Today&apos;s Appointments
         </h2>
-        <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-600">
+        <span className="text-xs font-medium font-mono px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-600">
           {appointments.length}
         </span>
       </div>
@@ -60,7 +60,7 @@ export function TodaysAppointmentsWidget({
                   {appt.customer.lastName}
                 </span>
                 {appt.vehicle && (
-                  <span className="text-surface-400 text-xs truncate">
+                  <span className="text-surface-400 text-xs font-mono truncate">
                     {appt.vehicle.plateNumber}
                   </span>
                 )}

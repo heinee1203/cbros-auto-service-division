@@ -191,17 +191,17 @@ function ManagerDashboard({
       {/* Today's Snapshot */}
       <div className="bg-white rounded-xl border border-surface-200 p-4">
         <p className="text-sm text-surface-600">
-          <span className="font-semibold text-primary">
+          <span className="font-semibold font-mono text-primary">
             {data.checkedInToday}
           </span>{" "}
           checked in today{" "}
           <span className="text-surface-300 mx-1">&middot;</span>
-          <span className="font-semibold text-primary">
+          <span className="font-semibold font-mono text-primary">
             {data.releasedToday}
           </span>{" "}
           released today{" "}
           <span className="text-surface-300 mx-1">&middot;</span>
-          <span className="font-semibold text-primary">
+          <span className="font-semibold font-mono text-primary">
             {formatPeso(data.todayRevenue)}
           </span>{" "}
           received today

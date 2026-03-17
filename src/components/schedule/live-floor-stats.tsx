@@ -5,7 +5,7 @@ import type { LiveFloorStats } from "./live-floor-types";
 
 export function LiveFloorStatsBar({ stats }: { stats: LiveFloorStats }) {
   const metrics = [
-    { label: "Queue Length", value: stats.queueLength, icon: Clock, color: "#FBBF24" },
+    { label: "Queue Length", value: stats.queueLength, icon: Clock, color: "var(--sch-accent)" },
     { label: "Active Services", value: stats.activeServices, icon: Activity, color: "#34D399" },
     {
       label: "Available Mechanics",
@@ -29,7 +29,7 @@ export function LiveFloorStatsBar({ stats }: { stats: LiveFloorStats }) {
         >
           <m.icon className="h-5 w-5 shrink-0" style={{ color: m.color }} />
           <div>
-            <div className="text-2xl font-bold" style={{ color: 'var(--sch-text)' }}>{m.value}</div>
+            <div className="text-2xl font-bold font-mono" style={{ color: 'var(--sch-text)' }}>{m.value}</div>
             <div className="text-xs" style={{ color: 'var(--sch-text-muted)' }}>{m.label}</div>
           </div>
         </div>

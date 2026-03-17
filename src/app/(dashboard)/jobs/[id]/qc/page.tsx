@@ -2,6 +2,8 @@ import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
 import { getQCInspection, getJobQCInspections } from "@/lib/services/qc";
 import QCClient from "./qc-client";
+import { EmptyState } from "@/components/ui/empty-state";
+import { AlertTriangle } from "lucide-react";
 
 export default async function QCPage({ params }: { params: Promise<{ id: string }> }) {
   const session = await getSession();
@@ -46,7 +48,13 @@ export default async function QCPage({ params }: { params: Promise<{ id: string 
     orderBy: { createdAt: "desc" },
   });
 
-  if (!job) return <div>Job not found</div>;
+  if (!job) return (
+    <EmptyState
+      icon={AlertTriangle}
+      title="Job not found"
+      description="The job order you're looking for doesn't exist or has been removed."
+    />
+  );
 
   return (
     <QCClient
