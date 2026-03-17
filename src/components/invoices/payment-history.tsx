@@ -95,13 +95,13 @@ export default function PaymentHistory({
         <div className="grid grid-cols-3 gap-4 text-center">
           <div>
             <p className="text-xs text-surface-500 mb-0.5">Invoice Total</p>
-            <p className="text-sm font-semibold text-primary">
+            <p className="text-sm font-mono font-semibold text-primary">
               {formatPeso(invoiceGrandTotal)}
             </p>
           </div>
           <div>
             <p className="text-xs text-surface-500 mb-0.5">Paid</p>
-            <p className="text-sm font-semibold text-primary">
+            <p className="text-sm font-mono font-semibold text-primary">
               {formatPeso(totalPaid)}
             </p>
           </div>
@@ -111,7 +111,7 @@ export default function PaymentHistory({
             </p>
             <p
               className={cn(
-                "text-sm font-semibold",
+                "text-sm font-mono font-semibold",
                 isOverpaid
                   ? "text-success-600"
                   : balanceDue === 0
@@ -165,7 +165,7 @@ export default function PaymentHistory({
             <tbody className="divide-y divide-surface-200">
               {payments.map((payment) => (
                 <tr key={payment.id} className="hover:bg-surface-50">
-                  <td className="px-3 py-2 text-surface-700 whitespace-nowrap">
+                  <td className="px-3 py-2 font-mono text-surface-700 whitespace-nowrap">
                     {formatDateTime(payment.paidAt)}
                   </td>
                   <td className="px-3 py-2">
@@ -174,15 +174,15 @@ export default function PaymentHistory({
                         payment.method}
                     </span>
                     {payment.orNumber && (
-                      <span className="ml-1 inline-flex items-center rounded-full bg-accent-50 px-2 py-0.5 text-xs font-medium text-accent-700">
+                      <span className="ml-1 inline-flex items-center rounded-full bg-accent-50 px-2 py-0.5 text-xs font-mono font-medium text-accent-700">
                         {payment.orNumber}
                       </span>
                     )}
                   </td>
-                  <td className="px-3 py-2 text-surface-600">
+                  <td className="px-3 py-2 font-mono text-surface-600">
                     {getReferenceDisplay(payment)}
                   </td>
-                  <td className="px-3 py-2 text-right font-medium text-primary">
+                  <td className="px-3 py-2 text-right font-mono font-medium text-primary">
                     {formatPeso(payment.amount)}
                   </td>
                   <td className="px-3 py-2 text-surface-600">

@@ -672,7 +672,7 @@ export default function PinClock() {
           </h1>
           <p className="text-gray-400 mt-1">
             {clockStatus?.dailyHours
-              ? `Today: ${clockStatus.dailyHours}`
+              ? <span>Today: <span className="font-mono">{clockStatus.dailyHours}</span></span>
               : "Select a task to clock in"}
           </p>
         </div>
@@ -701,7 +701,7 @@ export default function PinClock() {
                     <p className="text-white font-semibold text-lg truncate">
                       {task.taskName}
                     </p>
-                    <p className="text-gray-400 text-sm mt-0.5">
+                    <p className="text-gray-400 text-sm mt-0.5 font-mono">
                       {task.jobOrderNumber}
                     </p>
                   </div>
@@ -788,7 +788,7 @@ export default function PinClock() {
         {/* Task info */}
         <div className="text-center mb-10">
           <p className="text-white text-xl font-semibold">{entry.taskName}</p>
-          <p className="text-gray-400 text-sm mt-1">{entry.jobOrderNumber}</p>
+          <p className="text-gray-400 text-sm mt-1 font-mono">{entry.jobOrderNumber}</p>
         </div>
 
         {/* Action buttons */}
@@ -837,7 +837,7 @@ export default function PinClock() {
         {/* Daily total */}
         {clockStatus?.dailyHours && (
           <p className="text-gray-600 text-xs mt-6">
-            Today&apos;s total: {clockStatus.dailyHours}
+            Today&apos;s total: <span className="font-mono">{clockStatus.dailyHours}</span>
           </p>
         )}
       </div>
@@ -884,19 +884,19 @@ export default function PinClock() {
           </div>
           <div className="flex justify-between">
             <span className="text-gray-400 text-sm">Job Order</span>
-            <span className="text-white font-medium text-sm">
+            <span className="text-white font-medium text-sm font-mono">
               {summary.jobOrderNumber}
             </span>
           </div>
           <div className="flex justify-between">
             <span className="text-gray-400 text-sm">Duration</span>
-            <span className="text-amber-400 font-bold text-sm">
+            <span className="text-amber-400 font-bold text-sm font-mono">
               {formatDuration(summary.durationMinutes)}
             </span>
           </div>
           <div className="border-t border-gray-700 pt-3 flex justify-between">
             <span className="text-gray-400 text-sm">Daily Total</span>
-            <span className="text-white font-bold text-sm">
+            <span className="text-white font-bold text-sm font-mono">
               {summary.dailyHours}
             </span>
           </div>

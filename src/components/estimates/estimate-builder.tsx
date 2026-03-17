@@ -665,10 +665,10 @@ function AddLineItemForm({
                       <div className="text-xs text-surface-400">
                         {item.category}
                         {item.estimatedHours
-                          ? ` · ${item.estimatedHours}h`
+                          ? <span className="font-mono">{` · ${item.estimatedHours}h`}</span>
                           : ""}
                         {" · "}
-                        {formatPeso(item.defaultLaborRate)}
+                        <span className="font-mono">{formatPeso(item.defaultLaborRate)}</span>
                       </div>
                     </button>
                   ))}

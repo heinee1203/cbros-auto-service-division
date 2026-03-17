@@ -446,7 +446,7 @@ export default function InvoiceClient({
               </div>
               {shopInfo.shop_tin && (
                 <p className="text-xs text-surface-400 mt-1">
-                  TIN: {shopInfo.shop_tin}
+                  TIN: <span className="font-mono">{shopInfo.shop_tin}</span>
                 </p>
               )}
             </div>
@@ -454,19 +454,19 @@ export default function InvoiceClient({
             {/* Invoice Details */}
             <div className="text-right">
               <h3 className="text-lg font-semibold text-primary">INVOICE</h3>
-              <p className="text-sm font-medium text-primary mt-1">
+              <p className="text-sm font-medium font-mono text-primary mt-1">
                 {invoice.invoiceNumber}
               </p>
               <p className="text-sm text-surface-500">
-                Date: {formatDate(invoice.createdAt)}
+                Date: <span className="font-mono">{formatDate(invoice.createdAt)}</span>
               </p>
               {invoice.dueDate && (
                 <p className="text-sm text-surface-500">
-                  Due: {formatDate(invoice.dueDate)}
+                  Due: <span className="font-mono">{formatDate(invoice.dueDate)}</span>
                 </p>
               )}
               <p className="text-sm text-surface-500">
-                Job: {job.jobOrderNumber}
+                Job: <span className="font-mono">{job.jobOrderNumber}</span>
               </p>
               <div className="mt-2">
                 <span
@@ -690,7 +690,7 @@ export default function InvoiceClient({
           <div className="max-w-sm ml-auto space-y-2">
             <div className="flex justify-between text-sm">
               <span className="text-surface-500">Subtotal</span>
-              <span className="font-medium text-primary">
+              <span className="font-mono font-medium text-primary">
                 {formatPeso(subtotal)}
               </span>
             </div>
@@ -706,7 +706,7 @@ export default function InvoiceClient({
                     </p>
                   )}
                 </div>
-                <span className="font-medium text-danger-600">
+                <span className="font-mono font-medium text-danger-600">
                   -{formatPeso(discountAmount)}
                 </span>
               </div>
@@ -810,13 +810,13 @@ export default function InvoiceClient({
             {/* VAT */}
             <div className="flex justify-between text-sm">
               <span className="text-surface-500">VATable Amount</span>
-              <span className="font-medium text-primary">
+              <span className="font-mono font-medium text-primary">
                 {formatPeso(invoice.vatableAmount)}
               </span>
             </div>
             <div className="flex justify-between text-sm">
               <span className="text-surface-500">VAT (12%)</span>
-              <span className="font-medium text-primary">
+              <span className="font-mono font-medium text-primary">
                 {formatPeso(invoice.vatAmount)}
               </span>
             </div>
@@ -826,7 +826,7 @@ export default function InvoiceClient({
               <span className="text-base font-bold text-primary">
                 Grand Total
               </span>
-              <span className="text-lg font-bold text-accent-600">
+              <span className="text-lg font-bold font-mono text-accent-600">
                 {formatPeso(invoice.grandTotal)}
               </span>
             </div>
@@ -836,13 +836,13 @@ export default function InvoiceClient({
               <>
                 <div className="flex justify-between text-sm pt-2 border-t border-surface-200">
                   <span className="text-surface-500">Insurance Pays</span>
-                  <span className="font-medium text-primary">
+                  <span className="font-mono font-medium text-primary">
                     {formatPeso(invoice.insurancePays)}
                   </span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-surface-500">Customer Copay</span>
-                  <span className="font-medium text-primary">
+                  <span className="font-mono font-medium text-primary">
                     {formatPeso(invoice.customerCopay)}
                   </span>
                 </div>
@@ -854,7 +854,7 @@ export default function InvoiceClient({
               <>
                 <div className="flex justify-between text-sm pt-2 border-t border-surface-200">
                   <span className="text-surface-500">Total Paid</span>
-                  <span className="font-medium text-success-600">
+                  <span className="font-mono font-medium text-success-600">
                     {formatPeso(invoice.totalPaid)}
                   </span>
                 </div>
@@ -862,7 +862,7 @@ export default function InvoiceClient({
                   <span className="text-surface-500 font-medium">
                     Balance Due
                   </span>
-                  <span className="font-bold text-danger-600">
+                  <span className="font-mono font-bold text-danger-600">
                     {formatPeso(invoice.balanceDue)}
                   </span>
                 </div>
@@ -880,13 +880,13 @@ export default function InvoiceClient({
             <div className="grid grid-cols-3 gap-4">
               <div>
                 <p className="text-xs text-surface-400">Estimated Total</p>
-                <p className="text-sm font-medium text-primary">
+                <p className="text-sm font-mono font-medium text-primary">
                   {formatPeso(invoice.estimatedTotal)}
                 </p>
               </div>
               <div>
                 <p className="text-xs text-surface-400">Actual Total</p>
-                <p className="text-sm font-medium text-primary">
+                <p className="text-sm font-mono font-medium text-primary">
                   {formatPeso(invoice.actualTotal)}
                 </p>
               </div>
@@ -903,7 +903,7 @@ export default function InvoiceClient({
                   return (
                     <p
                       className={cn(
-                        "text-sm font-medium",
+                        "text-sm font-mono font-medium",
                         isOver ? "text-danger-600" : "text-success-600"
                       )}
                     >
@@ -1189,16 +1189,16 @@ function GroupSection({
               <td className="px-6 py-2 text-sm text-primary">
                 {item.description}
               </td>
-              <td className="px-3 py-2 text-sm text-right text-primary">
+              <td className="px-3 py-2 text-sm font-mono text-right text-primary">
                 {item.quantity}
               </td>
               <td className="px-3 py-2 text-sm text-surface-500">
                 {item.unit}
               </td>
-              <td className="px-3 py-2 text-sm text-right text-primary">
+              <td className="px-3 py-2 text-sm font-mono text-right text-primary">
                 {formatPeso(item.unitCost)}
               </td>
-              <td className="px-6 py-2 text-sm text-right font-medium text-primary">
+              <td className="px-6 py-2 text-sm font-mono text-right font-medium text-primary">
                 {formatPeso(item.subtotal)}
               </td>
               {canEdit && (
@@ -1306,7 +1306,7 @@ function GroupSection({
           >
             {label} Subtotal
           </td>
-          <td className="px-6 py-2 text-sm text-right font-semibold text-primary">
+          <td className="px-6 py-2 text-sm font-mono text-right font-semibold text-primary">
             {formatPeso(groupSubtotal)}
           </td>
           {canEdit && <td className="no-print px-3 py-2" />}
