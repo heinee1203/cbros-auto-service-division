@@ -1,6 +1,7 @@
 "use client";
 
-import { Bell, LogOut, Search, User } from "lucide-react";
+import { Bell, LogOut, Search, Smartphone, User } from "lucide-react";
+import Link from "next/link";
 import { signOut } from "next-auth/react";
 import { cn, getInitials } from "@/lib/utils";
 import { USER_ROLE_LABELS, type UserRole } from "@/types/enums";
@@ -39,6 +40,15 @@ export function Topbar({ user, onSearchOpen }: TopbarProps) {
         <Bell className="w-5 h-5 text-surface-500" />
         {/* Unread indicator — wired up in Phase 10 */}
       </button>
+
+      {/* Floor View link */}
+      <Link
+        href="/frontliner"
+        className="flex items-center gap-1.5 px-2 py-1.5 rounded-lg hover:bg-surface-100 text-surface-500 text-xs transition-colors"
+      >
+        <Smartphone className="w-3.5 h-3.5" />
+        <span className="hidden sm:inline">Floor View</span>
+      </Link>
 
       {/* Sync status */}
       <SyncStatusBadge />
