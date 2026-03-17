@@ -1,13 +1,15 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Wrench } from "lucide-react";
+import Link from "next/link";
+import { Wrench, Plus, Zap, FileText, History } from "lucide-react";
 import { toast } from "sonner";
 import { LiveFloorGrid } from "./live-floor-grid";
 import { LiveFloorStatsBar } from "./live-floor-stats";
 import { FloorJobSection } from "./floor-job-section";
 import { BayAssignmentDetail } from "./bay-assignment-detail";
 import { BayAssignModal } from "./bay-assign-modal";
+import { QuickJobModal } from "./quick-job-modal";
 import { EmptyState } from "@/components/ui/empty-state";
 import type { LiveFloorBay, LiveFloorStats, LiveFloorJob } from "./live-floor-types";
 
@@ -20,6 +22,7 @@ export default function LiveFloor() {
   const [selectedBay, setSelectedBay] = useState<LiveFloorBay | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
   const [assignOpen, setAssignOpen] = useState(false);
+  const [quickJobOpen, setQuickJobOpen] = useState(false);
 
   const fetchData = useCallback(async () => {
     try {
@@ -94,6 +97,46 @@ export default function LiveFloor() {
     <div className="space-y-6">
       <LiveFloorStatsBar stats={stats} />
 
+      {/* Action bar */}
+      <div className="flex items-center justify-between">
+        <div className="flex gap-2">
+          <Link
+            href="/schedule/registry?view=eod"
+            className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium"
+            style={{ background: "var(--sch-surface)", color: "var(--sch-text-muted)", border: "1px solid var(--sch-border)" }}
+          >
+            <FileText className="h-3.5 w-3.5" />
+            EOD Report
+          </Link>
+          <Link
+            href="/schedule/registry"
+            className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium"
+            style={{ background: "var(--sch-surface)", color: "var(--sch-text-muted)", border: "1px solid var(--sch-border)" }}
+          >
+            <History className="h-3.5 w-3.5" />
+            History
+          </Link>
+        </div>
+        <div className="flex gap-2">
+          <button
+            onClick={() => setQuickJobOpen(true)}
+            className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium"
+            style={{ background: "var(--sch-surface)", color: "var(--sch-text)", border: "1px solid var(--sch-border)" }}
+          >
+            <Zap className="h-4 w-4" />
+            Quick Job
+          </button>
+          <Link
+            href="/schedule/floor/intake"
+            className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-white"
+            style={{ background: "#3B82F6" }}
+          >
+            <Plus className="h-4 w-4" />
+            New Intake
+          </Link>
+        </div>
+      </div>
+
       {loading ? (
         <div className="flex items-center justify-center py-12" style={{ color: 'var(--sch-text-muted)' }}>
           Loading floor status...
@@ -132,6 +175,12 @@ export default function LiveFloor() {
         prefilledBayId={selectedBay?.id}
         allBays={bays.map((b) => ({ id: b.id, name: b.name }))}
         onAssigned={handleUpdated}
+      />
+
+      <QuickJobModal
+        open={quickJobOpen}
+        onClose={() => setQuickJobOpen(false)}
+        onCreated={() => { setQuickJobOpen(false); fetchData(); }}
       />
     </div>
   );

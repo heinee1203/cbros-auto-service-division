@@ -152,7 +152,7 @@ const columns: ColumnDef<EstimateRequestRow, unknown>[] = [
     header: "Created",
     enableSorting: true,
     cell: ({ getValue }) => (
-      <span className="text-sm text-surface-500">
+      <span className="text-sm font-mono text-surface-500">
         {formatDate(getValue() as string)}
       </span>
     ),

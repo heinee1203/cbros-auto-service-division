@@ -216,7 +216,7 @@ function buildColumns(
     cell: ({ getValue }) => {
       const val = getValue() as string | null;
       return (
-        <span className="text-sm text-surface-500">
+        <span className="text-sm text-surface-500 font-mono">
           {val ? formatDate(val) : "\u2014"}
         </span>
       );
@@ -227,7 +227,7 @@ function buildColumns(
     header: "Est Hours",
     enableSorting: false,
     cell: ({ row }) => (
-      <span className="text-sm text-surface-600">
+      <span className="text-sm text-surface-600 font-mono">
         {row.original.totalEstimatedHours > 0
           ? `${row.original.totalEstimatedHours}h`
           : "\u2014"}
@@ -239,7 +239,7 @@ function buildColumns(
     header: "Act Hours",
     enableSorting: false,
     cell: ({ row }) => (
-      <span className="text-sm text-surface-600">
+      <span className="text-sm text-surface-600 font-mono">
         {row.original.totalActualHours > 0
           ? `${row.original.totalActualHours}h`
           : "\u2014"}
@@ -258,7 +258,7 @@ function buildColumns(
       return (
         <span
           className={cn(
-            "text-sm font-semibold",
+            "text-sm font-semibold font-mono",
             eff >= 100 ? "text-green-600" : "text-red-600"
           )}
         >
@@ -279,7 +279,7 @@ function buildColumns(
       );
       return (
         <div className="flex items-center gap-1.5">
-          <span className="text-sm text-surface-600 font-medium">{days}</span>
+          <span className="text-sm text-surface-600 font-medium font-mono">{days}</span>
           {overdue > 0 && (
             <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-danger-100 text-danger-600 uppercase">
               +{overdue}d

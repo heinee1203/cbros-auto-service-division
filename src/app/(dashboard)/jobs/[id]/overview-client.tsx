@@ -267,7 +267,7 @@ export function OverviewClient({
             )}
             <div className="flex items-center gap-2 pt-1">
               <Car className="w-4 h-4 text-surface-400" />
-              <span className="text-sm font-medium text-primary">
+              <span className="text-sm font-medium font-mono text-primary">
                 {formatPlateNumber(jobOrder.vehicle.plateNumber)}
               </span>
             </div>
@@ -288,7 +288,7 @@ export function OverviewClient({
             Estimate Total
           </div>
           <p className="text-lg font-semibold text-primary">
-            {grandTotal > 0 ? formatPeso(grandTotal) : "No estimate"}
+            {grandTotal > 0 ? <span className="font-mono">{formatPeso(grandTotal)}</span> : "No estimate"}
           </p>
         </div>
 
@@ -313,7 +313,7 @@ export function OverviewClient({
           </div>
           <p className="text-lg font-semibold text-primary">
             {jobOrder.targetCompletionDate
-              ? formatDate(jobOrder.targetCompletionDate)
+              ? <span className="font-mono">{formatDate(jobOrder.targetCompletionDate)}</span>
               : "Not set"}
           </p>
         </div>
@@ -336,7 +336,7 @@ export function OverviewClient({
             Days in Shop
           </div>
           <p className="text-lg font-semibold text-primary">
-            {daysInShop} {daysInShop === 1 ? "day" : "days"}
+            <span className="font-mono">{daysInShop}</span> {daysInShop === 1 ? "day" : "days"}
           </p>
         </div>
       </div>
@@ -350,7 +350,7 @@ export function OverviewClient({
             <Timer className="w-4 h-4" />
             Estimated Hours
           </div>
-          <p className="text-lg font-semibold text-primary">
+          <p className="text-lg font-semibold font-mono text-primary">
             {estimatedHours > 0 ? `${estimatedHours.toFixed(1)} hrs` : "0 hrs"}
           </p>
         </div>
@@ -360,11 +360,11 @@ export function OverviewClient({
             <Clock className="w-4 h-4" />
             Actual Hours
           </div>
-          <p className={`text-lg font-semibold ${actualHours > 0 ? "text-primary" : "text-surface-400"}`}>
+          <p className={`text-lg font-semibold font-mono ${actualHours > 0 ? "text-primary" : "text-surface-400"}`}>
             {actualHours > 0 ? `${actualHours.toFixed(1)} hrs` : "0 hrs"}
           </p>
           {estimatedHours > 0 && actualHours > 0 && (
-            <p className={`text-xs ${actualHours <= estimatedHours ? "text-green-600" : "text-amber-600"}`}>
+            <p className={`text-xs font-mono ${actualHours <= estimatedHours ? "text-green-600" : "text-amber-600"}`}>
               {actualHours <= estimatedHours ? "On track" : `${(actualHours - estimatedHours).toFixed(1)} hrs over estimate`}
             </p>
           )}
@@ -375,11 +375,11 @@ export function OverviewClient({
             <DollarSign className="w-4 h-4" />
             Actual Cost
           </div>
-          <p className={`text-lg font-semibold ${actualCost > 0 ? "text-primary" : "text-surface-400"}`}>
+          <p className={`text-lg font-semibold font-mono ${actualCost > 0 ? "text-primary" : "text-surface-400"}`}>
             {actualCost > 0 ? formatPeso(actualCost) : formatPeso(0)}
           </p>
           {grandTotal > 0 && actualCost > 0 && (
-            <p className={`text-xs ${actualCost <= grandTotal ? "text-green-600" : "text-amber-600"}`}>
+            <p className={`text-xs font-mono ${actualCost <= grandTotal ? "text-green-600" : "text-amber-600"}`}>
               {actualCost <= grandTotal
                 ? `${((actualCost / grandTotal) * 100).toFixed(0)}% of estimate`
                 : `${formatPeso(actualCost - grandTotal)} over estimate`}
@@ -394,7 +394,7 @@ export function OverviewClient({
           </div>
           {efficiency > 0 ? (
             <>
-              <p className={`text-lg font-semibold ${efficiency >= 100 ? "text-green-600" : efficiency >= 80 ? "text-amber-600" : "text-red-600"}`}>
+              <p className={`text-lg font-semibold font-mono ${efficiency >= 100 ? "text-green-600" : efficiency >= 80 ? "text-amber-600" : "text-red-600"}`}>
                 {efficiency.toFixed(0)}%
               </p>
               <p className="text-xs text-surface-400">
@@ -471,7 +471,7 @@ export function OverviewClient({
                 <div className="space-y-1">
                   <div className="flex items-center justify-between text-xs text-amber-700">
                     <span>{inspectedItems} of {totalItems} items inspected</span>
-                    <span>{inspectionProgress.toFixed(0)}%</span>
+                    <span className="font-mono">{inspectionProgress.toFixed(0)}%</span>
                   </div>
                   <div className="w-full bg-amber-100 rounded-full h-2">
                     <div
@@ -497,7 +497,7 @@ export function OverviewClient({
               <p className="text-xs text-green-600">
                 {latestQCInspection.inspector.firstName} {latestQCInspection.inspector.lastName}
                 {" — "}
-                {formatDate(latestQCInspection.inspectionDate)}
+                <span className="font-mono">{formatDate(latestQCInspection.inspectionDate)}</span>
                 {(qcAttemptCount ?? 0) > 1 && (
                   <span className="ml-2 text-green-500">Attempt #{qcAttemptCount}</span>
                 )}
@@ -521,7 +521,7 @@ export function OverviewClient({
                   <p className="text-xs text-red-600">
                     {latestQCInspection.inspector.firstName} {latestQCInspection.inspector.lastName}
                     {" — "}
-                    {formatDate(latestQCInspection.inspectionDate)}
+                    <span className="font-mono">{formatDate(latestQCInspection.inspectionDate)}</span>
                   </p>
                 </div>
               </div>
@@ -560,7 +560,7 @@ export function OverviewClient({
                   Vehicle Released
                 </p>
                 <p className="text-xs text-green-600">
-                  {formatDate(releaseRecord.releaseDate)}
+                  <span className="font-mono">{formatDate(releaseRecord.releaseDate)}</span>
                   {releaseRecord.advisor && (
                     <> · {releaseRecord.advisor.firstName} {releaseRecord.advisor.lastName}</>
                   )}
@@ -616,7 +616,7 @@ export function OverviewClient({
                 </span>
                 <span className="text-green-600">on</span>
                 <span className="font-medium text-green-800">{timer.task.name}</span>
-                <span className="text-green-500 text-xs">
+                <span className="text-green-500 text-xs font-mono">
                   since {new Date(timer.clockIn).toLocaleTimeString("en-PH", { hour: "2-digit", minute: "2-digit" })}
                 </span>
               </div>
@@ -639,7 +639,7 @@ export function OverviewClient({
                 {supplementsSummary.count} supplemental {supplementsSummary.count === 1 ? "estimate" : "estimates"}
               </p>
               <p className="text-sm text-purple-600">
-                {formatPeso(supplementsSummary.totalAmount)} total
+                <span className="font-mono">{formatPeso(supplementsSummary.totalAmount)}</span> total
               </p>
             </div>
           </div>

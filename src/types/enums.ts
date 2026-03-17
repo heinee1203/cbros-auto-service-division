@@ -223,16 +223,16 @@ export const JOB_ORDER_STATUS_LABELS: Record<JobOrderStatus, string> = {
 };
 
 export const JOB_ORDER_STATUS_COLORS: Record<JobOrderStatus, string> = {
-  PENDING: "bg-surface-300 text-primary",
-  CHECKED_IN: "bg-accent-100 text-accent-700",
-  IN_PROGRESS: "bg-blue-100 text-blue-700",
-  QC_PENDING: "bg-warning-100 text-warning-600",
-  QC_PASSED: "bg-success-100 text-success-600",
+  PENDING: "bg-amber-100 text-amber-700",
+  CHECKED_IN: "bg-amber-100 text-amber-700",
+  IN_PROGRESS: "bg-emerald-100 text-emerald-700",
+  QC_PENDING: "bg-blue-100 text-blue-700",
+  QC_PASSED: "bg-blue-100 text-blue-700",
   QC_FAILED_REWORK: "bg-danger-100 text-danger-600",
-  AWAITING_PAYMENT: "bg-purple-100 text-purple-700",
-  PARTIAL_PAYMENT: "bg-yellow-100 text-yellow-700",
-  FULLY_PAID: "bg-success-100 text-success-600",
-  RELEASED: "bg-emerald-100 text-emerald-700",
+  AWAITING_PAYMENT: "bg-orange-100 text-orange-700",
+  PARTIAL_PAYMENT: "bg-orange-100 text-orange-700",
+  FULLY_PAID: "bg-emerald-100 text-emerald-700",
+  RELEASED: "bg-gray-100 text-gray-600",
   CANCELLED: "bg-gray-100 text-gray-500",
 };
 
@@ -332,10 +332,10 @@ export const TASK_STATUS_LABELS: Record<TaskStatus, string> = {
 
 export const TASK_STATUS_COLORS: Record<TaskStatus, string> = {
   QUEUED: "bg-surface-200 text-surface-600",
-  IN_PROGRESS: "bg-blue-100 text-blue-700",
-  PAUSED: "bg-yellow-100 text-yellow-700",
-  QC_REVIEW: "bg-purple-100 text-purple-700",
-  DONE: "bg-success-100 text-success-600",
+  IN_PROGRESS: "bg-emerald-100 text-emerald-700",
+  PAUSED: "bg-amber-100 text-amber-700",
+  QC_REVIEW: "bg-blue-100 text-blue-700",
+  DONE: "bg-gray-100 text-gray-600",
   REWORK: "bg-danger-100 text-danger-600",
 };
 

@@ -446,7 +446,7 @@ const columns: ColumnDef<CustomerRow, unknown>[] = [
     cell: ({ getValue }) => {
       const val = getValue() as string | null;
       return (
-        <span className="text-sm text-surface-500">
+        <span className="text-sm text-surface-500 font-mono">
           {val ? formatDate(val) : "—"}
         </span>
       );

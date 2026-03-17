@@ -745,14 +745,14 @@ export function VehicleDetailClient({ vehicle }: Props) {
           <div className="w-px h-10 bg-surface-200" />
           <div>
             <p className="text-xs text-surface-400 mb-0.5">First Visit</p>
-            <p className="text-sm font-medium text-primary">
+            <p className="text-sm font-medium font-mono text-primary">
               {firstVisit ? formatDate(firstVisit as string) : "—"}
             </p>
           </div>
           <div className="w-px h-10 bg-surface-200" />
           <div>
             <p className="text-xs text-surface-400 mb-0.5">Last Visit</p>
-            <p className="text-sm font-medium text-primary">
+            <p className="text-sm font-medium font-mono text-primary">
               {lastVisit ? formatDate(lastVisit as string) : "—"}
             </p>
           </div>
@@ -832,11 +832,11 @@ export function VehicleDetailClient({ vehicle }: Props) {
                           </span>
                         </div>
                         <div className="text-right flex-shrink-0">
-                          <p className="text-xs text-surface-400">
+                          <p className="text-xs font-mono text-surface-400">
                             {formatDate(jo.createdAt as string)}
                           </p>
                           {jo.createdAt !== jo.updatedAt && (
-                            <p className="text-xs text-surface-300 mt-0.5">
+                            <p className="text-xs font-mono text-surface-300 mt-0.5">
                               Updated {formatDate(jo.updatedAt as string)}
                             </p>
                           )}

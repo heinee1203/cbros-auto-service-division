@@ -173,7 +173,7 @@ export default async function InvoicesPage({
                       <td className="px-4 py-3">
                         <Link
                           href={`/jobs/${invoice.jobOrderId}/invoice`}
-                          className="font-medium text-accent-600 hover:text-accent-700 hover:underline"
+                          className="font-medium font-mono text-accent-600 hover:text-accent-700 hover:underline"
                         >
                           {invoice.invoiceNumber}
                         </Link>
@@ -184,7 +184,7 @@ export default async function InvoicesPage({
                           {invoice.jobOrder.customer.lastName}
                         </Link>
                       </td>
-                      <td className="px-4 py-3 text-surface-600">
+                      <td className="px-4 py-3 font-mono text-surface-600">
                         <Link href={`/jobs/${invoice.jobOrderId}/invoice`}>
                           {invoice.jobOrder.vehicle?.plateNumber ?? "—"}
                         </Link>
@@ -224,7 +224,7 @@ export default async function InvoicesPage({
                           </span>
                         </Link>
                       </td>
-                      <td className="px-4 py-3 text-surface-500">
+                      <td className="px-4 py-3 font-mono text-surface-500">
                         <Link href={`/jobs/${invoice.jobOrderId}/invoice`}>
                           {formatDate(invoice.createdAt)}
                         </Link>

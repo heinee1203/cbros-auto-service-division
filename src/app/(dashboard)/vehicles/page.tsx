@@ -582,7 +582,7 @@ function buildColumns(
       enableSorting: true,
       cell: ({ getValue }) => {
         const yr = getValue() as number | null;
-        return <span className="text-sm text-surface-600">{yr ?? "—"}</span>;
+        return <span className="text-sm font-mono text-surface-600">{yr ?? "—"}</span>;
       },
     },
     {

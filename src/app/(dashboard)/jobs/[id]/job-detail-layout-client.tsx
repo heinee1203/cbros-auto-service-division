@@ -73,7 +73,7 @@ export function JobDetailLayoutClient({
           <span className="font-semibold text-primary text-base">
             <span className="font-mono">{jobOrderNumber}</span>
             {plateDisplay && (
-              <span className="text-surface-600">
+              <span className="text-surface-600 font-mono">
                 {" "}
                 &mdash; {plateDisplay}
               </span>

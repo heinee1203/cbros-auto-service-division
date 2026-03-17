@@ -488,9 +488,9 @@ export function CustomerDetailClient({ customer: initialCustomer, warranties, fo
                   className="flex items-center gap-2 text-sm text-surface-600 hover:text-accent-600 transition-colors"
                 >
                   <Phone className="w-3.5 h-3.5 text-surface-400 shrink-0" />
-                  {formatPhone(customer.phone)}
+                  <span className="font-mono">{formatPhone(customer.phone)}</span>
                   {customer.phoneAlt && (
-                    <span className="text-surface-400">
+                    <span className="text-surface-400 font-mono">
                       · {formatPhone(customer.phoneAlt)}
                     </span>
                   )}
@@ -531,9 +531,11 @@ export function CustomerDetailClient({ customer: initialCustomer, warranties, fo
               {/* Member since */}
               <p className="text-xs text-surface-400 mt-3">
                 Member since{" "}
-                {customer.firstVisit
-                  ? formatDate(customer.firstVisit as string)
-                  : formatDate(customer.createdAt as string)}
+                <span className="font-mono">
+                  {customer.firstVisit
+                    ? formatDate(customer.firstVisit as string)
+                    : formatDate(customer.createdAt as string)}
+                </span>
               </p>
             </div>
           </div>
@@ -756,7 +758,7 @@ export function CustomerDetailClient({ customer: initialCustomer, warranties, fo
                                 {statusLabel}
                               </span>
                             </td>
-                            <td className="px-3 py-3 text-surface-500 text-sm">
+                            <td className="px-3 py-3 text-surface-500 text-sm font-mono">
                               {formatDate(jo.createdAt as string)}
                             </td>
                           </tr>
@@ -867,7 +869,7 @@ export function CustomerDetailClient({ customer: initialCustomer, warranties, fo
                               <p className="text-sm font-medium text-primary">{w.serviceCategory}</p>
                               <p className="text-xs text-surface-500 mt-0.5">{w.description}</p>
                               <p className="text-xs text-surface-400 mt-1">
-                                JO# {w.jobOrder.jobOrderNumber} · Expires {formatDate(w.endDate)}
+                                JO# <span className="font-mono">{w.jobOrder.jobOrderNumber}</span> · Expires <span className="font-mono">{formatDate(w.endDate)}</span>
                               </p>
                             </div>
                             <div className="text-right">
@@ -927,7 +929,7 @@ export function CustomerDetailClient({ customer: initialCustomer, warranties, fo
                               {typeLabels[f.type] || f.type}
                             </span>
                           </div>
-                          <p className="text-xs text-surface-500">{formatDate(f.scheduledAt)}</p>
+                          <p className="text-xs text-surface-500 font-mono">{formatDate(f.scheduledAt)}</p>
                         </div>
                       );
                     })}
