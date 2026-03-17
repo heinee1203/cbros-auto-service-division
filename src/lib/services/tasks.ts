@@ -525,3 +525,38 @@ export async function checkHourOverrun(taskId: string) {
 
   return { level: null as string | null, percentage };
 }
+
+// ---------------------------------------------------------------------------
+// 9. getTasksForTechnician — all tasks for a technician on active jobs
+// ---------------------------------------------------------------------------
+export async function getTasksForTechnician(technicianId: string) {
+  return prisma.task.findMany({
+    where: {
+      assignedTechnicianId: technicianId,
+      deletedAt: null,
+      jobOrder: {
+        status: { notIn: ["RELEASED", "CANCELLED"] },
+      },
+    },
+    include: {
+      jobOrder: {
+        select: {
+          id: true,
+          jobOrderNumber: true,
+          status: true,
+          vehicle: {
+            select: { id: true, plateNumber: true, make: true, model: true },
+          },
+        },
+      },
+      serviceCatalog: {
+        select: { id: true, name: true, requiredMilestonePhotos: true },
+      },
+      timeEntries: {
+        where: { technicianId, deletedAt: null },
+        select: { clockIn: true, clockOut: true, breakMinutes: true },
+      },
+    },
+    orderBy: [{ status: "desc" }, { sortOrder: "asc" }],
+  });
+}

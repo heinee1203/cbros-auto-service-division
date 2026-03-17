@@ -236,3 +236,46 @@ export async function updateJobOrderStatus(
     },
   });
 }
+
+// ---------------------------------------------------------------------------
+// 4. getActiveJobsForFloor — all active jobs for the shop floor view
+// ---------------------------------------------------------------------------
+export async function getActiveJobsForFloor() {
+  return prisma.jobOrder.findMany({
+    where: {
+      status: { notIn: ["RELEASED", "CANCELLED"] },
+    },
+    include: {
+      customer: { select: { id: true, firstName: true, lastName: true, phone: true } },
+      vehicle: { select: { id: true, plateNumber: true, make: true, model: true } },
+      primaryTechnician: { select: { id: true, firstName: true, lastName: true } },
+      bayAssignments: {
+        where: { endDate: null },
+        include: { bay: { select: { id: true, name: true } } },
+        take: 1,
+      },
+    },
+    orderBy: { createdAt: "desc" },
+  });
+}
+
+// ---------------------------------------------------------------------------
+// 5. getJobsAwaitingQC — jobs with QC_PENDING status
+// ---------------------------------------------------------------------------
+export async function getJobsAwaitingQC() {
+  return prisma.jobOrder.findMany({
+    where: { status: "QC_PENDING" },
+    include: {
+      customer: { select: { firstName: true, lastName: true } },
+      vehicle: { select: { plateNumber: true, make: true, model: true } },
+      primaryTechnician: { select: { firstName: true, lastName: true } },
+      estimates: {
+        where: { deletedAt: null },
+        include: {
+          estimateRequest: { select: { requestedCategories: true } },
+        },
+      },
+    },
+    orderBy: { createdAt: "desc" },
+  });
+}
