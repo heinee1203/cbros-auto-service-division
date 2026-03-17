@@ -94,7 +94,73 @@ export const SERVICE_CATEGORIES = [
   "Undercoating & Rust Protection",
   "Car Restoration",
   "Accessories & Add-ons",
+  "Preventive Maintenance Service (PMS)",
+  "Brake System",
+  "Suspension & Steering",
+  "Engine & Drivetrain",
+  "Electrical & Diagnostics",
+  "Tires & Wheels",
+  "Air Conditioning",
+  "Diagnostics & Inspection",
 ] as const;
+
+// Service group → categories mapping for the three-layer navigation
+export const SERVICE_GROUPS = {
+  "Body & Paint": [
+    "Collision Repair",
+    "Painting & Refinishing",
+    "Buffing & Paint Correction",
+    "Car Detailing",
+    "Undercoating & Rust Protection",
+    "Car Restoration",
+  ],
+  "Auto Service": [
+    "Preventive Maintenance Service (PMS)",
+    "Brake System",
+    "Suspension & Steering",
+    "Engine & Drivetrain",
+    "Electrical & Diagnostics",
+    "Tires & Wheels",
+    "Air Conditioning",
+  ],
+  "Other": [
+    "Accessories & Add-ons",
+    "Diagnostics & Inspection",
+  ],
+} as const;
+
+export type ServiceGroupName = keyof typeof SERVICE_GROUPS;
+
+// Short labels for category pills (horizontal scrollable nav)
+export const CATEGORY_SHORT_LABELS: Record<string, string> = {
+  "Collision Repair": "Collision",
+  "Painting & Refinishing": "Paint",
+  "Buffing & Paint Correction": "Buffing",
+  "Car Detailing": "Detailing",
+  "Undercoating & Rust Protection": "Undercoating",
+  "Car Restoration": "Restoration",
+  "Accessories & Add-ons": "Accessories",
+  "Preventive Maintenance Service (PMS)": "PMS",
+  "Brake System": "Brakes",
+  "Suspension & Steering": "Suspension",
+  "Engine & Drivetrain": "Engine",
+  "Electrical & Diagnostics": "Electrical",
+  "Tires & Wheels": "Tires",
+  "Air Conditioning": "A/C",
+  "Diagnostics & Inspection": "Diagnostics",
+};
+
+// Frequently used services — shown as quick picks at top of grid
+export const FREQUENTLY_USED_SERVICE_NAMES = [
+  "PMS Basic (Oil, Filter, Inspect)",
+  "Brake Pad Replacement (Front)",
+  "Oil Change Only",
+  "Full Repaint (Single Stage)",
+  "Spot Painting / Touch-Up (per panel)",
+  "A/C Recharge / Refrigerant Refill",
+  "Wheel Alignment (4-Wheel)",
+  "Engine Tune-Up (Spark Plugs, Filters, Timing)",
+];
 
 export const LINE_ITEM_UNITS = [
   "pcs", "set", "pair", "liters", "ml", "sheets",
@@ -260,6 +326,20 @@ export const MILESTONE_LABELS: Record<string, string> = {
   after_degreasing: "After Degreasing",
   before_detail: "Before Detail",
   after_detail: "After Detail",
+  // General auto repair milestones
+  before_service: "Before Service",
+  old_parts: "Old Parts Removed",
+  new_parts_installed: "New Parts Installed",
+  after_service: "After Service",
+  old_parts_removed: "Old Parts Removed",
+  worn_parts: "Worn Parts",
+  during_teardown: "During Teardown",
+  running_test: "Running Test",
+  diagnostic_screen: "Diagnostic Screen",
+  before_repair: "Before Repair",
+  after_repair: "After Repair",
+  codes_cleared: "Codes Cleared",
+  alignment_printout: "Alignment Printout",
 };
 
 // Phase 6: QC Checklist Categories
@@ -268,6 +348,12 @@ export const QC_CHECKLIST_CATEGORIES = [
   { id: "detailing", label: "Detailing", settingKey: "qc_checklist_detailing" },
   { id: "undercoating", label: "Undercoating", settingKey: "qc_checklist_undercoating" },
   { id: "mechanical", label: "Mechanical / Functional", settingKey: "qc_checklist_mechanical" },
+  { id: "pms", label: "Preventive Maintenance", settingKey: "qc_checklist_pms" },
+  { id: "brake", label: "Brake System", settingKey: "qc_checklist_brake" },
+  { id: "suspension", label: "Suspension & Steering", settingKey: "qc_checklist_suspension" },
+  { id: "engine", label: "Engine & Drivetrain", settingKey: "qc_checklist_engine" },
+  { id: "electrical", label: "Electrical & Diagnostics", settingKey: "qc_checklist_electrical" },
+  { id: "tire", label: "Tires & Wheels", settingKey: "qc_checklist_tire" },
 ] as const;
 
 // Service category → QC checklist category mapping
@@ -279,6 +365,14 @@ export const SERVICE_TO_QC_CATEGORY: Record<string, string[]> = {
   "Undercoating & Rust Protection": ["undercoating"],
   "Car Restoration": ["paint_body", "mechanical"],
   "Accessories & Add-ons": ["mechanical"],
+  "Preventive Maintenance Service (PMS)": ["pms"],
+  "Brake System": ["brake"],
+  "Suspension & Steering": ["suspension"],
+  "Engine & Drivetrain": ["engine"],
+  "Electrical & Diagnostics": ["electrical"],
+  "Tires & Wheels": ["tire"],
+  "Air Conditioning": ["mechanical"],
+  "Diagnostics & Inspection": ["electrical"],
 };
 
 // Phase 7: Invoice
@@ -318,6 +412,24 @@ export const DEPENDENCY_CHAINS: Record<string, string[]> = {
   ],
   "Undercoating & Rust Protection": [
     "Cleaning", "Degreasing", "Application", "Curing/Drying",
+  ],
+  "Preventive Maintenance Service (PMS)": [
+    "Drain & Remove Old", "Install New Parts", "Top Up Fluids", "Test & Inspect",
+  ],
+  "Brake System": [
+    "Disassembly", "Inspection/Measurement", "Install New Parts", "Bleed/Adjust", "Test Drive",
+  ],
+  "Suspension & Steering": [
+    "Disassembly", "Remove Old Parts", "Install New Parts", "Alignment", "Test Drive",
+  ],
+  "Engine & Drivetrain": [
+    "Diagnosis", "Disassembly", "Repair/Replace", "Reassembly", "Test & Tune",
+  ],
+  "Electrical & Diagnostics": [
+    "Diagnosis/Scan", "Repair/Replace", "Clear Codes", "Verify",
+  ],
+  "Tires & Wheels": [
+    "Remove Wheels", "Service Tires", "Mount & Balance", "TPMS Reset",
   ],
 };
 
