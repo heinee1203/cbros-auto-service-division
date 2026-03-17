@@ -22,6 +22,12 @@ export default withAuth(
       }
     }
 
+    // Role-based home redirect: shop floor roles go to frontliner
+    const FRONTLINER_ROLES = ["TECHNICIAN", "QC_INSPECTOR", "ADVISOR"];
+    if (pathname === "/" && FRONTLINER_ROLES.includes(token.role as string)) {
+      return NextResponse.redirect(new URL("/frontliner", req.url));
+    }
+
     return NextResponse.next();
   },
   {
