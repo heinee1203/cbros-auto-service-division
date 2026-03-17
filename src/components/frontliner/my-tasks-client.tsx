@@ -38,7 +38,7 @@ export function MyTasksClient({ tasks }: MyTasksClientProps) {
       <div className="flex items-center gap-3">
         <Link
           href="/frontliner"
-          className="flex h-10 w-10 items-center justify-center rounded-lg bg-[var(--sch-surface)] text-[var(--sch-text-muted)] transition-colors hover:bg-[var(--sch-card)]"
+          className="flex h-12 w-12 items-center justify-center rounded-lg bg-[var(--sch-surface)] text-[var(--sch-text-muted)] transition-colors hover:bg-[var(--sch-card)]"
         >
           <ArrowLeft className="h-5 w-5" />
         </Link>

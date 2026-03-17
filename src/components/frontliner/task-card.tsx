@@ -32,7 +32,7 @@ const BORDER_COLORS: Record<string, string> = {
   IN_PROGRESS: "border-emerald-500",
   PAUSED: "border-amber-500",
   QC_REVIEW: "border-blue-500",
-  DONE: "border-gray-500",
+  DONE: "border-[var(--sch-border)]",
   REWORK: "border-red-500",
 };
 
@@ -44,7 +44,7 @@ export function TaskCard({ task, onAction }: TaskCardProps) {
     TASK_STATUS_LABELS[task.status as TaskStatus] || task.status;
   const statusColor =
     TASK_STATUS_COLORS[task.status as TaskStatus] || "";
-  const borderColor = BORDER_COLORS[task.status] || "border-gray-500";
+  const borderColor = BORDER_COLORS[task.status] || "border-[var(--sch-border)]";
 
   const progressPct =
     task.estimatedHours > 0
@@ -104,7 +104,7 @@ export function TaskCard({ task, onAction }: TaskCardProps) {
                 )
               }
               disabled={isPending}
-              className="w-full text-center text-xs font-medium text-[var(--sch-text-muted)] hover:text-[var(--sch-text)] transition-colors py-1"
+              className="w-full text-center text-xs font-medium text-[var(--sch-text-muted)] hover:text-[var(--sch-text)] transition-colors h-12 min-h-[48px]"
             >
               Mark Complete
             </button>

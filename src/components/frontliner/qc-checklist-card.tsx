@@ -152,7 +152,7 @@ export function QCChecklistCard({
           onClick={() => handleStatusChange("NA")}
           className={`${btnBase} ${
             status === "NA" && item.status !== "NA"
-              ? "bg-gray-600 text-white"
+              ? "bg-[var(--sch-text-dim)] text-white"
               : "bg-[var(--sch-surface)] text-[var(--sch-text-dim)]"
           }`}
           aria-label="Not Applicable"
@@ -177,7 +177,7 @@ export function QCChecklistCard({
               type="button"
               onClick={() => fileInputRef.current?.click()}
               disabled={uploading}
-              className="flex h-10 items-center gap-2 rounded-lg bg-[var(--sch-surface)] px-3 text-sm text-[var(--sch-text-muted)] transition-colors"
+              className="flex h-12 min-h-[48px] items-center gap-2 rounded-lg bg-[var(--sch-surface)] px-3 text-sm text-[var(--sch-text-muted)] transition-colors"
             >
               {uploading ? (
                 <Loader2 className="h-4 w-4 animate-spin" />

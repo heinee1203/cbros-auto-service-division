@@ -399,7 +399,7 @@ export function ReleaseWizard({
               Release Photos
             </h2>
             <p className="text-sm" style={{ color: "var(--sch-text-muted)" }}>
-              {photos.length} of 6 photos taken (minimum 4 required)
+              <span className="font-mono">{photos.length}</span> of <span className="font-mono">6</span> photos taken (minimum <span className="font-mono">4</span> required)
             </p>
 
             {/* Progress bar */}
@@ -553,7 +553,7 @@ export function ReleaseWizard({
 
             <button
               onClick={clearSignature}
-              className="flex items-center gap-1.5 text-sm font-medium"
+              className="flex h-12 min-h-[48px] items-center gap-1.5 text-sm font-medium"
               style={{ color: "var(--sch-text-muted)" }}
             >
               <RotateCcw size={14} />

@@ -215,7 +215,7 @@ export function PhotosClient({ tasks, mode }: PhotosClientProps) {
       <div className="px-1">
         <div className="flex items-center justify-between mb-1.5">
           <span className="text-xs text-[var(--sch-text-muted)]">
-            {completed} of {total} milestones documented
+            <span className="font-mono">{completed}</span> of <span className="font-mono">{total}</span> milestones documented
           </span>
           <span className="font-mono text-xs text-[var(--sch-text-muted)]">
             {progressPct}%

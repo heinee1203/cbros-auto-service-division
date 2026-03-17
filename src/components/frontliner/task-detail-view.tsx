@@ -242,7 +242,7 @@ export function TaskDetailView({ task }: TaskDetailViewProps) {
                 )
               }
               disabled={isPending}
-              className="w-full text-center text-xs font-medium text-[var(--sch-text-muted)] hover:text-[var(--sch-text)] transition-colors py-1"
+              className="w-full text-center text-xs font-medium text-[var(--sch-text-muted)] hover:text-[var(--sch-text)] transition-colors h-12 min-h-[48px]"
             >
               Mark Complete
             </button>
@@ -312,7 +312,7 @@ export function TaskDetailView({ task }: TaskDetailViewProps) {
       <div className="bg-[var(--sch-card)] rounded-xl p-5">
         <Link
           href="/frontliner/my-tasks"
-          className="inline-flex items-center gap-1 text-sm text-[var(--sch-text-muted)] hover:text-[var(--sch-text)] transition-colors mb-3"
+          className="inline-flex h-12 items-center gap-1 text-sm text-[var(--sch-text-muted)] hover:text-[var(--sch-text)] transition-colors mb-3"
         >
           <ArrowLeft className="w-4 h-4" />
           My Tasks

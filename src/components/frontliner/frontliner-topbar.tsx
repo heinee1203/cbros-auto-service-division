@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Bell } from "lucide-react";
 import { getInitials } from "@/lib/utils";
+import { SyncStatusBadge } from "@/components/ui/sync-status-badge";
 import type { UserRole } from "@/types/enums";
 
 interface FrontlinerTopbarProps {
@@ -39,6 +40,9 @@ export function FrontlinerTopbar({ user }: FrontlinerTopbarProps) {
         <span className="text-sm text-[var(--sch-text)]">
           {user.firstName}
         </span>
+
+        {/* Offline sync indicator */}
+        <SyncStatusBadge />
 
         {/* Notification bell */}
         <button className="p-2 rounded-lg touch-target">

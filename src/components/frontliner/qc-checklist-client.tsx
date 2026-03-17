@@ -113,9 +113,9 @@ export function QCChecklistClient({ inspection, job }: QCChecklistClientProps) {
         <div className="mt-3">
           <div className="flex items-center justify-between text-xs text-[var(--sch-text-muted)]">
             <span>
-              {checkedItems} of {totalItems} items checked
+              <span className="font-mono">{checkedItems}</span> of <span className="font-mono">{totalItems}</span> items checked
             </span>
-            <span>{Math.round(progressPct)}%</span>
+            <span className="font-mono">{Math.round(progressPct)}%</span>
           </div>
           <div className="mt-1 h-2 overflow-hidden rounded-full bg-[var(--sch-surface)]">
             <div

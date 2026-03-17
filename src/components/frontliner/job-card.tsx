@@ -34,9 +34,9 @@ function getStatusBorderColor(status: string): string {
     case "PARTIAL_PAYMENT":
       return "border-l-orange-500";
     case "FULLY_PAID":
-      return "border-l-gray-500";
+      return "border-l-[var(--sch-border)]";
     default:
-      return "border-l-gray-400";
+      return "border-l-[var(--sch-border)]";
   }
 }
 

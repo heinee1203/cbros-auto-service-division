@@ -43,7 +43,7 @@ export default async function FrontlinerQCQueuePage() {
       <div>
         <h1 className="text-xl font-bold text-[var(--sch-text)]">QC Queue</h1>
         <p className="text-sm text-[var(--sch-text-muted)]">
-          {jobs.length} {jobs.length === 1 ? "job" : "jobs"} awaiting inspection
+          <span className="font-mono">{jobs.length}</span> {jobs.length === 1 ? "job" : "jobs"} awaiting inspection
         </p>
       </div>
 
