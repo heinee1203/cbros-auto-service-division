@@ -73,7 +73,15 @@ function formatDuration(minutes: number): string {
 // ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
-export default function PinClock() {
+interface PinClockProps {
+  preAuthUser?: {
+    id: string;
+    firstName: string;
+    lastName: string;
+  };
+}
+
+export default function PinClock({ preAuthUser }: PinClockProps = {}) {
   const { data: session, status: sessionStatus } = useSession();
 
   // State machine
@@ -158,6 +166,18 @@ export default function PinClock() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sessionStatus]);
+
+  // ---------------------------------------------------------------------------
+  // Pre-authenticated user (frontliner mode — skip PIN entry)
+  // ---------------------------------------------------------------------------
+  useEffect(() => {
+    if (preAuthUser && clockState === "idle") {
+      setTechName(`${preAuthUser.firstName} ${preAuthUser.lastName}`);
+      setClockState("authenticated");
+      fetchClockStatus();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [preAuthUser]);
 
   // ---------------------------------------------------------------------------
   // Timer effect for clocked-in state
@@ -953,7 +973,19 @@ export default function PinClock() {
         </div>
       )}
 
-      {clockState === "idle" && renderIdle()}
+      {clockState === "idle" && (preAuthUser ? (
+        <div className="flex flex-col items-center justify-center">
+          <svg
+            className="animate-spin h-10 w-10 text-amber-500 mb-4"
+            viewBox="0 0 24 24"
+            fill="none"
+          >
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+          </svg>
+          <p className="text-gray-400 text-lg">Loading...</p>
+        </div>
+      ) : renderIdle())}
       {clockState === "authenticated" && renderAuthenticated()}
       {clockState === "clocked_in" && renderClockedIn()}
       {clockState === "summary" && renderSummary()}
