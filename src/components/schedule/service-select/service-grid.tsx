@@ -24,7 +24,7 @@ function HighlightMatch({ text, query }: { text: string; query: string }) {
   return (
     <>
       {parts.map((part, i) =>
-        regex.test(part) ? (
+        i % 2 === 1 ? (
           <strong key={i} style={{ color: "var(--sch-accent)" }}>{part}</strong>
         ) : (
           <Fragment key={i}>{part}</Fragment>
