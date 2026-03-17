@@ -9,6 +9,10 @@
   body {
     @apply bg-surface-50 text-primary;
   }
+  /* Visible focus outlines for keyboard navigation */
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-accent;
+  }
 }
 
 @layer utilities {

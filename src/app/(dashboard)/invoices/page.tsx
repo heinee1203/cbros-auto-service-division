@@ -142,13 +142,13 @@ export default async function InvoicesPage({
                   <th className="text-left text-xs font-medium text-surface-500 uppercase tracking-wider px-4 py-3">
                     Vehicle
                   </th>
-                  <th className="text-left text-xs font-medium text-surface-500 uppercase tracking-wider px-4 py-3">
+                  <th className="text-right text-xs font-medium text-surface-500 uppercase tracking-wider px-4 py-3">
                     Total
                   </th>
-                  <th className="text-left text-xs font-medium text-surface-500 uppercase tracking-wider px-4 py-3">
+                  <th className="text-right text-xs font-medium text-surface-500 uppercase tracking-wider px-4 py-3">
                     Paid
                   </th>
-                  <th className="text-left text-xs font-medium text-surface-500 uppercase tracking-wider px-4 py-3">
+                  <th className="text-right text-xs font-medium text-surface-500 uppercase tracking-wider px-4 py-3">
                     Balance
                   </th>
                   <th className="text-left text-xs font-medium text-surface-500 uppercase tracking-wider px-4 py-3">
@@ -189,19 +189,19 @@ export default async function InvoicesPage({
                           {invoice.jobOrder.vehicle?.plateNumber ?? "—"}
                         </Link>
                       </td>
-                      <td className="px-4 py-3 font-mono text-primary">
+                      <td className="px-4 py-3 font-mono text-primary text-right">
                         <Link href={`/jobs/${invoice.jobOrderId}/invoice`}>
                           {formatPeso(invoice.grandTotal)}
                         </Link>
                       </td>
-                      <td className="px-4 py-3 font-mono text-surface-600">
+                      <td className="px-4 py-3 font-mono text-surface-600 text-right">
                         <Link href={`/jobs/${invoice.jobOrderId}/invoice`}>
                           {formatPeso(invoice.totalPaid)}
                         </Link>
                       </td>
                       <td
                         className={cn(
-                          "px-4 py-3 font-mono",
+                          "px-4 py-3 font-mono text-right",
                           showAging
                             ? agingColor(invoice.createdAt)
                             : "text-surface-600"
