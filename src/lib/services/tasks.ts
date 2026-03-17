@@ -79,6 +79,15 @@ export async function getTaskDetail(taskId: string) {
       assignedTechnician: {
         select: { id: true, firstName: true, lastName: true },
       },
+      jobOrder: {
+        select: {
+          id: true,
+          jobOrderNumber: true,
+          vehicle: {
+            select: { id: true, plateNumber: true, make: true, model: true },
+          },
+        },
+      },
       serviceCatalog: {
         select: {
           id: true,
