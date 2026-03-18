@@ -226,6 +226,18 @@ model EstimateVersion {
   customerSignature  String?   // base64 or file path
   customerComments   String?
 
+  // Level 1 — Technical Review
+  techReviewSignature    String?
+  techReviewSignedBy     String?
+  techReviewSignedAt     DateTime?
+  techReviewRole         String?
+
+  // Level 2 — Management Approval
+  mgmtApprovalSignature  String?
+  mgmtApprovalSignedBy   String?
+  mgmtApprovalSignedAt   DateTime?
+  mgmtApprovalRole       String?
+
   createdAt          DateTime  @default(now())
   updatedAt          DateTime  @updatedAt
   createdBy          String?
