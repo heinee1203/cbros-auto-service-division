@@ -15,7 +15,7 @@ import type { LiveFloorBay, LiveFloorStats, LiveFloorJob } from "./live-floor-ty
 
 export default function LiveFloor() {
   const [bays, setBays] = useState<LiveFloorBay[]>([]);
-  const [stats, setStats] = useState<LiveFloorStats>({ queueLength: 0, activeServices: 0, availableTechs: 0, totalTechs: 0 });
+  const [stats, setStats] = useState<LiveFloorStats>({ queueLength: 0, activeServices: 0, availableTechs: 0, totalTechs: 0, pendingEstimates: 0 });
   const [jobs, setJobs] = useState<LiveFloorJob[]>([]);
   const [loading, setLoading] = useState(true);
 

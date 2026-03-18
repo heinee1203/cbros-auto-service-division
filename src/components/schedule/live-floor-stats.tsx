@@ -1,6 +1,7 @@
 "use client";
 
-import { Clock, Activity, Users } from "lucide-react";
+import { Clock, Activity, Users, ClipboardList } from "lucide-react";
+import Link from "next/link";
 import type { LiveFloorStats } from "./live-floor-types";
 
 export function LiveFloorStatsBar({ stats }: { stats: LiveFloorStats }) {
@@ -16,7 +17,7 @@ export function LiveFloorStatsBar({ stats }: { stats: LiveFloorStats }) {
   ];
 
   return (
-    <div className="grid grid-cols-3 gap-3">
+    <div className="grid grid-cols-4 gap-3">
       {metrics.map((m) => (
         <div
           key={m.label}
@@ -34,6 +35,21 @@ export function LiveFloorStatsBar({ stats }: { stats: LiveFloorStats }) {
           </div>
         </div>
       ))}
+      <Link
+        href="/schedule/registry"
+        className="flex items-center gap-3 rounded-xl px-4 py-3 min-w-0 flex-1 cursor-pointer hover:opacity-80 transition-opacity"
+        style={{ background: "var(--sch-surface)", border: "1px solid var(--sch-border)" }}
+      >
+        <ClipboardList className="h-5 w-5 shrink-0" style={{ color: "#F59E0B" }} />
+        <div className="min-w-0">
+          <p className="text-2xl font-bold font-mono" style={{ color: "var(--sch-text)" }}>
+            {stats.pendingEstimates}
+          </p>
+          <p className="text-xs" style={{ color: "var(--sch-text-muted)" }}>
+            Pending Estimates
+          </p>
+        </div>
+      </Link>
     </div>
   );
 }

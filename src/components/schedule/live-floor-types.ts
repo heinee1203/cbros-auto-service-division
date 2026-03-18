@@ -36,6 +36,7 @@ export interface LiveFloorStats {
   activeServices: number;
   availableTechs: number;
   totalTechs: number;
+  pendingEstimates: number;
 }
 
 export interface LiveFloorJob {

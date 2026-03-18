@@ -550,7 +550,7 @@ export async function getLiveFloorData() {
     },
   });
 
-  const [queueCount, activeCount, totalTechs, clockedInTechIds] = await Promise.all([
+  const [queueCount, activeCount, totalTechs, clockedInTechIds, pendingEstimatesCount] = await Promise.all([
     prisma.jobOrder.count({
       where: { status: "CHECKED_IN", deletedAt: null },
     }),
@@ -564,6 +564,12 @@ export async function getLiveFloorData() {
       where: { clockOut: null },
       select: { technicianId: true },
       distinct: ["technicianId"],
+    }),
+    prisma.estimateRequest.count({
+      where: {
+        deletedAt: null,
+        status: { in: ["NEW_INQUIRY", "PENDING_ESTIMATE"] },
+      },
     }),
   ]);
 
@@ -623,6 +629,7 @@ export async function getLiveFloorData() {
       activeServices: activeCount,
       availableTechs: totalTechs - clockedInTechIds.length,
       totalTechs,
+      pendingEstimates: pendingEstimatesCount,
     },
     activeJobs: mappedJobs,
   };
