@@ -14,6 +14,21 @@ interface PublicEstimatePageProps {
 export default async function PublicEstimatePage({ params }: PublicEstimatePageProps) {
   const version = await getEstimateVersionByToken(params.token);
 
+  // Fetch signer names for approval signatures
+  let techReviewerName: string | null = null;
+  let mgmtApproverName: string | null = null;
+
+  if (version) {
+    if (version.techReviewSignedBy) {
+      const signer = await prisma.user.findUnique({ where: { id: version.techReviewSignedBy } });
+      if (signer) techReviewerName = `${signer.firstName} ${signer.lastName}`;
+    }
+    if (version.mgmtApprovalSignedBy) {
+      const signer = await prisma.user.findUnique({ where: { id: version.mgmtApprovalSignedBy } });
+      if (signer) mgmtApproverName = `${signer.firstName} ${signer.lastName}`;
+    }
+  }
+
   if (!version) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-surface-100">
@@ -241,6 +256,70 @@ export default async function PublicEstimatePage({ params }: PublicEstimatePageP
                 Terms & Conditions
               </h3>
               <p className="mt-1 text-sm text-surface-600 whitespace-pre-wrap">{termsText}</p>
+            </div>
+          )}
+
+          {/* Internal Approvals — only show if at least one signature exists */}
+          {(version.techReviewSignature || version.mgmtApprovalSignature) && (
+            <div className="border-t border-surface-200 px-8 pt-6">
+              <h3 className="text-sm font-semibold text-surface-500 uppercase tracking-wider mb-4">
+                Internal Approvals
+              </h3>
+              <div className="grid grid-cols-2 gap-8">
+                {/* Technical Review */}
+                {version.techReviewSignature && (
+                  <div>
+                    <p className="text-xs text-surface-400 mb-2">Technically Reviewed by:</p>
+                    <img
+                      src={version.techReviewSignature}
+                      alt="Technical review signature"
+                      className="h-16 object-contain mb-1"
+                    />
+                    <p className="text-sm font-medium text-primary">
+                      {techReviewerName ?? "Unknown"}
+                    </p>
+                    <p className="text-xs text-surface-500">
+                      {version.techReviewRole?.replace(/_/g, " ")}
+                    </p>
+                    <p className="text-xs text-surface-400">
+                      {version.techReviewSignedAt
+                        ? new Date(version.techReviewSignedAt).toLocaleDateString("en-PH", {
+                            year: "numeric",
+                            month: "short",
+                            day: "numeric",
+                          })
+                        : ""}
+                    </p>
+                  </div>
+                )}
+
+                {/* Management Approval */}
+                {version.mgmtApprovalSignature && (
+                  <div>
+                    <p className="text-xs text-surface-400 mb-2">Approved for Release by:</p>
+                    <img
+                      src={version.mgmtApprovalSignature}
+                      alt="Management approval signature"
+                      className="h-16 object-contain mb-1"
+                    />
+                    <p className="text-sm font-medium text-primary">
+                      {mgmtApproverName ?? "Unknown"}
+                    </p>
+                    <p className="text-xs text-surface-500">
+                      {version.mgmtApprovalRole?.replace(/_/g, " ")}
+                    </p>
+                    <p className="text-xs text-surface-400">
+                      {version.mgmtApprovalSignedAt
+                        ? new Date(version.mgmtApprovalSignedAt).toLocaleDateString("en-PH", {
+                            year: "numeric",
+                            month: "short",
+                            day: "numeric",
+                          })
+                        : ""}
+                    </p>
+                  </div>
+                )}
+              </div>
             </div>
           )}
 
