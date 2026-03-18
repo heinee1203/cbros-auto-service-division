@@ -20,6 +20,14 @@ export interface LiveFloorAssignment {
     vehicle: { plateNumber: string; make: string; model: string; color: string | null };
     primaryTechnician: { id: string; firstName: string; lastName: string } | null;
     tasks: { assignedTechnician: { id: string; firstName: string } | null }[];
+    estimates?: {
+      id: string;
+      versions: {
+        id: string;
+        techReviewSignedAt: string | null;
+        mgmtApprovalSignedAt: string | null;
+      }[];
+    }[];
   };
 }
 

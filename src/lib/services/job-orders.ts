@@ -260,7 +260,12 @@ export async function getActiveJobsForFloor() {
           id: true,
           versions: {
             where: { deletedAt: null },
-            select: { id: true, grandTotal: true },
+            select: {
+              id: true,
+              grandTotal: true,
+              techReviewSignedAt: true,
+              mgmtApprovalSignedAt: true,
+            },
             take: 1,
             orderBy: { versionNumber: "desc" as const },
           },

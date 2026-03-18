@@ -526,6 +526,23 @@ export async function getLiveFloorData() {
                   assignedTechnician: { select: { id: true, firstName: true } },
                 },
               },
+              estimates: {
+                where: { deletedAt: null },
+                select: {
+                  id: true,
+                  versions: {
+                    where: { deletedAt: null },
+                    select: {
+                      id: true,
+                      techReviewSignedAt: true,
+                      mgmtApprovalSignedAt: true,
+                    },
+                    take: 1,
+                    orderBy: { versionNumber: "desc" as const },
+                  },
+                },
+                take: 1,
+              },
             },
           },
         },

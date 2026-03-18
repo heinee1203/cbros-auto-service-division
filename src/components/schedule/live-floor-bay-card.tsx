@@ -33,6 +33,13 @@ export function LiveFloorBayCard({ bay, onClick }: BayCardProps) {
   const jo = assignment.jobOrder;
   const borderColor = BAY_STATUS_COLORS[jo.status] || BAY_STATUS_COLORS.DEFAULT;
 
+  // Determine if estimate needs review
+  const hasEstimate = jo.estimates && jo.estimates.length > 0 && jo.estimates[0].versions?.length > 0;
+  const latestVersion = hasEstimate ? jo.estimates![0].versions[0] : null;
+  const needsReview = hasEstimate && latestVersion && (
+    !latestVersion.techReviewSignedAt || !latestVersion.mgmtApprovalSignedAt
+  );
+
   const techNames = new Set<string>();
   if (jo.primaryTechnician) techNames.add(jo.primaryTechnician.firstName);
   jo.tasks.forEach((t) => {
@@ -63,10 +70,18 @@ export function LiveFloorBayCard({ bay, onClick }: BayCardProps) {
         {jo.vehicle.make} {jo.vehicle.model}
       </div>
       <div className="text-xs font-mono" style={{ color: 'var(--sch-text-muted)' }}>{jo.vehicle.plateNumber}</div>
+      {needsReview && (
+        <span
+          className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full"
+          style={{ background: "rgba(245,158,11,0.15)", color: "var(--sch-accent)" }}
+        >
+          Pending Review
+        </span>
+      )}
       <div className="flex items-center gap-1 text-xs mt-auto" style={{ color: 'var(--sch-text-muted)' }}>
         <Wrench className="h-3 w-3" />
         <span className={techNames.size === 0 ? "text-red-400" : ""}>
-          {techNames.size === 0 ? "⚠ Unassigned" : mechDisplay}
+          {techNames.size === 0 ? "Unassigned" : mechDisplay}
         </span>
       </div>
     </button>
