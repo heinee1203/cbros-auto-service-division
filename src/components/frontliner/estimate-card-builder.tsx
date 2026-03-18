@@ -15,6 +15,7 @@ import {
   ChevronDown,
 } from "lucide-react";
 import { formatPeso, centavosToPesos } from "@/lib/utils";
+import { PartsSearch } from "./parts-search";
 import {
   addLineItemAction,
   updateLineItemAction,
@@ -260,63 +261,86 @@ function AddPartForm({
   onAdd,
   onCancel,
   isPending,
+  catalogEnabled,
 }: {
-  onAdd: (desc: string, qty: number, pricePesos: string) => void;
+  onAdd: (desc: string, qty: number, pricePesos: string, apexProductId?: string, apexSku?: string) => void;
   onCancel: () => void;
   isPending: boolean;
+  catalogEnabled?: boolean;
 }) {
+  const [mode, setMode] = useState<"search" | "manual">(catalogEnabled ? "search" : "manual");
   const [desc, setDesc] = useState("");
   const [qty, setQty] = useState(1);
   const [price, setPrice] = useState("");
+  const [apexProductId, setApexProductId] = useState<string | undefined>();
+  const [apexSku, setApexSku] = useState<string | undefined>();
 
   const canSubmit = desc.trim().length > 0 && parseFloat(price) > 0;
 
   return (
     <div className="mt-3 p-3 rounded-lg border border-[var(--sch-accent)]/30 bg-[var(--sch-bg)]">
-      <input
-        type="text"
-        value={desc}
-        onChange={(e) => setDesc(e.target.value)}
-        placeholder="Part description"
-        className="h-12 w-full rounded-lg bg-[var(--sch-surface)] border border-[var(--sch-border)] px-3 text-[var(--sch-text)] placeholder:text-[var(--sch-text-muted)]/50 focus:outline-none focus:ring-2 focus:ring-[var(--sch-accent)] mb-3"
-      />
-      <div className="flex items-center gap-3 mb-3">
-        <div className="flex-shrink-0">
-          <label className="text-xs text-[var(--sch-text-muted)] mb-1 block">
-            Qty
-          </label>
-          <QtyStepper value={qty} onChange={setQty} disabled={isPending} />
+      {mode === "search" ? (
+        <div className="mb-3">
+          <PartsSearch
+            onSelect={(part) => {
+              setDesc(part.description);
+              setPrice(part.pricePesos.toString());
+              setApexProductId(part.apexProductId);
+              setApexSku(part.apexSku);
+              setMode("manual");
+            }}
+            onManualEntry={() => setMode("manual")}
+            disabled={isPending}
+          />
         </div>
-        <div className="flex-1">
-          <label className="text-xs text-[var(--sch-text-muted)] mb-1 block">
-            Price
-          </label>
-          <PesoInput value={price} onChange={setPrice} disabled={isPending} />
-        </div>
-      </div>
-      <div className="flex gap-2 justify-end">
-        <button
-          type="button"
-          onClick={onCancel}
-          disabled={isPending}
-          className="h-10 px-4 rounded-lg border border-[var(--sch-border)] text-[var(--sch-text-muted)] text-sm font-medium disabled:opacity-40"
-        >
-          Cancel
-        </button>
-        <button
-          type="button"
-          onClick={() => canSubmit && onAdd(desc.trim(), qty, price)}
-          disabled={!canSubmit || isPending}
-          className="h-10 px-4 rounded-lg bg-[var(--sch-accent)] text-black text-sm font-semibold disabled:opacity-40 flex items-center gap-1.5"
-        >
-          {isPending ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          ) : (
-            <Plus className="h-4 w-4" />
-          )}
-          Add
-        </button>
-      </div>
+      ) : (
+        <>
+          <input
+            type="text"
+            value={desc}
+            onChange={(e) => setDesc(e.target.value)}
+            placeholder="Part description"
+            className="h-12 w-full rounded-lg bg-[var(--sch-surface)] border border-[var(--sch-border)] px-3 text-[var(--sch-text)] placeholder:text-[var(--sch-text-muted)]/50 focus:outline-none focus:ring-2 focus:ring-[var(--sch-accent)] mb-3"
+          />
+          <div className="flex items-center gap-3 mb-3">
+            <div className="flex-shrink-0">
+              <label className="text-xs text-[var(--sch-text-muted)] mb-1 block">
+                Qty
+              </label>
+              <QtyStepper value={qty} onChange={setQty} disabled={isPending} />
+            </div>
+            <div className="flex-1">
+              <label className="text-xs text-[var(--sch-text-muted)] mb-1 block">
+                Price
+              </label>
+              <PesoInput value={price} onChange={setPrice} disabled={isPending} />
+            </div>
+          </div>
+          <div className="flex gap-2 justify-end">
+            <button
+              type="button"
+              onClick={onCancel}
+              disabled={isPending}
+              className="h-10 px-4 rounded-lg border border-[var(--sch-border)] text-[var(--sch-text-muted)] text-sm font-medium disabled:opacity-40"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={() => canSubmit && onAdd(desc.trim(), qty, price, apexProductId, apexSku)}
+              disabled={!canSubmit || isPending}
+              className="h-10 px-4 rounded-lg bg-[var(--sch-accent)] text-black text-sm font-semibold disabled:opacity-40 flex items-center gap-1.5"
+            >
+              {isPending ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Plus className="h-4 w-4" />
+              )}
+              Add
+            </button>
+          </div>
+        </>
+      )}
     </div>
   );
 }
@@ -334,6 +358,7 @@ function ServiceCard({
   onAddPart,
   onRemovePart,
   isPending,
+  catalogEnabled,
 }: {
   card: ServiceCardData;
   addingPart: boolean;
@@ -345,10 +370,13 @@ function ServiceCard({
     desc: string,
     qty: number,
     pricePesos: string,
-    partCount: number
+    partCount: number,
+    apexProductId?: string,
+    apexSku?: string
   ) => void;
   onRemovePart: (itemId: string) => void;
   isPending: boolean;
+  catalogEnabled?: boolean;
 }) {
   const cardTotal = calculateCardTotal(card);
   const laborItem = card.laborItem;
@@ -463,17 +491,20 @@ function ServiceCard({
           {/* Add Part button / form */}
           {addingPart ? (
             <AddPartForm
-              onAdd={(desc, qty, price) =>
+              onAdd={(desc, qty, price, apexProductId, apexSku) =>
                 onAddPart(
                   card.serviceCatalogId,
                   desc,
                   qty,
                   price,
-                  card.partItems.length
+                  card.partItems.length,
+                  apexProductId,
+                  apexSku
                 )
               }
               onCancel={onToggleAddPart}
               isPending={isPending}
+              catalogEnabled={catalogEnabled}
             />
           ) : (
             <button
@@ -500,11 +531,13 @@ function OtherItemsCard({
   onRemove,
   onAddItem,
   isPending,
+  catalogEnabled,
 }: {
   items: LineItem[];
   onRemove: (id: string) => void;
-  onAddItem: (desc: string, qty: number, pricePesos: string) => void;
+  onAddItem: (desc: string, qty: number, pricePesos: string, apexProductId?: string, apexSku?: string) => void;
   isPending: boolean;
+  catalogEnabled?: boolean;
 }) {
   const [showAddForm, setShowAddForm] = useState(false);
 
@@ -557,12 +590,13 @@ function OtherItemsCard({
       {showAddForm ? (
         <div className="mt-3">
           <AddPartForm
-            onAdd={(desc, qty, price) => {
-              onAddItem(desc, qty, price);
+            onAdd={(desc, qty, price, apexProductId, apexSku) => {
+              onAddItem(desc, qty, price, apexProductId, apexSku);
               setShowAddForm(false);
             }}
             onCancel={() => setShowAddForm(false)}
             isPending={isPending}
+            catalogEnabled={catalogEnabled}
           />
         </div>
       ) : (
@@ -654,6 +688,16 @@ export default function EstimateCardBuilder({
   const [saving, setSaving] = useState(false);
   const [approvalUrl, setApprovalUrl] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
+  const [catalogEnabled, setCatalogEnabled] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/parts/search?q=test&limit=1")
+      .then(res => res.json())
+      .then(data => {
+        setCatalogEnabled(data.error !== "catalog_disabled");
+      })
+      .catch(() => setCatalogEnabled(false));
+  }, []);
 
   // Debounce timer ref for hours changes
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -754,7 +798,9 @@ export default function EstimateCardBuilder({
       desc: string,
       qty: number,
       pricePesos: string,
-      partCount: number
+      partCount: number,
+      apexProductId?: string,
+      apexSku?: string
     ) => {
       const price = parseFloat(pricePesos);
       if (isNaN(price) || price <= 0) return;
@@ -769,6 +815,8 @@ export default function EstimateCardBuilder({
           unitCost: price, // Action expects pesos
           markup: 0,
           sortOrder: (partCount + 1) * 10,
+          ...(apexProductId && { apexProductId }),
+          ...(apexSku && { apexSku }),
         });
 
         if (result.success && result.data) {
@@ -814,7 +862,7 @@ export default function EstimateCardBuilder({
 
   // Add item to "Other Items" (no serviceCatalogId)
   const handleAddOtherItem = useCallback(
-    (desc: string, qty: number, pricePesos: string) => {
+    (desc: string, qty: number, pricePesos: string, apexProductId?: string, apexSku?: string) => {
       const price = parseFloat(pricePesos);
       if (isNaN(price) || price <= 0) return;
 
@@ -828,6 +876,8 @@ export default function EstimateCardBuilder({
           unitCost: price,
           markup: 0,
           sortOrder: (otherItems.length + 1) * 10,
+          ...(apexProductId && { apexProductId }),
+          ...(apexSku && { apexSku }),
         });
 
         if (result.success && result.data) {
@@ -996,6 +1046,7 @@ export default function EstimateCardBuilder({
             onAddPart={handleAddPart}
             onRemovePart={handleRemovePart}
             isPending={isPending}
+            catalogEnabled={catalogEnabled}
           />
         ))}
 
@@ -1004,6 +1055,7 @@ export default function EstimateCardBuilder({
           onRemove={handleRemovePart}
           onAddItem={handleAddOtherItem}
           isPending={isPending}
+          catalogEnabled={catalogEnabled}
         />
 
         {serviceCards.length === 0 && otherItems.length === 0 && (

@@ -74,6 +74,8 @@ export const estimateLineItemSchema = z.object({
   estimatedHours: z.coerce.number().min(0).optional().nullable(),
   assignedTechnicianId: z.string().optional().nullable(),
   sortOrder: z.coerce.number().int().default(0),
+  apexProductId: z.string().optional().nullable(),
+  apexSku: z.string().optional().nullable(),
 });
 
 export type EstimateLineItemInput = z.infer<typeof estimateLineItemSchema>;

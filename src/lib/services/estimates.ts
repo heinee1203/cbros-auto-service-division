@@ -98,6 +98,8 @@ export async function addLineItem(
       estimatedHours: data.estimatedHours ?? null,
       assignedTechnicianId: data.assignedTechnicianId ?? null,
       sortOrder: data.sortOrder,
+      apexProductId: data.apexProductId ?? null,
+      apexSku: data.apexSku ?? null,
       createdBy: userId,
       updatedBy: userId,
     },
