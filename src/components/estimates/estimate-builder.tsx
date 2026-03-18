@@ -67,6 +67,7 @@ interface EstimateVersion {
   lineItems: LineItem[];
 }
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 interface Props {
   estimateRequestId: string;
   version: EstimateVersion;
@@ -74,6 +75,8 @@ interface Props {
   approvalToken?: string | null;
   customerId?: string;
   vehicleId?: string;
+  approvalStatus?: any;
+  currentUserRole?: string;
 }
 
 interface ServiceCatalogItem {
@@ -98,7 +101,7 @@ const GROUPS: EstimateLineItemGroup[] = [
 // Component
 // ---------------------------------------------------------------------------
 
-export function EstimateBuilder({ estimateRequestId, version, status, approvalToken, customerId, vehicleId }: Props) {
+export function EstimateBuilder({ estimateRequestId, version, status, approvalToken, customerId, vehicleId, approvalStatus, currentUserRole }: Props) {
   const router = useRouter();
   const [collapsedGroups, setCollapsedGroups] = useState<
     Record<string, boolean>
@@ -158,6 +161,8 @@ export function EstimateBuilder({ estimateRequestId, version, status, approvalTo
           approvalToken={approvalToken}
           customerId={customerId}
           vehicleId={vehicleId}
+          approvalStatus={approvalStatus}
+          currentUserRole={currentUserRole}
         />
       </div>
     </div>

@@ -436,6 +436,12 @@ function mapCategoriesToBayTypes(categories: string[]): string[] {
     "Undercoating & Rust Protection": "GENERAL",
     "Collision Repair": "GENERAL",
     "Car Restoration": "GENERAL",
+    "Preventive Maintenance Service (PMS)": "GENERAL",
+    "Brake System": "GENERAL",
+    "Suspension & Steering": "GENERAL",
+    "Engine & Drivetrain": "GENERAL",
+    "Electrical & Diagnostics": "GENERAL",
+    "Tires & Wheels": "GENERAL",
   };
   return Array.from(new Set(categories.map(c => map[c]).filter((v): v is string => Boolean(v))));
 }

@@ -64,6 +64,21 @@
   --sch-input-border: rgba(255, 255, 255, 0.2);
   --sch-accent: #F59E0B;
   --sch-accent-hover: #D97706;
+  color-scheme: dark;
+}
+
+/* Dark theme — native <select> dropdown & <option> contrast fix */
+[data-schedule-theme="dark"] select,
+[data-schedule-theme="dark"] select option {
+  background-color: #1E293B;
+  color: #E2E8F0;
+}
+
+/* Dark theme — date/time input popup contrast */
+[data-schedule-theme="dark"] input[type="date"],
+[data-schedule-theme="dark"] input[type="time"],
+[data-schedule-theme="dark"] input[type="datetime-local"] {
+  color-scheme: dark;
 }
 
 [data-schedule-theme="light"] {

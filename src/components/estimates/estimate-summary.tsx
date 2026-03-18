@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Loader2, Send, CheckCircle, ClipboardCheck, Printer, CalendarPlus } from "lucide-react";
+import { Loader2, Send, CheckCircle, ClipboardCheck, Printer, CalendarPlus, Lock } from "lucide-react";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { AppointmentForm } from "@/components/schedule/appointment-form";
 import {
@@ -12,6 +12,7 @@ import {
 } from "@/lib/actions/estimate-actions";
 import { beginIntakeAction } from "@/lib/actions/intake-actions";
 import { formatPeso, cn } from "@/lib/utils";
+import { EstimateApprovalPanel } from "./estimate-approval-panel";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -37,6 +38,7 @@ interface EstimateVersion {
   estimatedDays: number | null;
 }
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 interface Props {
   estimateRequestId: string;
   version: EstimateVersion;
@@ -44,13 +46,15 @@ interface Props {
   approvalToken?: string | null;
   customerId?: string;
   vehicleId?: string;
+  approvalStatus?: any;
+  currentUserRole?: string;
 }
 
 // ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
 
-export function EstimateSummary({ estimateRequestId, version, status, approvalToken, customerId, vehicleId }: Props) {
+export function EstimateSummary({ estimateRequestId, version, status, approvalToken, customerId, vehicleId, approvalStatus, currentUserRole }: Props) {
   const router = useRouter();
 
   // Discount state
@@ -297,6 +301,15 @@ export function EstimateSummary({ estimateRequestId, version, status, approvalTo
         </button>
       </div>
 
+      {/* Approval Panel */}
+      {approvalStatus && currentUserRole && (
+        <EstimateApprovalPanel
+          versionId={version.id}
+          approvalStatus={approvalStatus}
+          currentUserRole={currentUserRole}
+        />
+      )}
+
       {/* Schedule Drop-Off — shown only when estimate is approved */}
       {status === "ESTIMATE_APPROVED" && (
         <div className="border-t border-surface-200 pt-3">
@@ -313,28 +326,44 @@ export function EstimateSummary({ estimateRequestId, version, status, approvalTo
       {/* Action Buttons */}
       <div className="border-t border-surface-200 pt-3 space-y-2">
         {approvalToken && (
-          <a
-            href={`/view/estimate/${approvalToken}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-surface-200 text-surface-600 hover:bg-surface-50 text-sm font-semibold transition-colors"
-          >
-            <Printer className="w-4 h-4" />
-            Print / View Estimate
-          </a>
-        )}
-        <button
-          onClick={() => setConfirmAction("ESTIMATE_SENT")}
-          disabled={statusLoading !== null}
-          className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-surface-200 text-surface-600 hover:bg-surface-50 text-sm font-semibold transition-colors disabled:opacity-50"
-        >
-          {statusLoading === "ESTIMATE_SENT" ? (
-            <Loader2 className="w-4 h-4 animate-spin" />
+          (!approvalStatus || approvalStatus.canPrintOrSend) ? (
+            <a
+              href={`/view/estimate/${approvalToken}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-surface-200 text-surface-600 hover:bg-surface-50 text-sm font-semibold transition-colors"
+            >
+              <Printer className="w-4 h-4" />
+              Print / View Estimate
+            </a>
           ) : (
-            <Send className="w-4 h-4" />
-          )}
-          Mark as Sent
-        </button>
+            <div className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-surface-200 bg-surface-100 text-surface-400 text-sm font-semibold cursor-not-allowed">
+              <Lock className="w-4 h-4" />
+              Print / View Estimate
+              <span className="text-xs font-normal">(Requires management approval)</span>
+            </div>
+          )
+        )}
+        {(!approvalStatus || approvalStatus.canPrintOrSend) ? (
+          <button
+            onClick={() => setConfirmAction("ESTIMATE_SENT")}
+            disabled={statusLoading !== null}
+            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-surface-200 text-surface-600 hover:bg-surface-50 text-sm font-semibold transition-colors disabled:opacity-50"
+          >
+            {statusLoading === "ESTIMATE_SENT" ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <Send className="w-4 h-4" />
+            )}
+            Mark as Sent
+          </button>
+        ) : (
+          <div className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-surface-200 bg-surface-100 text-surface-400 text-sm font-semibold cursor-not-allowed">
+            <Lock className="w-4 h-4" />
+            Mark as Sent
+            <span className="text-xs font-normal">(Requires management approval)</span>
+          </div>
+        )}
         <button
           onClick={() => setConfirmAction("ESTIMATE_APPROVED")}
           disabled={statusLoading !== null}
@@ -377,18 +406,26 @@ export function EstimateSummary({ estimateRequestId, version, status, approvalTo
           <p className="text-xs text-emerald-700 font-medium">
             Vehicle is approved. Ready to begin the intake process.
           </p>
-          <button
-            onClick={handleBeginIntake}
-            disabled={beginningIntake}
-            className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-700 transition-colors disabled:opacity-50"
-          >
-            {beginningIntake ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : (
-              <ClipboardCheck className="w-4 h-4" />
-            )}
-            {beginningIntake ? "Starting Intake..." : "Begin Intake / Check-In"}
-          </button>
+          {(!approvalStatus || approvalStatus.canStartWork) ? (
+            <button
+              onClick={handleBeginIntake}
+              disabled={beginningIntake}
+              className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-700 transition-colors disabled:opacity-50"
+            >
+              {beginningIntake ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <ClipboardCheck className="w-4 h-4" />
+              )}
+              {beginningIntake ? "Starting Intake..." : "Begin Intake / Check-In"}
+            </button>
+          ) : (
+            <div className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-surface-200 text-surface-400 text-sm font-semibold cursor-not-allowed">
+              <Lock className="w-4 h-4" />
+              Begin Intake / Check-In
+              <span className="text-xs font-normal">(Requires technical review)</span>
+            </div>
+          )}
         </div>
       )}
 

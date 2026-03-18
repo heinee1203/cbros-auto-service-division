@@ -117,15 +117,18 @@ interface EstimateRequest {
   estimates: Estimate[];
 }
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 interface Props {
   estimateRequest: EstimateRequest;
+  approvalStatus?: any;
+  currentUserRole?: string;
 }
 
 // ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
 
-export function EstimateDetailClient({ estimateRequest }: Props) {
+export function EstimateDetailClient({ estimateRequest, approvalStatus, currentUserRole }: Props) {
   const router = useRouter();
   const [starting, setStarting] = useState(false);
 
@@ -198,6 +201,8 @@ export function EstimateDetailClient({ estimateRequest }: Props) {
         approvalToken={version.approvalToken}
         customerId={estimateRequest.customer.id}
         vehicleId={estimateRequest.vehicle.id}
+        approvalStatus={approvalStatus}
+        currentUserRole={currentUserRole}
       />
     </div>
   );

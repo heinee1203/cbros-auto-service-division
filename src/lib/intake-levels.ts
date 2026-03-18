@@ -8,18 +8,20 @@ export type IntakeLevel = 1 | 2 | 3;
  */
 export const CATEGORY_LEVEL_MAP: Record<string, IntakeLevel> = {
   // Level 1 — Quick
-  "Preventive Maintenance": 1,
-  "Tire & Alignment": 1,
-  "Electrical": 1,
+  "Preventive Maintenance Service (PMS)": 1,
+  "Electrical & Diagnostics": 1,
+  "Tires & Wheels": 1,
   "Air Conditioning": 1,
   "Diagnostics & Inspection": 1,
   "Accessories & Add-ons": 1,
 
   // Level 2 — Standard
-  "Mechanical Repair": 2,
+  "Brake System": 2,
+  "Suspension & Steering": 2,
   "Buffing & Paint Correction": 2,
 
   // Level 3 — Full
+  "Engine & Drivetrain": 3,
   "Collision Repair": 3,
   "Painting & Refinishing": 3,
   "Car Detailing": 3,
@@ -72,7 +74,19 @@ export const QUICK_EXTERIOR_SHOTS = [
 
 /** Focused shots for Level 2 — 4 exterior + 4 work-area (determined by category) */
 export const FOCUSED_WORK_AREA_SHOTS: Record<string, { id: string; label: string; description: string }[]> = {
-  "Mechanical Repair": [
+  "Brake System": [
+    { id: "wheel-area", label: "Wheel Area", description: "Close-up of brake assembly area" },
+    { id: "undercarriage-front", label: "Undercarriage Front", description: "Under front of vehicle" },
+    { id: "undercarriage-rear", label: "Undercarriage Rear", description: "Under rear of vehicle" },
+    { id: "work-area-closeup", label: "Work Area", description: "Close-up of area to be repaired" },
+  ],
+  "Suspension & Steering": [
+    { id: "undercarriage-front", label: "Undercarriage Front", description: "Under front of vehicle" },
+    { id: "undercarriage-rear", label: "Undercarriage Rear", description: "Under rear of vehicle" },
+    { id: "wheel-area", label: "Wheel Area", description: "Close-up of suspension components" },
+    { id: "work-area-closeup", label: "Work Area", description: "Close-up of area to be repaired" },
+  ],
+  "Engine & Drivetrain": [
     { id: "engine-bay", label: "Engine Bay", description: "Open hood, engine visible" },
     { id: "undercarriage-front", label: "Undercarriage Front", description: "Under front of vehicle" },
     { id: "undercarriage-rear", label: "Undercarriage Rear", description: "Under rear of vehicle" },

@@ -1,14 +1,22 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { Cloud, CloudOff, Loader2, RefreshCw } from "lucide-react";
 import { usePhotoQueue } from "@/hooks/use-photo-queue";
 import { useNetworkStatus } from "@/hooks/use-network-status";
 
 export function SyncStatusBadge() {
+  const [mounted, setMounted] = useState(false);
   const { queueCount, isSyncing, syncNow } = usePhotoQueue();
   const { isOnline } = useNetworkStatus();
 
-  if (queueCount === 0 && isOnline) return null;
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Defer rendering until after hydration to avoid server/client mismatch
+  // (useNetworkStatus depends on navigator.onLine, usePhotoQueue on IndexedDB)
+  if (!mounted || (queueCount === 0 && isOnline)) return null;
 
   return (
     <button
