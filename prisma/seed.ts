@@ -319,6 +319,12 @@ async function main() {
     { key: "hour_overrun_critical_pct", value: "100", category: "alerts", description: "Red alert at this % of estimated hours" },
     { key: "parts_variance_threshold_pct", value: "15", category: "alerts", description: "Flag variance when actual exceeds estimated by this %" },
 
+    // Approvals
+    { key: "estimate_require_tech_review", value: "true", category: "approvals", description: "Require Service Manager/Chief Mechanic technical review before work starts" },
+    { key: "estimate_require_mgmt_approval", value: "true", category: "approvals", description: "Require GM/Operations Manager approval before printing/sending" },
+    { key: "estimate_tech_review_bypass_below", value: "0", category: "approvals", description: "Skip tech review for estimates below this amount (centavos, 0 = always required)" },
+    { key: "estimate_mgmt_approval_bypass_below", value: "0", category: "approvals", description: "Skip mgmt approval for estimates below this amount (centavos, 0 = always required)" },
+
     // Approval link expiry
     { key: "estimate_approval_link_days", value: "7", category: "documents", description: "Days before estimate approval link expires" },
 

@@ -32,6 +32,8 @@ export const PERMISSIONS = {
     UserRole.ESTIMATOR,
   ],
   "estimates:approve_discount": [UserRole.OWNER, UserRole.MANAGER],
+  "estimate:tech_review": [UserRole.OWNER, UserRole.MANAGER],
+  "estimate:mgmt_approve": [UserRole.OWNER, UserRole.MANAGER],
   "estimates:view": [
     UserRole.OWNER,
     UserRole.MANAGER,
