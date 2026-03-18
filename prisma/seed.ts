@@ -328,6 +328,11 @@ async function main() {
     // Approval link expiry
     { key: "estimate_approval_link_days", value: "7", category: "documents", description: "Days before estimate approval link expires" },
 
+    // Integrations — Apex POS
+    { key: "apex_pos_api_url", value: "", category: "integrations", description: "Apex POS API base URL" },
+    { key: "apex_pos_api_key", value: "", category: "integrations", description: "Apex POS API key for authentication" },
+    { key: "apex_pos_enabled", value: "false", category: "integrations", description: "Enable Apex POS parts catalog integration" },
+
     // QC Checklist Templates
     { key: "qc_checklist_paint_body", value: JSON.stringify([
       {"description": "Color match accuracy (natural light + fluorescent)", "sortOrder": 1},
