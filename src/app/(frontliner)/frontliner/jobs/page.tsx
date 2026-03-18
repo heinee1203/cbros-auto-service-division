@@ -33,6 +33,12 @@ export default async function FrontlinerJobsPage() {
       : null,
     bayName:
       jo.bayAssignments.length > 0 ? jo.bayAssignments[0].bay.name : null,
+    hasEstimate:
+      jo.estimates.length > 0 && jo.estimates[0].versions.length > 0,
+    latestVersionId:
+      jo.estimates.length > 0 && jo.estimates[0].versions.length > 0
+        ? jo.estimates[0].versions[0].id
+        : null,
   }));
 
   return <JobsClient jobs={jobs} />;

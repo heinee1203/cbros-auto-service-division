@@ -4,7 +4,7 @@ import { useState, useTransition, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import Link from "next/link";
-import { ExternalLink, Loader2 } from "lucide-react";
+import { ExternalLink, Loader2, ClipboardList } from "lucide-react";
 
 import { BottomSheet } from "./bottom-sheet";
 import { JobCard } from "./job-card";
@@ -22,6 +22,8 @@ type Job = {
   vehicle: { plateNumber: string; make: string; model: string };
   primaryTechnician: { firstName: string; lastName: string } | null;
   bayName: string | null;
+  hasEstimate: boolean;
+  latestVersionId: string | null;
 };
 
 interface JobsClientProps {
@@ -197,6 +199,35 @@ export function JobsClient({ jobs }: JobsClientProps) {
                   })}
                 </div>
               </div>
+            )}
+
+            {/* Estimate actions */}
+            {!selectedJob.hasEstimate && (
+              <Link
+                href={`/frontliner/estimate/job/${selectedJob.id}`}
+                className="flex h-12 w-full items-center justify-center gap-2 rounded-xl text-sm font-semibold mt-2"
+                style={{
+                  background: "var(--sch-accent)",
+                  color: "#1A1A2E",
+                }}
+              >
+                <ClipboardList className="h-4 w-4" />
+                Add Pricing
+              </Link>
+            )}
+            {selectedJob.hasEstimate && selectedJob.latestVersionId && (
+              <Link
+                href={`/frontliner/estimate/${selectedJob.latestVersionId}`}
+                className="flex h-12 w-full items-center justify-center gap-2 rounded-xl text-sm font-semibold mt-2"
+                style={{
+                  background: "var(--sch-surface)",
+                  color: "var(--sch-text)",
+                  border: "1px solid var(--sch-border)",
+                }}
+              >
+                <ClipboardList className="h-4 w-4" />
+                Edit Estimate
+              </Link>
             )}
 
             {/* Close */}

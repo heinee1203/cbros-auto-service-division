@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { Wrench, Plus, Zap, FileText, History } from "lucide-react";
+import { Wrench, Plus, Zap, FileText, History, ClipboardList } from "lucide-react";
 import { toast } from "sonner";
 import { LiveFloorGrid } from "./live-floor-grid";
 import { LiveFloorStatsBar } from "./live-floor-stats";
@@ -126,6 +126,14 @@ export default function LiveFloor() {
             <Zap className="h-4 w-4" />
             Quick Job
           </button>
+          <Link
+            href="/frontliner/estimate"
+            className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium"
+            style={{ background: "var(--sch-surface)", color: "var(--sch-text)", border: "1px solid var(--sch-border)" }}
+          >
+            <ClipboardList className="h-4 w-4" />
+            New Estimate
+          </Link>
           <Link
             href="/schedule/floor/intake"
             className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-white"

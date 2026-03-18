@@ -254,6 +254,19 @@ export async function getActiveJobsForFloor() {
         include: { bay: { select: { id: true, name: true } } },
         take: 1,
       },
+      estimates: {
+        where: { deletedAt: null },
+        select: {
+          id: true,
+          versions: {
+            where: { deletedAt: null },
+            select: { id: true, grandTotal: true },
+            take: 1,
+            orderBy: { versionNumber: "desc" as const },
+          },
+        },
+        take: 1,
+      },
     },
     orderBy: { createdAt: "desc" },
   });
