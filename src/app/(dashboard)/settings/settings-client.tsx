@@ -19,6 +19,7 @@ import {
   Plus,
   X,
   Loader2,
+  Plug,
 } from "lucide-react";
 import { updateSettingsBatchAction } from "@/lib/actions/settings-actions";
 
@@ -49,6 +50,7 @@ const CATEGORY_CONFIG: Array<{
   { key: "qc", label: "QC Checklists", icon: ClipboardCheck },
   { key: "session", label: "Session", icon: Clock },
   { key: "alerts", label: "Alerts", icon: AlertTriangle },
+  { key: "integrations", label: "Integrations", icon: Plug },
 ];
 
 function formatLabel(key: string): string {
@@ -61,8 +63,9 @@ function formatLabel(key: string): string {
 function getFieldType(
   key: string,
   category: string
-): "boolean" | "centavos" | "percentage" | "months" | "number" | "textarea" | "json_array" | "text" {
+): "boolean" | "centavos" | "percentage" | "months" | "number" | "textarea" | "json_array" | "password" | "text" {
   if (key.endsWith("_enabled")) return "boolean";
+  if (key.includes("_api_key") || key.includes("_secret") || key.includes("_token")) return "password";
   if (category === "qc") return "json_array";
   if (category === "documents" || category === "care_instructions") return "textarea";
   if (category === "labor" && key.includes("_rate")) return "centavos";
@@ -277,6 +280,17 @@ function SettingField({
         );
       }
 
+      case "password": {
+        return (
+          <input
+            type="password"
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            className="w-full rounded-lg border border-surface-200 bg-surface-50 px-3 py-2 text-sm font-mono text-primary focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+          />
+        );
+      }
+
       default: {
         return (
           <input
@@ -325,6 +339,12 @@ export function SettingsClient({
     return map;
   });
   const [isPending, startTransition] = useTransition();
+  const [testingConnection, setTestingConnection] = useState(false);
+  const [connectionResult, setConnectionResult] = useState<{
+    success: boolean;
+    productCount?: number;
+    error?: string;
+  } | null>(null);
 
   const handleChange = useCallback((key: string, value: string) => {
     setValues((prev) => ({ ...prev, [key]: value }));
@@ -409,6 +429,58 @@ export function SettingsClient({
                 />
               ))}
             </div>
+
+            {activeCategory === "integrations" && (
+              <div className="mt-4 flex items-center gap-3">
+                <button
+                  onClick={async () => {
+                    setTestingConnection(true);
+                    setConnectionResult(null);
+                    try {
+                      const res = await fetch("/api/parts/test-connection", {
+                        method: "POST",
+                      });
+                      const data = await res.json();
+                      setConnectionResult(data);
+                    } catch {
+                      setConnectionResult({
+                        success: false,
+                        error: "Network error",
+                      });
+                    } finally {
+                      setTestingConnection(false);
+                    }
+                  }}
+                  disabled={testingConnection}
+                  className="px-4 py-2 text-sm font-medium rounded-lg bg-accent text-white hover:bg-accent/90 disabled:opacity-50 flex items-center gap-2"
+                >
+                  {testingConnection ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Testing...
+                    </>
+                  ) : (
+                    <>
+                      <Plug className="h-4 w-4" />
+                      Test Connection
+                    </>
+                  )}
+                </button>
+                {connectionResult && (
+                  <span
+                    className={`text-sm ${
+                      connectionResult.success
+                        ? "text-emerald-600"
+                        : "text-red-500"
+                    }`}
+                  >
+                    {connectionResult.success
+                      ? `Connected (${connectionResult.productCount?.toLocaleString() || "?"} products)`
+                      : connectionResult.error || "Disconnected"}
+                  </span>
+                )}
+              </div>
+            )}
 
             <div className="mt-8 flex justify-end border-t border-surface-100 pt-4">
               <button
