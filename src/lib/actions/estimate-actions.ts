@@ -25,6 +25,7 @@ import {
   updateVersionDetails,
   generateApprovalToken,
 } from "@/lib/services/estimates";
+import { signTechReview, signMgmtApproval } from "@/lib/services/estimate-approvals";
 import { prisma } from "@/lib/prisma";
 import { generateDocNumber } from "@/lib/utils";
 
@@ -271,4 +272,56 @@ export async function updateEstimateStatusAction(
   revalidatePath("/estimates");
   revalidatePath(`/estimates/${estimateRequestId}`);
   return { success: true, data: approvalToken ? { approvalToken } : undefined };
+}
+
+// ---------------------------------------------------------------------------
+// 10. signTechReviewAction
+// ---------------------------------------------------------------------------
+export async function signTechReviewAction(
+  versionId: string,
+  signature: string
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const session = await getSession();
+    if (!session?.user) return { success: false, error: "Not authenticated" };
+
+    await signTechReview(versionId, session.user.id, signature);
+
+    revalidatePath("/estimates");
+    revalidatePath("/frontliner");
+    revalidatePath("/schedule/floor");
+
+    return { success: true };
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Failed to sign technical review",
+    };
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 11. signMgmtApprovalAction
+// ---------------------------------------------------------------------------
+export async function signMgmtApprovalAction(
+  versionId: string,
+  signature: string
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const session = await getSession();
+    if (!session?.user) return { success: false, error: "Not authenticated" };
+
+    await signMgmtApproval(versionId, session.user.id, signature);
+
+    revalidatePath("/estimates");
+    revalidatePath("/frontliner");
+    revalidatePath("/schedule/floor");
+
+    return { success: true };
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Failed to sign management approval",
+    };
+  }
 }
