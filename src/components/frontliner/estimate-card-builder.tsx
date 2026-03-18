@@ -498,13 +498,17 @@ function ServiceCard({
 function OtherItemsCard({
   items,
   onRemove,
+  onAddItem,
   isPending,
 }: {
   items: LineItem[];
   onRemove: (id: string) => void;
+  onAddItem: (desc: string, qty: number, pricePesos: string) => void;
   isPending: boolean;
 }) {
-  if (items.length === 0) return null;
+  const [showAddForm, setShowAddForm] = useState(false);
+
+  if (items.length === 0 && !showAddForm) return null;
 
   const total = items.reduce((sum, item) => sum + item.subtotal, 0);
 
@@ -548,6 +552,29 @@ function OtherItemsCard({
           </div>
         </div>
       ))}
+
+      {/* Add Item form */}
+      {showAddForm ? (
+        <div className="mt-3">
+          <AddPartForm
+            onAdd={(desc, qty, price) => {
+              onAddItem(desc, qty, price);
+              setShowAddForm(false);
+            }}
+            onCancel={() => setShowAddForm(false)}
+            isPending={isPending}
+          />
+        </div>
+      ) : (
+        <button
+          type="button"
+          onClick={() => setShowAddForm(true)}
+          className="mt-3 flex items-center gap-1.5 text-sm font-medium text-[var(--sch-accent)] hover:opacity-80"
+        >
+          <Plus className="h-4 w-4" />
+          Add Item
+        </button>
+      )}
     </div>
   );
 }
@@ -785,6 +812,51 @@ export default function EstimateCardBuilder({
     });
   }, []);
 
+  // Add item to "Other Items" (no serviceCatalogId)
+  const handleAddOtherItem = useCallback(
+    (desc: string, qty: number, pricePesos: string) => {
+      const price = parseFloat(pricePesos);
+      if (isNaN(price) || price <= 0) return;
+
+      startTransition(async () => {
+        const result = await addLineItemAction(versionId, {
+          group: "PARTS",
+          description: desc,
+          serviceCatalogId: null,
+          quantity: qty,
+          unit: "pcs",
+          unitCost: price,
+          markup: 0,
+          sortOrder: (otherItems.length + 1) * 10,
+        });
+
+        if (result.success && result.data) {
+          const centavos = Math.round(price * 100);
+          const subtotal = Math.round(qty * centavos);
+          const newItem: LineItem = {
+            id: result.data.id as string,
+            group: "PARTS",
+            description: desc,
+            serviceCatalogId: null,
+            quantity: qty,
+            unit: "pcs",
+            unitCost: centavos,
+            markup: 0,
+            subtotal,
+            notes: null,
+            estimatedHours: null,
+            sortOrder: (otherItems.length + 1) * 10,
+          };
+          setLineItems((prev) => [...prev, newItem]);
+          toast.success("Item added");
+        } else {
+          toast.error(result.error || "Failed to add item");
+        }
+      });
+    },
+    [versionId, otherItems.length]
+  );
+
   // ---------------------------------------------------------------------------
   // Discount handler
   // ---------------------------------------------------------------------------
@@ -930,6 +1002,7 @@ export default function EstimateCardBuilder({
         <OtherItemsCard
           items={otherItems}
           onRemove={handleRemovePart}
+          onAddItem={handleAddOtherItem}
           isPending={isPending}
         />
 

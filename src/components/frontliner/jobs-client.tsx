@@ -111,13 +111,36 @@ export function JobsClient({ jobs }: JobsClientProps) {
       {/* Job cards */}
       {filteredJobs.length === 0 ? (
         <div
-          className="rounded-xl p-8 text-center"
+          className="rounded-xl p-8 text-center space-y-4"
           style={{
             background: "var(--sch-card)",
             color: "var(--sch-text-muted)",
           }}
         >
-          No jobs in this category
+          <p>No active jobs</p>
+          <div className="flex flex-wrap items-center justify-center gap-3">
+            <Link
+              href="/frontliner/intake"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium"
+              style={{ background: "var(--sch-accent)", color: "#1A1A2E" }}
+            >
+              New Intake
+            </Link>
+            <Link
+              href="/frontliner/estimate"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium"
+              style={{ background: "var(--sch-surface)", color: "var(--sch-text)", border: "1px solid var(--sch-border)" }}
+            >
+              New Estimate
+            </Link>
+            <Link
+              href="/schedule/floor"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium"
+              style={{ color: "var(--sch-text-muted)" }}
+            >
+              Back to Live Floor
+            </Link>
+          </div>
         </div>
       ) : (
         <div className="space-y-3">
@@ -218,7 +241,7 @@ export function JobsClient({ jobs }: JobsClientProps) {
             )}
             {selectedJob.hasEstimate && selectedJob.latestVersionId && (
               <Link
-                href={`/frontliner/estimate/${selectedJob.latestVersionId}`}
+                href={`/frontliner/estimate/${selectedJob.latestVersionId}?returnTo=/frontliner/jobs`}
                 className="flex h-12 w-full items-center justify-center gap-2 rounded-xl text-sm font-semibold mt-2"
                 style={{
                   background: "var(--sch-surface)",

@@ -727,7 +727,7 @@ export function RegistryEstimateDetail({ data }: { data: EstimateDetailData }) {
         {/* Edit Estimate */}
         {version && (
           <Link
-            href={`/frontliner/estimate/${version.id}`}
+            href={`/frontliner/estimate/${version.id}?returnTo=${encodeURIComponent(`/schedule/registry/estimate/${data.requestId}`)}`}
             className="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-semibold"
             style={{
               background: "var(--sch-surface)",

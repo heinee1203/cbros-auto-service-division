@@ -1,10 +1,11 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import EstimateCardBuilder from "./estimate-card-builder";
 
 interface EstimateEditWrapperProps {
   versionId: string;
+  returnTo?: string;
   initialLineItems: {
     id: string;
     group: string;
@@ -34,6 +35,7 @@ interface EstimateEditWrapperProps {
 
 export function EstimateEditWrapper({
   versionId,
+  returnTo,
   initialLineItems,
   initialVersion,
 }: EstimateEditWrapperProps) {
@@ -43,7 +45,7 @@ export function EstimateEditWrapper({
       versionId={versionId}
       initialLineItems={initialLineItems}
       initialVersion={initialVersion}
-      onSave={() => router.back()}
+      onSave={() => router.push(returnTo || "/schedule/registry")}
     />
   );
 }

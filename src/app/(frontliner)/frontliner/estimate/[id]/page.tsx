@@ -14,10 +14,12 @@ const EstimateEditWrapper = dynamic(
 
 interface Props {
   params: { id: string };
+  searchParams: { returnTo?: string };
 }
 
-export default async function FrontlinerEditEstimatePage({ params }: Props) {
+export default async function FrontlinerEditEstimatePage({ params, searchParams }: Props) {
   const { id } = params;
+  const returnTo = searchParams.returnTo || "/schedule/registry";
   const session = await getSession();
   if (!session?.user) redirect("/login");
   if (!can(session.user.role, "estimates:create")) redirect("/frontliner");
@@ -72,7 +74,7 @@ export default async function FrontlinerEditEstimatePage({ params }: Props) {
         }}
       >
         <a
-          href="/frontliner/jobs"
+          href={returnTo}
           className="p-2 -ml-2 rounded-lg"
           style={{ color: "var(--sch-text-muted)" }}
         >
@@ -93,6 +95,7 @@ export default async function FrontlinerEditEstimatePage({ params }: Props) {
       <div className="flex-1 overflow-y-auto">
         <EstimateEditWrapper
           versionId={id}
+          returnTo={returnTo}
           initialLineItems={lineItems}
           initialVersion={versionSummary}
         />
