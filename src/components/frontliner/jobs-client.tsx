@@ -24,6 +24,7 @@ type Job = {
   bayName: string | null;
   hasEstimate: boolean;
   latestVersionId: string | null;
+  estimateRequestId: string | null;
 };
 
 interface JobsClientProps {
@@ -227,6 +228,20 @@ export function JobsClient({ jobs }: JobsClientProps) {
               >
                 <ClipboardList className="h-4 w-4" />
                 Edit Estimate
+              </Link>
+            )}
+            {selectedJob.hasEstimate && selectedJob.estimateRequestId && (
+              <Link
+                href={`/schedule/registry/estimate/${selectedJob.estimateRequestId}`}
+                className="flex h-12 w-full items-center justify-center gap-2 rounded-xl text-sm font-semibold mt-2"
+                style={{
+                  background: "var(--sch-surface)",
+                  color: "var(--sch-text-muted)",
+                  border: "1px solid var(--sch-border)",
+                }}
+              >
+                <ClipboardList className="h-4 w-4" />
+                View Estimate
               </Link>
             )}
 

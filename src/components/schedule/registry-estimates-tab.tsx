@@ -286,7 +286,7 @@ export function RegistryEstimatesTab() {
                 return (
                   <tr
                     key={est.id}
-                    onClick={() => router.push(`/estimates/${est.id}`)}
+                    onClick={() => router.push(`/schedule/registry/estimate/${est.id}`)}
                     className="cursor-pointer transition-colors"
                     style={{ borderBottom: "1px solid var(--sch-border)" }}
                     onMouseEnter={(e) =>

@@ -39,6 +39,8 @@ export default async function FrontlinerJobsPage() {
       jo.estimates.length > 0 && jo.estimates[0].versions.length > 0
         ? jo.estimates[0].versions[0].id
         : null,
+    estimateRequestId:
+      jo.estimates.length > 0 ? jo.estimates[0].estimateRequestId : null,
   }));
 
   return <JobsClient jobs={jobs} />;

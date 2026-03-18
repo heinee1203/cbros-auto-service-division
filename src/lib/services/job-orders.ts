@@ -258,6 +258,7 @@ export async function getActiveJobsForFloor() {
         where: { deletedAt: null },
         select: {
           id: true,
+          estimateRequestId: true,
           versions: {
             where: { deletedAt: null },
             select: {
