@@ -810,13 +810,20 @@ export function InquiryWizard() {
   const renderStep4 = () => (
     <div className="space-y-4">
       <h2 className="text-lg font-semibold text-primary">Photos</h2>
-      <div className="border-2 border-dashed border-surface-300 rounded-xl p-12 flex flex-col items-center justify-center text-center">
+      <button
+        type="button"
+        onClick={handleNext}
+        className="w-full border-2 border-dashed border-surface-300 rounded-xl p-12 flex flex-col items-center justify-center text-center hover:border-accent/50 hover:bg-accent/5 transition-colors cursor-pointer"
+      >
         <Camera className="w-12 h-12 text-surface-300 mb-3" />
         <p className="text-sm text-surface-500 font-medium">
           Photos can be added after creating the estimate request.
         </p>
-        <p className="text-xs text-surface-400 mt-1">Skip for now</p>
-      </div>
+        <span className="text-sm text-accent hover:text-accent-600 underline underline-offset-2 font-medium mt-2 inline-flex items-center gap-1">
+          Skip for now
+          <ChevronRight className="w-3.5 h-3.5" />
+        </span>
+      </button>
     </div>
   );
 
