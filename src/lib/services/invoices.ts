@@ -276,14 +276,20 @@ export async function generateInvoice(jobOrderId: string, userId: string) {
     discountValue
   );
 
-  const vatableAmount = preDiscountTotal - discount;
-
+  // Prices are VAT-inclusive — back out VAT from the inclusive total (BIR format)
+  const totalAfterDiscount = preDiscountTotal - discount;
   const { vatEnabled, vatRate } = await getVatSettings();
+
+  // VATable Sales = Total / (1 + rate), VAT = Total - VATable Sales
+  const vatableAmount = vatEnabled
+    ? Math.round(totalAfterDiscount / (1 + vatRate / 100))
+    : totalAfterDiscount;
   const vatAmount = vatEnabled
-    ? Math.round(vatableAmount * (vatRate / 100))
+    ? totalAfterDiscount - vatableAmount
     : 0;
 
-  const grandTotal = vatableAmount + vatAmount;
+  // Grand total stays the same as the quoted price — VAT is already included
+  const grandTotal = totalAfterDiscount;
   const balanceDue = grandTotal;
   const estimatedTotal = grandTotal;
 
@@ -614,14 +620,18 @@ export async function recalculateInvoiceTotals(invoiceId: string) {
     invoice.discountValue
   );
 
-  const vatableAmount = preDiscountTotal - discount;
-
+  // Prices are VAT-inclusive — back out VAT from the inclusive total (BIR format)
+  const totalAfterDiscount = preDiscountTotal - discount;
   const { vatEnabled, vatRate } = await getVatSettings();
+
+  const vatableAmount = vatEnabled
+    ? Math.round(totalAfterDiscount / (1 + vatRate / 100))
+    : totalAfterDiscount;
   const vatAmount = vatEnabled
-    ? Math.round(vatableAmount * (vatRate / 100))
+    ? totalAfterDiscount - vatableAmount
     : 0;
 
-  const grandTotal = vatableAmount + vatAmount;
+  const grandTotal = totalAfterDiscount;
   const balanceDue = grandTotal - invoice.totalPaid;
 
   // Determine payment status

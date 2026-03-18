@@ -349,19 +349,14 @@ function EditSupplement({
               )}
             </span>
           </div>
-          <div className="flex justify-between">
-            <span className="text-surface-500">VAT (12%)</span>
-            <span className="font-mono text-primary">
-              {formatPeso(supplement.vatAmount)}
-            </span>
-          </div>
           <div className="border-t border-surface-200 pt-1.5 mt-1.5" />
           <div className="flex justify-between font-semibold">
-            <span className="text-primary">Grand Total</span>
+            <span className="text-primary">Total</span>
             <span className="font-mono text-primary">
               {formatPeso(supplement.grandTotal)}
             </span>
           </div>
+          <p className="text-xs text-surface-400 italic mt-1">*Prices are VAT-inclusive</p>
         </div>
       </div>
 

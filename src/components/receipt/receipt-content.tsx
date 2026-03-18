@@ -22,6 +22,8 @@ interface ReceiptData {
   invoice: {
     invoiceNumber: string;
     grandTotal: number;
+    vatableAmount: number;
+    vatAmount: number;
     orNumber: string | null;
   };
   customer: {
@@ -132,6 +134,25 @@ export function ReceiptContent({ data }: { data: ReceiptData }) {
           <span>Balance After:</span>
           <span>{formatPeso(runningBalance)}</span>
         </div>
+
+        {/* BIR VAT Breakdown */}
+        {invoice.vatAmount > 0 && (
+          <>
+            <hr className="border-dashed border-surface-400 my-2" />
+            <div className="flex justify-between">
+              <span>VATable Sales:</span>
+              <span>{formatPeso(invoice.vatableAmount)}</span>
+            </div>
+            <div className="flex justify-between">
+              <span>12% VAT:</span>
+              <span>{formatPeso(invoice.vatAmount)}</span>
+            </div>
+            <div className="flex justify-between">
+              <span>VAT-Exempt:</span>
+              <span>{formatPeso(0)}</span>
+            </div>
+          </>
+        )}
 
         <hr className="border-dashed border-surface-400 my-2" />
 

@@ -33,6 +33,8 @@ export default async function PublicReceiptPage({ params }: ReceiptPageProps) {
     invoice: {
       invoiceNumber: data.invoice.invoiceNumber,
       grandTotal: data.invoice.grandTotal,
+      vatableAmount: data.invoice.vatableAmount,
+      vatAmount: data.invoice.vatAmount,
       orNumber: data.invoice.orNumber,
     },
     customer: {

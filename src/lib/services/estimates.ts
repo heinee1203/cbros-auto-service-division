@@ -265,8 +265,10 @@ export async function recalculateVersionTotals(versionId: string) {
   }
 
   const afterDiscount = rawTotal - discountAmount;
-  const vatAmount = Math.round(afterDiscount * (version.vatRate / 100));
-  const grandTotal = afterDiscount + vatAmount;
+
+  // Prices are VAT-inclusive — no VAT added on top for estimates
+  const vatAmount = 0;
+  const grandTotal = afterDiscount;
 
   const updated = await prisma.estimateVersion.update({
     where: { id: versionId },

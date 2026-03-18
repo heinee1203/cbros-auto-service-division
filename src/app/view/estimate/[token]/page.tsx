@@ -226,23 +226,11 @@ export default async function PublicEstimatePage({ params }: PublicEstimatePageP
                 </div>
               )}
 
-              {version.vatAmount > 0 && (
-                <>
-                  <div className="flex justify-between">
-                    <span className="text-surface-500">VATable Amount</span>
-                    <span>{formatPeso(afterDiscount)}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-surface-500">VAT ({version.vatRate}%)</span>
-                    <span>{formatPeso(version.vatAmount)}</span>
-                  </div>
-                </>
-              )}
-
               <div className="flex justify-between border-t border-surface-300 pt-2 text-base font-bold">
-                <span>Grand Total</span>
+                <span>Total</span>
                 <span>{formatPeso(version.grandTotal)}</span>
               </div>
+              <p className="text-xs text-surface-400 italic mt-1">*Prices are VAT-inclusive</p>
             </div>
           </div>
 

@@ -807,29 +807,35 @@ export default function InvoiceClient({
               </div>
             )}
 
-            {/* VAT */}
-            <div className="flex justify-between text-sm">
-              <span className="text-surface-500">VATable Amount</span>
-              <span className="font-mono font-medium text-primary">
-                {formatPeso(invoice.vatableAmount)}
-              </span>
-            </div>
-            <div className="flex justify-between text-sm">
-              <span className="text-surface-500">VAT (12%)</span>
-              <span className="font-mono font-medium text-primary">
-                {formatPeso(invoice.vatAmount)}
-              </span>
-            </div>
-
-            {/* Grand Total */}
+            {/* Total Amount Due */}
             <div className="flex justify-between pt-2 border-t border-surface-200">
               <span className="text-base font-bold text-primary">
-                Grand Total
+                Total Amount Due
               </span>
               <span className="text-lg font-bold font-mono text-accent-600">
                 {formatPeso(invoice.grandTotal)}
               </span>
             </div>
+
+            {/* BIR VAT Breakdown (backed out from inclusive price) */}
+            {invoice.vatAmount > 0 && (
+              <div className="space-y-1 pt-2 border-t border-dashed border-surface-200">
+                <p className="text-xs font-medium text-surface-400 uppercase tracking-wide">VAT Breakdown (BIR)</p>
+                <div className="flex justify-between text-xs text-surface-500">
+                  <span>VATable Sales</span>
+                  <span className="font-mono">{formatPeso(invoice.vatableAmount)}</span>
+                </div>
+                <div className="flex justify-between text-xs text-surface-500">
+                  <span>12% VAT</span>
+                  <span className="font-mono">{formatPeso(invoice.vatAmount)}</span>
+                </div>
+                <div className="flex justify-between text-xs text-surface-500">
+                  <span>VAT-Exempt Sales</span>
+                  <span className="font-mono">{formatPeso(0)}</span>
+                </div>
+              </div>
+            )}
+            <p className="text-xs text-surface-400 italic">*Prices are VAT-inclusive</p>
 
             {/* Insurance Split */}
             {job.isInsuranceJob && (

@@ -168,7 +168,7 @@ export default function EstimateTabClient({
                 </div>
                 <div className="text-right">
                   <span className="text-xs text-surface-400 block">
-                    Grand Total
+                    Total
                   </span>
                   <span className="font-mono text-lg font-bold text-primary">
                     {formatPeso(latestVersion.grandTotal)}
@@ -293,19 +293,14 @@ export default function EstimateTabClient({
                     )}
                   </span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-surface-500">VAT (12%)</span>
-                  <span className="font-mono text-primary">
-                    {formatPeso(latestVersion.vatAmount)}
-                  </span>
-                </div>
                 <div className="border-t border-surface-200 pt-1.5 mt-1.5" />
                 <div className="flex justify-between font-semibold">
-                  <span className="text-primary">Grand Total</span>
+                  <span className="text-primary">Total</span>
                   <span className="font-mono text-primary">
                     {formatPeso(latestVersion.grandTotal)}
                   </span>
                 </div>
+                <p className="text-xs text-surface-400 italic mt-1">*Prices are VAT-inclusive</p>
               </div>
             </div>
           </div>

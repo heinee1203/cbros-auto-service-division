@@ -276,12 +276,6 @@ export default async function SupplementApprovalPage({
                   {formatPeso(subtotal)}
                 </span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-gray-500">VAT (12%)</span>
-                <span className="font-mono font-medium text-gray-900">
-                  {formatPeso(supplement.vatAmount)}
-                </span>
-              </div>
               <div className="border-t border-gray-200 pt-1.5 mt-1.5" />
               <div className="flex justify-between text-base font-bold">
                 <span className="text-gray-900">Total</span>
@@ -289,6 +283,7 @@ export default async function SupplementApprovalPage({
                   {formatPeso(supplement.grandTotal)}
                 </span>
               </div>
+              <p className="text-xs text-gray-400 italic mt-1">*Prices are VAT-inclusive</p>
             </div>
           </div>
 

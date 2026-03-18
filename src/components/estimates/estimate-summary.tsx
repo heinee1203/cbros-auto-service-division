@@ -168,28 +168,23 @@ export function EstimateSummary({ estimateRequestId, version, status, approvalTo
     <div className="bg-white rounded-xl border border-surface-200 p-4 space-y-4">
       <h3 className="text-sm font-semibold text-primary">Estimate Summary</h3>
 
-      {/* Group Subtotals */}
+      {/* Group Subtotals — hide zero-amount rows */}
       <div className="space-y-2 text-sm">
-        <SummaryRow
-          label="Labor"
-          amount={version.subtotalLabor}
-        />
-        <SummaryRow
-          label="Parts & Materials"
-          amount={version.subtotalParts}
-        />
-        <SummaryRow
-          label="Paint & Consumables"
-          amount={version.subtotalPaint + version.subtotalMaterials}
-        />
-        <SummaryRow
-          label="Sublet / Outsourced"
-          amount={version.subtotalSublet}
-        />
-        <SummaryRow
-          label="Other"
-          amount={version.subtotalOther}
-        />
+        {version.subtotalLabor > 0 && (
+          <SummaryRow label="Labor" amount={version.subtotalLabor} />
+        )}
+        {version.subtotalParts > 0 && (
+          <SummaryRow label="Parts & Materials" amount={version.subtotalParts} />
+        )}
+        {(version.subtotalPaint + version.subtotalMaterials) > 0 && (
+          <SummaryRow label="Paint & Consumables" amount={version.subtotalPaint + version.subtotalMaterials} />
+        )}
+        {version.subtotalSublet > 0 && (
+          <SummaryRow label="Sublet / Outsourced" amount={version.subtotalSublet} />
+        )}
+        {version.subtotalOther > 0 && (
+          <SummaryRow label="Other" amount={version.subtotalOther} />
+        )}
 
         <div className="border-t border-surface-200 pt-2">
           <SummaryRow label="Subtotal" amount={rawSubtotal} bold />
@@ -252,20 +247,17 @@ export function EstimateSummary({ estimateRequestId, version, status, approvalTo
         )}
       </div>
 
-      {/* VAT + Grand Total */}
+      {/* Total (VAT-inclusive) */}
       <div className="space-y-2 border-t border-surface-200 pt-3">
-        <SummaryRow
-          label={`VAT (${version.vatRate}%)`}
-          amount={version.vatAmount}
-        />
         <div className="border-t-2 border-primary pt-2">
           <div className="flex justify-between items-center">
-            <span className="text-sm font-bold text-primary">Grand Total</span>
+            <span className="text-sm font-bold text-primary">Total</span>
             <span className="font-mono font-bold text-lg text-primary">
               {formatPeso(version.grandTotal)}
             </span>
           </div>
         </div>
+        <p className="text-xs text-surface-400 italic">*Prices are VAT-inclusive</p>
       </div>
 
       {/* Estimated Days */}

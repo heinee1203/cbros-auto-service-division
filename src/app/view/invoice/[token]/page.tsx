@@ -243,23 +243,29 @@ export default async function PublicInvoicePage({ params }: PublicInvoicePagePro
                 </div>
               )}
 
+              <div className="flex justify-between border-t border-surface-300 pt-2 text-base font-bold">
+                <span>Total Amount Due</span>
+                <span>{formatPeso(invoice.grandTotal)}</span>
+              </div>
+
+              {/* BIR VAT Breakdown (backed out from inclusive price) */}
               {invoice.vatAmount > 0 && (
-                <>
+                <div className="space-y-0.5 pt-2 border-t border-dashed border-surface-200 text-xs text-surface-500">
                   <div className="flex justify-between">
-                    <span className="text-surface-500">VATable Amount</span>
+                    <span>VATable Sales</span>
                     <span>{formatPeso(invoice.vatableAmount)}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-surface-500">VAT (12%)</span>
+                    <span>12% VAT</span>
                     <span>{formatPeso(invoice.vatAmount)}</span>
                   </div>
-                </>
+                  <div className="flex justify-between">
+                    <span>VAT-Exempt Sales</span>
+                    <span>{formatPeso(0)}</span>
+                  </div>
+                </div>
               )}
-
-              <div className="flex justify-between border-t border-surface-300 pt-2 text-base font-bold">
-                <span>Grand Total</span>
-                <span>{formatPeso(invoice.grandTotal)}</span>
-              </div>
+              <p className="text-xs text-surface-400 italic mt-1">*Prices are VAT-inclusive</p>
 
               {invoice.insurancePays > 0 && (
                 <>

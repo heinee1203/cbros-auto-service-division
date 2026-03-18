@@ -155,9 +155,10 @@ export async function createWalkInJob(
       };
     });
 
+    // Prices are VAT-inclusive — no VAT added on top
     const vatRate = 12.0;
-    const vatAmount = Math.round(subtotalLabor * (vatRate / 100));
-    const grandTotal = subtotalLabor + vatAmount;
+    const vatAmount = 0;
+    const grandTotal = subtotalLabor;
 
     const versionLabel = `${requestNumber}-v1`;
 

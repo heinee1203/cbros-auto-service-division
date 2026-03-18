@@ -209,14 +209,10 @@ export async function recalculateSupplementTotals(supplementId: string) {
     }
   }
 
-  const vatSetting = await prisma.setting.findUnique({
-    where: { key: "vat_rate" },
-  });
-  const vatRate = parseFloat(vatSetting?.value ?? "12");
-
+  // Prices are VAT-inclusive — no VAT added on top for supplemental estimates
   const subtotal = subtotalLabor + subtotalParts + subtotalMaterials + subtotalOther;
-  const vatAmount = Math.round((subtotal * vatRate) / 100);
-  const grandTotal = subtotal + vatAmount;
+  const vatAmount = 0;
+  const grandTotal = subtotal;
 
   await prisma.supplementalEstimate.update({
     where: { id: supplementId },
