@@ -79,6 +79,7 @@ model Customer {
   notes         String?
   tags          String    @default("[]") // JSON array stored as string for SQLite
   smsOptOut     Boolean   @default(false)
+  chargeAccountId String? // linked corporate/fleet charge account
 
   totalSpend    Int       @default(0)    // centavos, auto-calculated
   jobCount      Int       @default(0)    // auto-calculated
@@ -98,9 +99,11 @@ model Customer {
   jobOrders         JobOrder[]
   warranties        Warranty[]
   appointments      Appointment[]
+  chargeAccount     ChargeAccount? @relation(fields: [chargeAccountId], references: [id])
 
   @@index([phone])
   @@index([lastName, firstName])
+  @@index([chargeAccountId])
   @@index([deletedAt])
 }
 
@@ -713,6 +716,11 @@ model Invoice {
   paidInFullAt      DateTime?
   notes             String?
 
+  // Invoice type: Cash (pay now) vs Charge (corporate credit)
+  invoiceType       String    @default("CASH") // "CASH" or "CHARGE"
+  chargeAccountId   String?
+  creditTerms       String?   // "NET_30", "NET_60", "NET_15", "DUE_ON_RECEIPT"
+
   // Insurance split
   insurancePays     Int       @default(0)  // insurance portion (centavos)
   customerCopay     Int       @default(0)  // customer portion (centavos)
@@ -726,6 +734,11 @@ model Invoice {
   estimatedTotal    Int       @default(0)
   actualTotal       Int       @default(0)
 
+  // Apex POS AR sync
+  apexArSynced      Boolean   @default(false)
+  apexArId          String?
+  apexArSyncedAt    DateTime?
+
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
   createdBy         String?
@@ -734,6 +747,7 @@ model Invoice {
 
   // Relations
   jobOrder          JobOrder  @relation(fields: [jobOrderId], references: [id])
+  chargeAccount     ChargeAccount? @relation(fields: [chargeAccountId], references: [id])
   lineItems         InvoiceLineItem[]
   payments          Payment[]
 
@@ -741,6 +755,7 @@ model Invoice {
   @@index([invoiceNumber])
   @@index([orNumber])
   @@index([paymentStatus])
+  @@index([chargeAccountId])
   @@index([deletedAt])
 }
 
@@ -792,6 +807,38 @@ model Payment {
 
   @@index([invoiceId])
   @@index([method])
+  @@index([deletedAt])
+}
+
+// ---------------------------------------------------------------------------
+// Charge Account (Corporate / Fleet AR)
+// ---------------------------------------------------------------------------
+model ChargeAccount {
+  id              String    @id @default(cuid())
+  companyName     String
+  contactPerson   String?
+  phone           String?
+  email           String?
+  address         String?
+  tinNumber       String?
+  creditLimit     Int?      // centavos, null = no limit
+  creditTerms     String    @default("NET_30") // NET_30, NET_60, NET_15, DUE_ON_RECEIPT
+  currentBalance  Int       @default(0) // running AR balance in centavos
+  isActive        Boolean   @default(true)
+  notes           String?
+  apexCustomerId  String?
+
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  createdBy       String?
+  updatedBy       String?
+  deletedAt       DateTime?
+
+  // Relations
+  invoices        Invoice[]
+  customers       Customer[]
+
+  @@index([companyName])
   @@index([deletedAt])
 }
 
