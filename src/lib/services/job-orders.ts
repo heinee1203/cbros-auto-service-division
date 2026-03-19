@@ -279,6 +279,57 @@ export async function getActiveJobsForFloor() {
 }
 
 // ---------------------------------------------------------------------------
+// 4b. getJobQueueForFloor — all active + today's released jobs for queue view
+// ---------------------------------------------------------------------------
+export async function getJobQueueForFloor() {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  return prisma.jobOrder.findMany({
+    where: {
+      OR: [
+        // Active jobs (not released, not cancelled)
+        { status: { notIn: ["RELEASED", "CANCELLED"] } },
+        // Today's released jobs (for "Done" filter)
+        { status: "RELEASED", actualCompletionDate: { gte: today } },
+      ],
+    },
+    include: {
+      customer: { select: { id: true, firstName: true, lastName: true, phone: true } },
+      vehicle: { select: { id: true, plateNumber: true, make: true, model: true, year: true, color: true } },
+      primaryTechnician: { select: { id: true, firstName: true, lastName: true } },
+      bayAssignments: {
+        where: { endDate: null },
+        include: { bay: { select: { id: true, name: true } } },
+        take: 1,
+      },
+      intakeRecord: {
+        select: { checkedInAt: true },
+      },
+      tasks: {
+        where: { deletedAt: null },
+        select: { startedAt: true, completedAt: true, status: true },
+      },
+      estimates: {
+        where: { deletedAt: null },
+        select: {
+          id: true,
+          estimateRequestId: true,
+          versions: {
+            where: { deletedAt: null },
+            select: { id: true, grandTotal: true },
+            take: 1,
+            orderBy: { versionNumber: "desc" as const },
+          },
+        },
+        take: 1,
+      },
+    },
+    orderBy: { createdAt: "desc" },
+  });
+}
+
+// ---------------------------------------------------------------------------
 // 5. getJobsAwaitingQC — jobs with QC_PENDING status
 // ---------------------------------------------------------------------------
 export async function getJobsAwaitingQC() {

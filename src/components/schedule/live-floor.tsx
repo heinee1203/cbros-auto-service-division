@@ -11,6 +11,7 @@ import { BayAssignmentDetail } from "./bay-assignment-detail";
 import { BayAssignModal } from "./bay-assign-modal";
 import { QuickJobModal } from "./quick-job-modal";
 import { EmptyState } from "@/components/ui/empty-state";
+import { JobQueue } from "./job-queue";
 import type { LiveFloorBay, LiveFloorStats, LiveFloorJob } from "./live-floor-types";
 
 export default function LiveFloor() {
@@ -160,6 +161,8 @@ export default function LiveFloor() {
       )}
 
       {!loading && jobs.length > 0 && <FloorJobSection jobs={jobs} onRefresh={fetchData} />}
+
+      {!loading && <JobQueue />}
 
       <BayAssignmentDetail
         open={detailOpen}
