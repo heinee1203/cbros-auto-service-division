@@ -334,6 +334,12 @@ async function main() {
     { key: "commission_basis", value: '"labor_billed"', category: "commission", description: "What the commission % is applied to" },
     { key: "commission_include_only_paid", value: "true", category: "commission", description: "Only count jobs that are FULLY_PAID" },
     { key: "commission_include_only_released", value: "false", category: "commission", description: "Only count RELEASED jobs" },
+    { key: "commission_chief_mechanic_id", value: '""', category: "commission", description: "User ID of the Chief Mechanic (special formula)" },
+    { key: "commission_cm_shop_rate", value: "5", category: "commission", description: "CM Option A: % of total shop mechanical labor" },
+    { key: "commission_cm_own_rate", value: "10", category: "commission", description: "CM Option B: % of CM's own mechanical labor" },
+    { key: "commission_sm_deduction_rate", value: "5", category: "commission", description: "% deducted from each tech for Service Manager pool" },
+    { key: "commission_service_manager_id", value: '""', category: "commission", description: "User ID of the Service Manager" },
+    { key: "commission_eligible_categories", value: '"Preventive Maintenance Service (PMS),Brake System,Suspension & Steering,Engine & Drivetrain,Electrical & Diagnostics,Tires & Wheels,Air Conditioning,Diagnostics & Inspection"', category: "commission", description: "Service categories eligible for commission" },
 
     // SMS
     { key: "sms_enabled", value: "false", category: "sms", description: "Enable SMS notifications" },
@@ -647,6 +653,26 @@ async function main() {
     });
   }
   console.log(`  Created/verified ${advisors.length} front desk advisors`);
+
+  // ========================================================================
+  // 8. Service Manager
+  // ========================================================================
+  const smPin = await bcrypt.hash("3001", 12);
+  const smPw = await bcrypt.hash("3001", 12);
+  await prisma.user.upsert({
+    where: { username: "service_manager" },
+    update: {},
+    create: {
+      username: "service_manager",
+      passwordHash: smPw,
+      pinHash: smPin,
+      firstName: "Service",
+      lastName: "Manager",
+      role: "MANAGER",
+      isActive: true,
+    },
+  });
+  console.log("  Created/verified Service Manager (PIN: 3001)");
 
   console.log("Seed complete!");
 }

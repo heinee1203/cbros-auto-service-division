@@ -1211,21 +1211,26 @@ model CommissionRate {
 }
 
 model CommissionPeriod {
-  id              String    @id @default(cuid())
-  periodStart     DateTime
-  periodEnd       DateTime
-  status          String    @default("DRAFT") // CommissionPeriodStatus
-  totalCommission Int       @default(0) // centavos
-  notes           String?
-  finalizedBy     String?
-  finalizedAt     DateTime?
-  paidBy          String?
-  paidAt          DateTime?
-  createdBy       String
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  id                    String    @id @default(cuid())
+  periodStart           DateTime
+  periodEnd             DateTime
+  status                String    @default("DRAFT") // CommissionPeriodStatus
+  totalMechanicalLabor  Int       @default(0) // total mechanical labor sales, centavos
+  totalGrossCommission  Int       @default(0) // sum of all techs' gross, centavos
+  totalSmDeduction      Int       @default(0) // sum of all SM deductions, centavos
+  totalNetCommission    Int       @default(0) // sum of all techs' net, centavos
+  smPayout              Int       @default(0) // = totalSmDeduction, what SM receives, centavos
+  serviceManagerId      String?   // User ID of SM at time of calculation
+  notes                 String?
+  finalizedBy           String?
+  finalizedAt           DateTime?
+  paidBy                String?
+  paidAt                DateTime?
+  createdBy             String
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
 
-  entries         CommissionEntry[]
+  entries               CommissionEntry[]
 
   @@index([status])
   @@index([periodStart, periodEnd])
@@ -1237,9 +1242,14 @@ model CommissionEntry {
   userId              String    // technician
   jobOrderId          String
   taskId              String?
-  laborBilled         Int       // centavos
+  laborBilled         Int       // mechanical labor amount billed, centavos
   commissionRate      Float     // rate snapshot at calculation time
-  commissionAmount    Int       // centavos
+  grossCommission     Int       // before SM deduction, centavos
+  smDeduction         Int       @default(0) // 5% deducted for SM pool, centavos
+  netCommission       Int       // gross - smDeduction, centavos
+  cmOptionA           Int?      // CM only: shop rate × total mech labor, centavos
+  cmOptionB           Int?      // CM only: own rate × own labor, centavos
+  cmSelectedOption    String?   // CM only: "A" or "B"
   notes               String?
   createdAt           DateTime  @default(now())
 
