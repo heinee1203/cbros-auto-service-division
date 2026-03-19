@@ -335,6 +335,23 @@ async function main() {
     { key: "commission_include_only_paid", value: "true", category: "commission", description: "Only count jobs that are FULLY_PAID" },
     { key: "commission_include_only_released", value: "false", category: "commission", description: "Only count RELEASED jobs" },
 
+    // SMS
+    { key: "sms_enabled", value: "false", category: "sms", description: "Enable SMS notifications" },
+    { key: "sms_api_key", value: '""', category: "sms", description: "Semaphore API key" },
+    { key: "sms_sender_name", value: '"AutoServ"', category: "sms", description: "SMS sender name (max 11 chars)" },
+    { key: "sms_daily_limit", value: "100", category: "sms", description: "Maximum SMS per day" },
+    { key: "sms_appointment_reminder_hours", value: "24", category: "sms", description: "Hours before appointment to send reminder" },
+    { key: "sms_template_appointment_reminder", value: '"Hi {customerName}, reminder: your appointment at {shopName} is on {scheduledDate} at {scheduledTime}. Call us: {shopPhone}"', category: "sms", description: "Appointment reminder SMS template" },
+    { key: "sms_template_vehicle_checked_in", value: '"Hi {customerName}, your {vehiclePlate} has been checked in. Job #{jobNumber}. We\'ll keep you updated! - {shopName}"', category: "sms", description: "Vehicle checked in SMS template" },
+    { key: "sms_template_vehicle_ready", value: '"Hi {customerName}, your {vehiclePlate} is ready for pickup! Visit us at your convenience. - {shopName} {shopPhone}"', category: "sms", description: "Vehicle ready SMS template" },
+    { key: "sms_template_payment_received", value: '"Hi {customerName}, we received your payment of {amount}. Thank you! - {shopName}"', category: "sms", description: "Payment received SMS template" },
+    { key: "sms_template_estimate_ready", value: '"Hi {customerName}, your estimate for {vehiclePlate} is ready for review: {link} - {shopName}"', category: "sms", description: "Estimate ready SMS template" },
+    { key: "sms_template_supplement_approval", value: '"Hi {customerName}, additional work is needed on your {vehiclePlate}. Please review: {link} - {shopName}"', category: "sms", description: "Supplement approval SMS template" },
+    { key: "sms_template_followup_7day", value: '"Hi {customerName}, how\'s your vehicle after the service? Any concerns? Call us: {shopPhone} - {shopName}"', category: "sms", description: "7-day follow-up SMS template" },
+    { key: "sms_template_followup_30day", value: '"Hi {customerName}, it\'s been a month since your service. How are we doing? Feedback appreciated! - {shopName} {shopPhone}"', category: "sms", description: "30-day follow-up SMS template" },
+    { key: "sms_template_followup_6month", value: '"Hi {customerName}, time for a check-up! It\'s been 6 months since your last service. Book now: {shopPhone} - {shopName}"', category: "sms", description: "6-month follow-up SMS template" },
+    { key: "sms_template_followup_1year", value: '"Hi {customerName}, it\'s been a year! Schedule your annual service today: {shopPhone} - {shopName}"', category: "sms", description: "1-year follow-up SMS template" },
+
     // Integrations — Apex POS
     { key: "apex_pos_api_url", value: "", category: "integrations", description: "Apex POS API base URL" },
     { key: "apex_pos_api_key", value: "", category: "integrations", description: "Apex POS API key for authentication" },
