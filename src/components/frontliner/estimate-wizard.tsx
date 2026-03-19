@@ -314,7 +314,7 @@ export function EstimateWizard(props: EstimateWizardProps) {
             </button>
           </div>
         </div>
-        <div className="flex-1">
+        <div className="flex-1 min-h-0">
           <IntakeServiceSelect
             onComplete={handleServiceSelectComplete}
             preselectedServiceIds={props.prefilledServiceIds}
