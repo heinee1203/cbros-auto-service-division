@@ -269,7 +269,7 @@ export function IntakeServiceSelect({
   return (
     <div className="flex flex-col h-full">
       {/* -- Search Bar -- */}
-      <div className="mb-3">
+      <div className="flex-shrink-0 mb-3">
         <ServiceSearchBar value={searchQuery} onChange={setSearchQuery} />
       </div>
 
@@ -341,8 +341,8 @@ export function IntakeServiceSelect({
         </div>
       )}
 
-      {/* -- Scrollable Content -- */}
-      <div className="flex-1 min-h-0 overflow-y-auto pr-1 pb-2">
+      {/* -- Scrollable Content + Footer -- */}
+      <div className="flex-1 min-h-0 overflow-y-auto pr-1">
         {/* Frequently Used (only when not searching and not check-up) */}
         {!isSearching && !checkUpOnly && (
           <FrequentlyUsed
@@ -379,16 +379,15 @@ export function IntakeServiceSelect({
             </p>
           </div>
         )}
-      </div>
 
-      {/* -- Bottom Bar (identical to original) -- */}
-      <div
-        className="flex-shrink-0 px-4 py-3 flex items-center gap-3 flex-wrap"
-        style={{
-          background: "var(--sch-card)",
-          borderTop: "1px solid var(--sch-border)",
-        }}
-      >
+        {/* -- Bottom Bar (inside scroll, sticky to bottom) -- */}
+        <div
+          className="sticky bottom-0 px-4 py-3 flex items-center gap-3 flex-wrap mt-auto"
+          style={{
+            background: "var(--sch-card)",
+            borderTop: "1px solid var(--sch-border)",
+          }}
+        >
         <button
           type="button"
           onClick={onBack}
@@ -451,6 +450,7 @@ export function IntakeServiceSelect({
           Continue
           <ChevronRight className="w-4 h-4" />
         </button>
+        </div>
       </div>
     </div>
   );
