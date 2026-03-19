@@ -5,6 +5,17 @@ import { useRouter } from "next/navigation";
 import { ChevronLeft, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
+// Lock body scroll while wizard is mounted (prevent double scrollbar)
+function useLockBodyScroll() {
+  useEffect(() => {
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, []);
+}
+
 import {
   IntakePlateLookup,
   type PlateLookupResult,
@@ -81,6 +92,7 @@ function getInitialStep(props: EstimateWizardProps): 1 | 2 | 3 {
 // ---------------------------------------------------------------------------
 
 export function EstimateWizard(props: EstimateWizardProps) {
+  useLockBodyScroll();
   const router = useRouter();
   const initialStep = getInitialStep(props);
 
@@ -286,8 +298,8 @@ export function EstimateWizard(props: EstimateWizardProps) {
   // -----------------------------------------------------------------------
   if (step === 2) {
     return (
-      <div className="flex flex-col h-full">
-        <div className="px-4 py-3 flex items-center gap-3 border-b" style={{ borderColor: "var(--sch-border)" }}>
+      <div className="fixed inset-0 z-50 flex flex-col" style={{ background: "var(--sch-bg)" }}>
+        <div className="px-4 py-3 flex items-center gap-3 border-b shrink-0" style={{ borderColor: "var(--sch-border)" }}>
           <span className="text-sm text-[var(--sch-text-muted)]">Vehicle at shop?</span>
           <div className="flex gap-2">
             <button
