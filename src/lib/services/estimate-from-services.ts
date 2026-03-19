@@ -16,6 +16,7 @@ export interface CreateEstimateFromServicesInput {
   userId: string;
   jobOrderId?: string;
   customerConcern?: string;
+  vehiclePresent?: boolean;
 }
 
 export interface CreateEstimateFromServicesResult {
@@ -34,6 +35,7 @@ export async function createEstimateFromServices(
     userId,
     jobOrderId,
     customerConcern,
+    vehiclePresent,
   } = input;
 
   // 1. Fetch selected services
@@ -78,6 +80,7 @@ export async function createEstimateFromServices(
         status: "PENDING_ESTIMATE",
         customerConcern: concern,
         requestedCategories: JSON.stringify(categories),
+        vehiclePresent: vehiclePresent ?? false,
         createdBy: userId,
         updatedBy: userId,
       },

@@ -12,11 +12,15 @@ import {
   Lock,
   CheckCircle,
   Package,
+  Car,
 } from "lucide-react";
 import { formatPeso } from "@/lib/utils";
 import { can } from "@/lib/permissions";
 import type { UserRole } from "@/types/enums";
-import { generateApprovalTokenAction } from "@/lib/actions/frontliner-estimate-actions";
+import {
+  generateApprovalTokenAction,
+  markVehiclePresentAction,
+} from "@/lib/actions/frontliner-estimate-actions";
 import { toast } from "sonner";
 
 // ---------------------------------------------------------------------------
@@ -76,6 +80,7 @@ interface EstimateDetailData {
   requestId: string;
   requestNumber: string;
   status: string;
+  vehiclePresent: boolean;
   customerConcern: string | null;
   createdAt: string;
   customer: { name: string; phone: string } | null;
@@ -290,6 +295,7 @@ export function RegistryEstimateDetail({ data }: { data: EstimateDetailData }) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [approvalUrl, setApprovalUrl] = useState<string | null>(null);
+  const [vehiclePresent, setVehiclePresent] = useState(data.vehiclePresent);
 
   const version = data.version;
   const approvalStatus = data.approvalStatus;
@@ -356,7 +362,18 @@ export function RegistryEstimateDetail({ data }: { data: EstimateDetailData }) {
               — {data.vehicle?.plateNumber} — {data.vehicle?.color}
             </p>
           </div>
-          <StatusBadge status={data.status} />
+          <div className="flex items-center gap-2">
+            <StatusBadge status={data.status} />
+            {vehiclePresent ? (
+              <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400">
+                Vehicle Here
+              </span>
+            ) : (
+              <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-[var(--sch-border)] text-[var(--sch-text-muted)]">
+                Quote Only
+              </span>
+            )}
+          </div>
         </div>
       </div>
 
@@ -723,6 +740,45 @@ export function RegistryEstimateDetail({ data }: { data: EstimateDetailData }) {
         >
           Actions
         </h3>
+
+        {/* Vehicle Has Arrived / Begin Intake */}
+        {!vehiclePresent ? (
+          <button
+            onClick={() => {
+              startTransition(async () => {
+                const result = await markVehiclePresentAction(data.requestId);
+                if (result.success) {
+                  setVehiclePresent(true);
+                  toast.success("Vehicle marked as present");
+                } else {
+                  toast.error(result.error || "Failed to update");
+                }
+              });
+            }}
+            disabled={isPending}
+            className="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-semibold disabled:opacity-60"
+            style={{
+              background: "rgba(52,211,153,0.15)",
+              color: "#34D399",
+              border: "1px solid rgba(52,211,153,0.4)",
+            }}
+          >
+            <Car className="h-4 w-4" />
+            {isPending ? "Updating..." : "Vehicle Has Arrived"}
+          </button>
+        ) : (
+          <Link
+            href={`/frontliner/intake?estimateRequestId=${data.requestId}`}
+            className="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-semibold"
+            style={{
+              background: "rgba(52,211,153,0.15)",
+              color: "#34D399",
+              border: "1px solid rgba(52,211,153,0.4)",
+            }}
+          >
+            <Car className="h-4 w-4" /> Begin Intake
+          </Link>
+        )}
 
         {/* Edit Estimate */}
         {version && (

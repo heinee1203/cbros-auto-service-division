@@ -158,6 +158,7 @@ export async function createEstimateRequest(
       claimNumber: data.claimNumber || null,
       adjusterName: data.adjusterName || null,
       adjusterContact: data.adjusterContact || null,
+      vehiclePresent: false, // Inquiry wizard is always estimate-only
       createdBy: userId,
       updatedBy: userId,
     },

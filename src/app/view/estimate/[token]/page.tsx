@@ -351,6 +351,18 @@ export default async function PublicEstimatePage({ params }: PublicEstimatePageP
             </div>
           </div>
 
+          {/* Validity note for estimate-only */}
+          {!version.estimate.estimateRequest.vehiclePresent && (
+            <div className="px-8">
+              <div className="mt-4 pt-3 border-t border-surface-200">
+                <p className="text-xs text-surface-400 italic">
+                  This estimate is valid for 30 days from the date of issue.
+                  Prices may change based on actual vehicle inspection.
+                </p>
+              </div>
+            </div>
+          )}
+
           {/* Footer */}
           <div className="border-t border-surface-200 px-8 py-4 text-center text-xs text-surface-400">
             <p>Thank you for choosing {shopInfo.shop_name || "AutoServ Pro"}!</p>

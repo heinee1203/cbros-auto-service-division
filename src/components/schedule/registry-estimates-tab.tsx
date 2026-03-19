@@ -24,6 +24,7 @@ interface EstimateRequest {
   status: string;
   customerConcern: string | null;
   requestedCategories: string | null;
+  vehiclePresent: boolean;
   createdAt: string;
   customer: { firstName: string; lastName: string; phone: string };
   vehicle: { plateNumber: string; make: string; model: string };
@@ -363,15 +364,26 @@ export function RegistryEstimatesTab() {
 
                     {/* Status */}
                     <td className="px-3 py-3 hidden md:table-cell">
-                      <span
-                        className="px-2 py-1 rounded-full text-[11px] font-medium whitespace-nowrap"
-                        style={{
-                          background: statusStyle.bg,
-                          color: statusStyle.text,
-                        }}
-                      >
-                        {statusStyle.label}
-                      </span>
+                      <div className="flex flex-wrap items-center gap-1.5">
+                        <span
+                          className="px-2 py-1 rounded-full text-[11px] font-medium whitespace-nowrap"
+                          style={{
+                            background: statusStyle.bg,
+                            color: statusStyle.text,
+                          }}
+                        >
+                          {statusStyle.label}
+                        </span>
+                        {est.vehiclePresent ? (
+                          <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400">
+                            Vehicle Here
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-[var(--sch-border)] text-[var(--sch-text-muted)]">
+                            Quote Only
+                          </span>
+                        )}
+                      </div>
                     </td>
 
                     {/* Approval */}

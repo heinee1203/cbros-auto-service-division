@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { getSession } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 import {
   createEstimateFromServices,
   type CreateEstimateFromServicesResult,
@@ -20,6 +21,7 @@ export async function createEstimateFromServicesAction(input: {
   serviceIds: string[];
   jobOrderId?: string;
   customerConcern?: string;
+  vehiclePresent?: boolean;
 }): Promise<{
   success: boolean;
   error?: string;
@@ -103,5 +105,24 @@ export async function getEstimateVersionAction(
           ? error.message
           : "Failed to fetch estimate version",
     };
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 4. markVehiclePresentAction
+// ---------------------------------------------------------------------------
+export async function markVehiclePresentAction(estimateRequestId: string) {
+  const session = await getSession();
+  if (!session?.user) return { success: false, error: "Not authenticated" };
+
+  try {
+    await prisma.estimateRequest.update({
+      where: { id: estimateRequestId },
+      data: { vehiclePresent: true },
+    });
+    revalidatePath("/schedule/registry");
+    return { success: true };
+  } catch (error) {
+    return { success: false, error: error instanceof Error ? error.message : "Failed" };
   }
 }

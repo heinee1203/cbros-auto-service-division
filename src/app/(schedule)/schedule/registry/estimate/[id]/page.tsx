@@ -52,6 +52,7 @@ export default async function RegistryEstimateDetailPage({
     requestId: request.id,
     requestNumber: request.requestNumber,
     status: request.status,
+    vehiclePresent: request.vehiclePresent,
     customerConcern: request.customerConcern,
     createdAt: request.createdAt.toISOString(),
     customer: request.customer

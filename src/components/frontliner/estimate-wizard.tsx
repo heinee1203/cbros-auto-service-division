@@ -85,6 +85,7 @@ export function EstimateWizard(props: EstimateWizardProps) {
   const initialStep = getInitialStep(props);
 
   const [step, setStep] = useState<1 | 2 | 3>(initialStep);
+  const [vehiclePresent, setVehiclePresent] = useState(false);
   const [customerId, setCustomerId] = useState<string | null>(
     props.prefilledCustomerId || null,
   );
@@ -117,6 +118,7 @@ export function EstimateWizard(props: EstimateWizardProps) {
           vehicleId,
           serviceIds,
           jobOrderId: props.prefilledJobOrderId,
+          vehiclePresent,
         });
 
         if (!createResult.success || !createResult.data) {
@@ -156,7 +158,7 @@ export function EstimateWizard(props: EstimateWizardProps) {
         setCreating(false);
       }
     },
-    [customerId, vehicleId, props.prefilledJobOrderId],
+    [customerId, vehicleId, props.prefilledJobOrderId, vehiclePresent],
   );
 
   // -----------------------------------------------------------------------
@@ -284,11 +286,42 @@ export function EstimateWizard(props: EstimateWizardProps) {
   // -----------------------------------------------------------------------
   if (step === 2) {
     return (
-      <IntakeServiceSelect
-        onComplete={handleServiceSelectComplete}
-        preselectedServiceIds={props.prefilledServiceIds}
-        onBack={handleServiceSelectBack}
-      />
+      <div className="flex flex-col h-full">
+        <div className="px-4 py-3 flex items-center gap-3 border-b" style={{ borderColor: "var(--sch-border)" }}>
+          <span className="text-sm text-[var(--sch-text-muted)]">Vehicle at shop?</span>
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={() => setVehiclePresent(true)}
+              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                vehiclePresent
+                  ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/40"
+                  : "bg-[var(--sch-surface)] text-[var(--sch-text-muted)] border border-[var(--sch-border)]"
+              }`}
+            >
+              Yes
+            </button>
+            <button
+              type="button"
+              onClick={() => setVehiclePresent(false)}
+              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                !vehiclePresent
+                  ? "bg-[var(--sch-accent)]/20 text-[var(--sch-accent)] border border-[var(--sch-accent)]/40"
+                  : "bg-[var(--sch-surface)] text-[var(--sch-text-muted)] border border-[var(--sch-border)]"
+              }`}
+            >
+              Quote Only
+            </button>
+          </div>
+        </div>
+        <div className="flex-1">
+          <IntakeServiceSelect
+            onComplete={handleServiceSelectComplete}
+            preselectedServiceIds={props.prefilledServiceIds}
+            onBack={handleServiceSelectBack}
+          />
+        </div>
+      </div>
     );
   }
 
