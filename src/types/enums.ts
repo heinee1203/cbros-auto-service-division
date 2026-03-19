@@ -504,3 +504,36 @@ export const COMMISSION_PERIOD_STATUS_COLORS: Record<CommissionPeriodStatus, str
   FINALIZED: "bg-blue-100 text-blue-700",
   PAID: "bg-success-100 text-success-600",
 };
+
+// SMS
+export const SmsType = {
+  APPOINTMENT_REMINDER: "APPOINTMENT_REMINDER",
+  VEHICLE_CHECKED_IN: "VEHICLE_CHECKED_IN",
+  VEHICLE_READY: "VEHICLE_READY",
+  PAYMENT_RECEIVED: "PAYMENT_RECEIVED",
+  ESTIMATE_READY: "ESTIMATE_READY",
+  SUPPLEMENT_APPROVAL: "SUPPLEMENT_APPROVAL",
+  FOLLOWUP_7DAY: "FOLLOWUP_7DAY",
+  FOLLOWUP_30DAY: "FOLLOWUP_30DAY",
+  FOLLOWUP_6MONTH: "FOLLOWUP_6MONTH",
+  FOLLOWUP_1YEAR: "FOLLOWUP_1YEAR",
+} as const;
+export type SmsType = (typeof SmsType)[keyof typeof SmsType];
+
+export const SMS_TYPE_LABELS: Record<SmsType, string> = {
+  APPOINTMENT_REMINDER: "Appointment Reminder",
+  VEHICLE_CHECKED_IN: "Vehicle Checked In",
+  VEHICLE_READY: "Vehicle Ready",
+  PAYMENT_RECEIVED: "Payment Received",
+  ESTIMATE_READY: "Estimate Ready",
+  SUPPLEMENT_APPROVAL: "Supplement Approval",
+  FOLLOWUP_7DAY: "7-Day Follow-Up",
+  FOLLOWUP_30DAY: "30-Day Follow-Up",
+  FOLLOWUP_6MONTH: "6-Month Follow-Up",
+  FOLLOWUP_1YEAR: "1-Year Follow-Up",
+};
+
+export const SMS_STATUS_COLORS: Record<string, string> = {
+  SENT: "bg-success-100 text-success-600",
+  FAILED: "bg-danger-100 text-danger-600",
+};

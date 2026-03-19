@@ -78,6 +78,7 @@ model Customer {
   referredBy    String?
   notes         String?
   tags          String    @default("[]") // JSON array stored as string for SQLite
+  smsOptOut     Boolean   @default(false)
 
   totalSpend    Int       @default(0)    // centavos, auto-calculated
   jobCount      Int       @default(0)    // auto-calculated
@@ -1248,4 +1249,29 @@ model CommissionEntry {
 
   @@index([commissionPeriodId, userId])
   @@index([jobOrderId])
+}
+
+// ============================================================================
+// SMS LOG (Append-only — NO soft delete)
+// ============================================================================
+
+model SmsLog {
+  id                String    @id @default(cuid())
+  recipientPhone    String
+  recipientName     String?
+  customerId        String?
+  type              String    // SmsType
+  message           String
+  status            String    @default("SENT")  // SENT, FAILED
+  provider          String    @default("semaphore")
+  providerMessageId String?
+  costCentavos      Int?
+  error             String?
+  jobOrderId        String?
+  createdAt         DateTime  @default(now())
+
+  @@index([customerId])
+  @@index([type])
+  @@index([status])
+  @@index([createdAt])
 }

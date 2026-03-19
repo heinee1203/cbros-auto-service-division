@@ -137,3 +137,20 @@ export function formatPlateNumber(plate: string): string {
   }
   return cleaned;
 }
+
+// Normalize Philippine phone number to E.164 format for SMS
+// "09171234567" → "+639171234567"
+// "+639171234567" → "+639171234567"
+export function normalizeToE164(phone: string): string | null {
+  const digits = phone.replace(/\D/g, "");
+  if (digits.startsWith("09") && digits.length === 11) {
+    return `+63${digits.slice(1)}`;
+  }
+  if (digits.startsWith("639") && digits.length === 12) {
+    return `+${digits}`;
+  }
+  if (digits.startsWith("9") && digits.length === 10) {
+    return `+63${digits}`;
+  }
+  return null;
+}
