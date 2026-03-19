@@ -149,40 +149,6 @@ function calculateDiscount(
 // Sub-components
 // ---------------------------------------------------------------------------
 
-function HoursStepper({
-  value,
-  onChange,
-  disabled,
-}: {
-  value: number;
-  onChange: (v: number) => void;
-  disabled?: boolean;
-}) {
-  return (
-    <div className="flex items-center gap-1">
-      <button
-        type="button"
-        disabled={disabled || value <= 0}
-        onClick={() => onChange(Math.max(0, value - 0.5))}
-        className="h-11 w-11 flex items-center justify-center rounded-lg border border-[var(--sch-border)] text-[var(--sch-text)] disabled:opacity-40"
-      >
-        <Minus className="h-4 w-4" />
-      </button>
-      <span className="h-12 w-16 flex items-center justify-center rounded-lg bg-[var(--sch-bg)] border border-[var(--sch-border)] font-mono text-lg text-[var(--sch-text)] text-center">
-        {value}
-      </span>
-      <button
-        type="button"
-        disabled={disabled}
-        onClick={() => onChange(value + 0.5)}
-        className="h-11 w-11 flex items-center justify-center rounded-lg border border-[var(--sch-border)] text-[var(--sch-text)] disabled:opacity-40"
-      >
-        <Plus className="h-4 w-4" />
-      </button>
-    </div>
-  );
-}
-
 function QtyStepper({
   value,
   onChange,
@@ -353,7 +319,6 @@ function ServiceCard({
   card,
   addingPart,
   onToggleAddPart,
-  onUpdateLaborHours,
   onUpdateLaborRate,
   onAddPart,
   onRemovePart,
@@ -363,7 +328,6 @@ function ServiceCard({
   card: ServiceCardData;
   addingPart: boolean;
   onToggleAddPart: () => void;
-  onUpdateLaborHours: (itemId: string, hours: number) => void;
   onUpdateLaborRate: (itemId: string, pesosValue: string) => void;
   onAddPart: (
     serviceCatalogId: string,
@@ -410,42 +374,20 @@ function ServiceCard({
         </span>
       </div>
 
-      {/* Labor section */}
+      {/* Labor section — flat fee */}
       {laborItem && (
         <div className="mb-3">
           <div className="text-xs font-medium text-[var(--sch-text-muted)] uppercase tracking-wider mb-2">
             Labor
           </div>
-          <div className="flex items-end gap-3 flex-wrap">
-            <div>
-              <label className="text-xs text-[var(--sch-text-muted)] mb-1 block">
-                Hours
-              </label>
-              <HoursStepper
-                value={laborItem.quantity}
-                onChange={(v) => onUpdateLaborHours(laborItem.id, v)}
-                disabled={isPending}
-              />
-            </div>
-            <div className="text-[var(--sch-text-muted)] text-lg pb-2">
-              &times;
-            </div>
-            <div className="flex-1 min-w-[120px]">
-              <label className="text-xs text-[var(--sch-text-muted)] mb-1 block">
-                Rate
-              </label>
+          <div className="flex items-center gap-3">
+            <div className="flex-1 max-w-[200px]">
               <PesoInput
                 value={localRate}
                 onChange={setLocalRate}
                 onBlur={() => onUpdateLaborRate(laborItem.id, localRate)}
                 disabled={isPending}
               />
-            </div>
-            <div className="text-[var(--sch-text-muted)] text-lg pb-2">=</div>
-            <div className="pb-2">
-              <span className="font-mono text-lg text-[var(--sch-text)] font-semibold">
-                {formatPeso(laborItem.subtotal)}
-              </span>
             </div>
           </div>
         </div>
@@ -743,42 +685,20 @@ export default function EstimateCardBuilder({
   // Labor handlers
   // ---------------------------------------------------------------------------
 
-  const handleLaborHoursChange = useCallback(
-    (itemId: string, newHours: number) => {
-      // Update locally immediately for responsiveness
-      updateLineItemLocally(itemId, { quantity: newHours });
-
-      // Debounce the server call
-      if (debounceRef.current) clearTimeout(debounceRef.current);
-      debounceRef.current = setTimeout(() => {
-        startTransition(async () => {
-          // Actions expect unitCost in pesos
-          const item = lineItems.find((i) => i.id === itemId);
-          if (!item) return;
-          const result = await updateLineItemAction(itemId, {
-            quantity: newHours,
-            unitCost: item.unitCost / 100, // Convert centavos to pesos for action
-          });
-          if (!result.success) {
-            toast.error(result.error || "Failed to update hours");
-          }
-        });
-      }, 500);
-    },
-    [lineItems, updateLineItemLocally]
-  );
-
   const handleLaborRateBlur = useCallback(
     (itemId: string, pesosValue: string) => {
       const pesos = parseFloat(pesosValue);
       if (isNaN(pesos) || pesos < 0) return;
 
       const centavos = Math.round(pesos * 100);
-      updateLineItemLocally(itemId, { unitCost: centavos });
+      // Flat fee: unitCost IS the subtotal (qty=1)
+      updateLineItemLocally(itemId, { unitCost: centavos, subtotal: centavos, quantity: 1 });
 
       startTransition(async () => {
         const result = await updateLineItemAction(itemId, {
           unitCost: pesos, // Action expects pesos
+          quantity: 1,
+          unit: "job",
         });
         if (!result.success) {
           toast.error(result.error || "Failed to update rate");
@@ -1041,7 +961,6 @@ export default function EstimateCardBuilder({
                 prev === card.serviceCatalogId ? null : card.serviceCatalogId
               )
             }
-            onUpdateLaborHours={handleLaborHoursChange}
             onUpdateLaborRate={handleLaborRateBlur}
             onAddPart={handleAddPart}
             onRemovePart={handleRemovePart}

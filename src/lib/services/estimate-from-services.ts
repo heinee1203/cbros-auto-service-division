@@ -105,12 +105,13 @@ export async function createEstimateFromServices(
       },
     });
 
-    // 8. Create LABOR line items for each service
+    // 8. Create LABOR line items for each service (flat fee pricing)
     for (let i = 0; i < services.length; i++) {
       const service = services[i];
       const hours = service.defaultEstimatedHours || 1;
       const rate = service.defaultLaborRate || 0;
-      const subtotal = Math.round(hours * rate);
+      // Flat fee = hourly rate × estimated hours (customer sees one price)
+      const flatFee = Math.round(hours * rate);
 
       await tx.estimateLineItem.create({
         data: {
@@ -118,11 +119,12 @@ export async function createEstimateFromServices(
           group: "LABOR",
           description: service.name,
           serviceCatalogId: service.id,
-          quantity: hours,
-          unit: "hrs",
-          unitCost: rate,
+          quantity: 1,
+          unit: "job",
+          unitCost: flatFee,
           markup: 0,
-          subtotal,
+          subtotal: flatFee,
+          estimatedHours: hours, // preserved for internal tracking
           sortOrder: i * 10,
           createdBy: userId,
           updatedBy: userId,

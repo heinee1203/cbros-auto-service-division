@@ -547,7 +547,7 @@ function AddLineItemForm({
   // Form fields
   const [description, setDescription] = useState("");
   const [quantity, setQuantity] = useState("1");
-  const [unit, setUnit] = useState(group === "LABOR" ? "hrs" : "pcs");
+  const [unit, setUnit] = useState(group === "LABOR" ? "job" : "pcs");
   const [unitCost, setUnitCost] = useState("");
   const [markup, setMarkup] = useState("0");
   const [estimatedHours, setEstimatedHours] = useState("");
