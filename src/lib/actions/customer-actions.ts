@@ -74,6 +74,18 @@ export async function updateCustomerAction(
   return { success: true };
 }
 
+export async function toggleSmsOptOutAction(
+  customerId: string,
+  smsOptOut: boolean
+): Promise<ActionResult> {
+  const session = await getSession();
+  if (!session?.user) return { success: false, error: "Unauthorized" };
+
+  await updateCustomer(customerId, { smsOptOut } as any, session.user.id);
+  revalidatePath(`/customers/${customerId}`);
+  return { success: true };
+}
+
 export async function deleteCustomerAction(id: string): Promise<ActionResult> {
   const session = await getSession();
   if (!session?.user) return { success: false, error: "Unauthorized" };

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import {
   ArrowLeft,
@@ -17,6 +17,7 @@ import {
   StickyNote,
   Shield,
   Calendar,
+  MessageSquare,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -32,6 +33,7 @@ import {
 import {
   updateCustomerAction,
   deleteCustomerAction,
+  toggleSmsOptOutAction,
 } from "@/lib/actions/customer-actions";
 import { JOB_ORDER_STATUS_LABELS, JOB_ORDER_STATUS_COLORS, type JobOrderStatus } from "@/types/enums";
 import type { CustomerInput } from "@/lib/validators";
@@ -71,6 +73,7 @@ type CustomerDetail = {
   referredBy: string | null;
   notes: string | null;
   tags: string;
+  smsOptOut: boolean;
   jobCount: number;
   totalSpend: number;
   lastVisit: string | Date | null;
@@ -431,6 +434,17 @@ export function CustomerDetailClient({ customer: initialCustomer, warranties, fo
     }
   }
 
+  const handleToggleSms = useCallback(async (optOut: boolean) => {
+    const result = await toggleSmsOptOutAction(customer.id, optOut);
+    if (result.success) {
+      setCustomer((prev) => ({ ...prev, smsOptOut: optOut }));
+      toast.success(optOut ? "SMS notifications disabled" : "SMS notifications enabled");
+      router.refresh();
+    } else {
+      toast.error(result.error || "Failed to update");
+    }
+  }, [customer.id, router]);
+
   const statClass =
     "flex flex-col items-center justify-center px-6 py-4 bg-white border border-surface-200 rounded-xl";
 
@@ -526,6 +540,24 @@ export function CustomerDetailClient({ customer: initialCustomer, warranties, fo
                     Referred by {customer.referredBy}
                   </div>
                 )}
+              </div>
+
+              {/* SMS Opt-out toggle */}
+              <div className="flex items-center gap-2 mt-3">
+                <MessageSquare className="w-3.5 h-3.5 text-surface-400 shrink-0" />
+                <span className="text-sm text-surface-600">SMS Notifications</span>
+                <button
+                  onClick={() => handleToggleSms(!customer.smsOptOut)}
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                    !customer.smsOptOut ? "bg-green-500" : "bg-surface-300"
+                  }`}
+                >
+                  <span
+                    className={`inline-block h-4 w-4 rounded-full bg-white transition-transform ${
+                      !customer.smsOptOut ? "translate-x-6" : "translate-x-1"
+                    }`}
+                  />
+                </button>
               </div>
 
               {/* Member since */}
