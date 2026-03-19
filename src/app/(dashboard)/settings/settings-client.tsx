@@ -20,6 +20,7 @@ import {
   X,
   Loader2,
   Plug,
+  MessageSquare,
 } from "lucide-react";
 import { updateSettingsBatchAction } from "@/lib/actions/settings-actions";
 
@@ -51,6 +52,7 @@ const CATEGORY_CONFIG: Array<{
   { key: "session", label: "Session", icon: Clock },
   { key: "alerts", label: "Alerts", icon: AlertTriangle },
   { key: "integrations", label: "Integrations", icon: Plug },
+  { key: "sms", label: "SMS", icon: MessageSquare },
 ];
 
 function formatLabel(key: string): string {
