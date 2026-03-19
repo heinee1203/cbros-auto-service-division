@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { LayoutList, Columns3 } from "lucide-react";
 import { toast } from "sonner";
 import { formatPeso } from "@/lib/utils";
+import { JOB_STATUS_LABELS, JOB_STATUS_COLORS } from "@/lib/constants";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -66,55 +67,10 @@ const FILTERS = [
   },
 ];
 
-// ---------------------------------------------------------------------------
-// Status badge config
-// ---------------------------------------------------------------------------
-const STATUS_CONFIG: Record<
-  string,
-  { label: string; bg: string; text: string }
-> = {
-  PENDING: { label: "Pending", bg: "rgba(156,163,175,0.2)", text: "#9CA3AF" },
-  CHECKED_IN: {
-    label: "Checked In",
-    bg: "rgba(251,191,36,0.2)",
-    text: "#FBBF24",
-  },
-  PENDING_ESTIMATE: {
-    label: "Needs Estimate",
-    bg: "rgba(251,191,36,0.2)",
-    text: "#FBBF24",
-  },
-  IN_PROGRESS: {
-    label: "In-Service",
-    bg: "rgba(52,211,153,0.2)",
-    text: "#34D399",
-  },
-  QC_PENDING: {
-    label: "QC Review",
-    bg: "rgba(167,139,250,0.2)",
-    text: "#A78BFA",
-  },
-  QC_PASSED: {
-    label: "Pickup",
-    bg: "rgba(251,146,60,0.2)",
-    text: "#FB923C",
-  },
-  AWAITING_RELEASE: {
-    label: "Pickup",
-    bg: "rgba(251,146,60,0.2)",
-    text: "#FB923C",
-  },
-  RELEASED: { label: "Done", bg: "rgba(96,165,250,0.2)", text: "#60A5FA" },
-};
-
 function getStatusConfig(status: string) {
-  return (
-    STATUS_CONFIG[status] || {
-      label: status,
-      bg: "rgba(156,163,175,0.2)",
-      text: "#9CA3AF",
-    }
-  );
+  const label = JOB_STATUS_LABELS[status] || status;
+  const colors = JOB_STATUS_COLORS[status] || { bg: "rgba(156,163,175,0.2)", text: "#9CA3AF" };
+  return { label, ...colors };
 }
 
 function getDetailHref(job: SerializedJob) {

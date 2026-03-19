@@ -209,16 +209,16 @@ export type BodyType = (typeof BodyType)[keyof typeof BodyType];
 
 // Display labels for UI
 export const JOB_ORDER_STATUS_LABELS: Record<JobOrderStatus, string> = {
-  PENDING: "Pending",
-  CHECKED_IN: "Checked In",
-  IN_PROGRESS: "In Progress",
-  QC_PENDING: "QC Pending",
+  PENDING: "Waitlist",
+  CHECKED_IN: "Waitlist",
+  IN_PROGRESS: "In-Service",
+  QC_PENDING: "QC Review",
   QC_PASSED: "QC Passed",
-  QC_FAILED_REWORK: "Rework Required",
-  AWAITING_PAYMENT: "Awaiting Payment",
+  QC_FAILED_REWORK: "Rework",
+  AWAITING_PAYMENT: "Ready for Pickup",
   PARTIAL_PAYMENT: "Partial Payment",
-  FULLY_PAID: "Fully Paid",
-  RELEASED: "Released",
+  FULLY_PAID: "Paid",
+  RELEASED: "Done",
   CANCELLED: "Cancelled",
 };
 

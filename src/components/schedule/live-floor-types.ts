@@ -64,14 +64,15 @@ export const BAY_STATUS_COLORS: Record<string, string> = {
 };
 
 export const DARK_STATUS_PILLS: Record<string, { bg: string; text: string; label: string }> = {
-  PENDING: { bg: "rgba(148,163,184,0.2)", text: "#94A3B8", label: "Pending" },
+  PENDING: { bg: "rgba(148,163,184,0.2)", text: "#94A3B8", label: "Waitlist" },
+  PENDING_ESTIMATE: { bg: "rgba(245,158,11,0.2)", text: "#FBBF24", label: "Waitlist" },
   CHECKED_IN: { bg: "rgba(245,158,11,0.2)", text: "#FBBF24", label: "Waitlist" },
   IN_PROGRESS: { bg: "rgba(16,185,129,0.2)", text: "#34D399", label: "In-Service" },
-  QC_PENDING: { bg: "rgba(139,92,246,0.2)", text: "#A78BFA", label: "QC" },
+  QC_PENDING: { bg: "rgba(139,92,246,0.2)", text: "#A78BFA", label: "QC Review" },
   QC_PASSED: { bg: "rgba(59,130,246,0.2)", text: "#60A5FA", label: "QC Passed" },
   QC_FAILED_REWORK: { bg: "rgba(239,68,68,0.2)", text: "#F87171", label: "Rework" },
-  AWAITING_PAYMENT: { bg: "rgba(249,115,22,0.2)", text: "#FB923C", label: "Pickup" },
-  PARTIAL_PAYMENT: { bg: "rgba(234,179,8,0.2)", text: "#FACC15", label: "Partial Pay" },
+  AWAITING_PAYMENT: { bg: "rgba(249,115,22,0.2)", text: "#FB923C", label: "Ready for Pickup" },
+  PARTIAL_PAYMENT: { bg: "rgba(234,179,8,0.2)", text: "#FACC15", label: "Partial Payment" },
   FULLY_PAID: { bg: "rgba(16,185,129,0.2)", text: "#34D399", label: "Paid" },
   RELEASED: { bg: "rgba(100,116,139,0.2)", text: "#94A3B8", label: "Done" },
   CANCELLED: { bg: "rgba(100,116,139,0.15)", text: "#64748B", label: "Cancelled" },

@@ -39,7 +39,11 @@ export async function getJobOrders({
   }
 
   if (status && status !== "ALL") {
-    where.status = status;
+    if (status.includes(",")) {
+      where.status = { in: status.split(",") };
+    } else {
+      where.status = status;
+    }
   }
 
   const orderByMap: Record<string, Record<string, string>> = {

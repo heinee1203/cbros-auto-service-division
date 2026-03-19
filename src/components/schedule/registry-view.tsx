@@ -28,16 +28,16 @@ interface JobsResponse {
 
 const ALL_STATUSES = [
   { value: "ALL", label: "All Statuses" },
-  { value: "PENDING", label: "Pending" },
-  { value: "CHECKED_IN", label: "Checked In" },
-  { value: "IN_PROGRESS", label: "In Progress" },
-  { value: "QC_PENDING", label: "QC Pending" },
+  { value: "PENDING", label: "Waitlist" },
+  { value: "CHECKED_IN", label: "Waitlist (Checked In)" },
+  { value: "IN_PROGRESS", label: "In-Service" },
+  { value: "QC_PENDING", label: "QC Review" },
   { value: "QC_PASSED", label: "QC Passed" },
   { value: "QC_FAILED_REWORK", label: "Rework" },
-  { value: "AWAITING_PAYMENT", label: "Awaiting Payment" },
+  { value: "AWAITING_PAYMENT", label: "Ready for Pickup" },
   { value: "PARTIAL_PAYMENT", label: "Partial Payment" },
-  { value: "FULLY_PAID", label: "Fully Paid" },
-  { value: "RELEASED", label: "Released" },
+  { value: "FULLY_PAID", label: "Paid" },
+  { value: "RELEASED", label: "Done" },
   { value: "CANCELLED", label: "Cancelled" },
 ];
 

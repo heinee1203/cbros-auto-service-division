@@ -118,15 +118,15 @@ function getStatusActionLabel(status: string): string {
     case "QC_PASSED":
       return "QC Passed";
     case "QC_FAILED_REWORK":
-      return "Rework Required";
+      return "Rework";
     case "AWAITING_PAYMENT":
-      return "Awaiting Payment";
+      return "Ready for Pickup";
     case "PARTIAL_PAYMENT":
-      return "Partial Payment Received";
+      return "Partial Payment";
     case "FULLY_PAID":
-      return "Fully Paid";
+      return "Paid";
     case "RELEASED":
-      return "Vehicle Released";
+      return "Done";
     case "CANCELLED":
       return "Cancelled";
     default:

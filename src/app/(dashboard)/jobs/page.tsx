@@ -14,7 +14,7 @@ import {
   formatPlateNumber,
   cn,
 } from "@/lib/utils";
-import { JOB_ORDER_STATUS_TABS } from "@/lib/constants";
+import { JOB_ORDER_STATUS_TABS, JOB_TAB_STATUS_MAP } from "@/lib/constants";
 import {
   JOB_ORDER_STATUS_LABELS,
   JOB_ORDER_STATUS_COLORS,
@@ -354,7 +354,14 @@ export default function JobsPage() {
         sortOrder: sort?.desc ? "desc" : "asc",
       });
       if (debouncedSearch) params.set("search", debouncedSearch);
-      if (statusFilter && statusFilter !== "ALL") params.set("status", statusFilter);
+      if (statusFilter && statusFilter !== "ALL") {
+        const statuses = JOB_TAB_STATUS_MAP[statusFilter];
+        if (statuses && statuses.length > 0) {
+          params.set("status", statuses.join(","));
+        } else {
+          params.set("status", statusFilter);
+        }
+      }
 
       const res = await fetch(`/api/jobs?${params.toString()}`);
       if (!res.ok) throw new Error("Failed to fetch job orders");
