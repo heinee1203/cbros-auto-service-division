@@ -327,6 +327,8 @@ async function main() {
 
     // Approval link expiry
     { key: "estimate_approval_link_days", value: "7", category: "documents", description: "Days before estimate approval link expires" },
+    { key: "estimate_validity_days", value: "30", category: "documents", description: "Days an estimate-only quote is valid" },
+    { key: "estimate_validity_note", value: "This estimate is valid for 30 days from the date of issue. Prices may change based on actual vehicle inspection.", category: "documents", description: "Validity note printed on estimate-only quotes" },
 
     // Commission
     { key: "commission_period_type", value: '"weekly"', category: "commission", description: "Commission period type: weekly, semi_monthly, monthly" },

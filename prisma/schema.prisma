@@ -153,6 +153,7 @@ model EstimateRequest {
 
   customerConcern   String
   requestedCategories String  @default("[]") // JSON array
+  vehiclePresent    Boolean   @default(false)  // false = estimate only, true = car at shop
   isInsuranceClaim  Boolean   @default(false)
   claimNumber       String?
   adjusterName      String?
