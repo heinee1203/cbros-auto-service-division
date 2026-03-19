@@ -537,12 +537,12 @@ async function main() {
   }
 
   for (const bay of realBays) {
-    const existing = await prisma.bay.findFirst({
-      where: { name: bay.name, deletedAt: null },
+    const bayId = `seed-bay-${bay.name.toLowerCase().replace(/[^a-z0-9]/g, "-")}`;
+    await prisma.bay.upsert({
+      where: { id: bayId },
+      update: {},
+      create: { id: bayId, ...bay },
     });
-    if (!existing) {
-      await prisma.bay.create({ data: bay });
-    }
   }
   console.log(`  Created/verified ${realBays.length} real bays`);
 
@@ -606,23 +606,21 @@ async function main() {
     const user = await prisma.user.findUnique({ where: { username: cr.username } });
     if (!user) continue;
 
-    // Only create if no commission rate exists yet
-    const existing = await prisma.commissionRate.findFirst({
-      where: { userId: user.id },
+    const crId = `seed-commission-${cr.username}`;
+    await prisma.commissionRate.upsert({
+      where: { id: crId },
+      update: {},
+      create: {
+        id: crId,
+        userId: user.id,
+        rate: cr.rate,
+        notes: "Initial default rate",
+        createdBy: admin.id,
+      },
     });
-    if (!existing) {
-      await prisma.commissionRate.create({
-        data: {
-          userId: user.id,
-          rate: cr.rate,
-          notes: "Initial default rate",
-          createdBy: admin.id,
-        },
-      });
-      commissionCount++;
-    }
+    commissionCount++;
   }
-  console.log(`  Created ${commissionCount} commission rates`);
+  console.log(`  Created/verified ${commissionCount} commission rates`);
 
   // ========================================================================
   // 7. Front Desk Advisors (7)
