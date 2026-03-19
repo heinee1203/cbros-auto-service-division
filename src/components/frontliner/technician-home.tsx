@@ -11,6 +11,7 @@ import {
 } from "@/lib/actions/time-entry-actions";
 import { TASK_STATUS_LABELS, TASK_STATUS_COLORS } from "@/types/enums";
 import type { TaskStatus } from "@/types/enums";
+import { formatPeso } from "@/lib/utils";
 
 interface ActiveEntry {
   id: string;
@@ -40,11 +41,17 @@ interface TaskItem {
   };
 }
 
+interface CommissionData {
+  thisWeek: { amount: number; jobs: number };
+  lastWeek: { amount: number; jobs: number; status: string | null };
+}
+
 interface TechnicianHomeProps {
   firstName: string;
   activeEntry: ActiveEntry | null;
   dailyHours: string;
   tasks: TaskItem[];
+  commission?: CommissionData;
 }
 
 function getGreeting(): string {
@@ -100,6 +107,7 @@ export function TechnicianHome({
   activeEntry,
   dailyHours,
   tasks,
+  commission,
 }: TechnicianHomeProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -215,6 +223,40 @@ export function TechnicianHome({
           Today: {dailyHours}
         </p>
       </div>
+
+      {/* My Commission */}
+      {commission && (
+        <div>
+          <h2 className="text-lg font-semibold text-[var(--sch-text)] mb-3">
+            My Commission
+          </h2>
+          <div className="rounded-xl bg-[var(--sch-card)] p-4 space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-[var(--sch-text-muted)]">This Week</span>
+              <span className="font-mono font-semibold text-[var(--sch-text)]">
+                {formatPeso(commission.thisWeek.amount)}{" "}
+                <span className="text-sm font-normal text-[var(--sch-text-muted)]">
+                  ({commission.thisWeek.jobs} {commission.thisWeek.jobs === 1 ? "job" : "jobs"})
+                </span>
+              </span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-[var(--sch-text-muted)]">Last Week</span>
+              <span className="font-mono font-semibold text-[var(--sch-text)]">
+                {formatPeso(commission.lastWeek.amount)}{" "}
+                <span className="text-sm font-normal text-[var(--sch-text-muted)]">
+                  ({commission.lastWeek.jobs} {commission.lastWeek.jobs === 1 ? "job" : "jobs"})
+                </span>
+                {commission.lastWeek.status === "PAID" && (
+                  <span className="ml-1.5 inline-block rounded-full bg-green-600 px-2 py-0.5 text-xs font-medium text-white">
+                    PAID
+                  </span>
+                )}
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* My Tasks Today */}
       <div>

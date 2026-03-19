@@ -4,6 +4,7 @@ import { getActiveEntry, getDailyEntries } from "@/lib/services/time-entries";
 import { getTasksForTechnician } from "@/lib/services/tasks";
 import { getJobsAwaitingQC, getActiveJobsForFloor } from "@/lib/services/job-orders";
 import { getTodaysAppointments } from "@/lib/services/analytics";
+import { getTechnicianCommission } from "@/lib/services/commissions";
 import { TechnicianHome } from "@/components/frontliner/technician-home";
 import { AdvisorHome } from "@/components/frontliner/advisor-home";
 import { QCInspectorHome } from "@/components/frontliner/qc-inspector-home";
@@ -15,10 +16,11 @@ export default async function FrontlinerHomePage() {
   const { id: userId, role, firstName } = session.user;
 
   if (role === "TECHNICIAN") {
-    const [activeEntry, dailyEntries, tasks] = await Promise.all([
+    const [activeEntry, dailyEntries, tasks, commission] = await Promise.all([
       getActiveEntry(userId),
       getDailyEntries(userId, new Date()),
       getTasksForTechnician(userId),
+      getTechnicianCommission(userId),
     ]);
 
     // Calculate daily hours from completed entries
@@ -90,12 +92,25 @@ export default async function FrontlinerHomePage() {
       };
     });
 
+    const commissionProp = {
+      thisWeek: {
+        amount: commission.thisWeek.amount,
+        jobs: commission.thisWeek.jobs,
+      },
+      lastWeek: {
+        amount: commission.lastWeek.amount,
+        jobs: commission.lastWeek.jobs,
+        status: commission.lastWeek.status,
+      },
+    };
+
     return (
       <TechnicianHome
         firstName={firstName}
         activeEntry={activeEntryProp}
         dailyHours={dailyHours}
         tasks={tasksProp}
+        commission={commissionProp}
       />
     );
   }

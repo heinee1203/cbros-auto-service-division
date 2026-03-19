@@ -328,6 +328,13 @@ async function main() {
     // Approval link expiry
     { key: "estimate_approval_link_days", value: "7", category: "documents", description: "Days before estimate approval link expires" },
 
+    // Commission
+    { key: "commission_period_type", value: '"weekly"', category: "commission", description: "Commission period type: weekly, semi_monthly, monthly" },
+    { key: "commission_week_start", value: '"monday"', category: "commission", description: "Day the commission week starts" },
+    { key: "commission_basis", value: '"labor_billed"', category: "commission", description: "What the commission % is applied to" },
+    { key: "commission_include_only_paid", value: "true", category: "commission", description: "Only count jobs that are FULLY_PAID" },
+    { key: "commission_include_only_released", value: "false", category: "commission", description: "Only count RELEASED jobs" },
+
     // Integrations — Apex POS
     { key: "apex_pos_api_url", value: "", category: "integrations", description: "Apex POS API base URL" },
     { key: "apex_pos_api_key", value: "", category: "integrations", description: "Apex POS API key for authentication" },
@@ -550,6 +557,47 @@ async function main() {
     });
   }
   console.log(`  Created/verified ${technicians.length} technicians`);
+
+  // ========================================================================
+  // 6b. Default Commission Rates for Technicians
+  // ========================================================================
+  const commissionRates: { username: string; rate: number }[] = [
+    { username: "allan", rate: 15.0 },   // Chief Mechanic
+    { username: "inggo", rate: 10.0 },
+    { username: "lino", rate: 10.0 },
+    { username: "toni", rate: 10.0 },
+    { username: "jurell", rate: 10.0 },
+    { username: "sam", rate: 10.0 },
+    { username: "nold", rate: 10.0 },
+    { username: "joy", rate: 10.0 },
+    { username: "kevin", rate: 10.0 },
+    { username: "joseph", rate: 10.0 },
+    { username: "roi", rate: 10.0 },
+    { username: "buban", rate: 10.0 },
+  ];
+
+  let commissionCount = 0;
+  for (const cr of commissionRates) {
+    const user = await prisma.user.findUnique({ where: { username: cr.username } });
+    if (!user) continue;
+
+    // Only create if no commission rate exists yet
+    const existing = await prisma.commissionRate.findFirst({
+      where: { userId: user.id },
+    });
+    if (!existing) {
+      await prisma.commissionRate.create({
+        data: {
+          userId: user.id,
+          rate: cr.rate,
+          notes: "Initial default rate",
+          createdBy: admin.id,
+        },
+      });
+      commissionCount++;
+    }
+  }
+  console.log(`  Created ${commissionCount} commission rates`);
 
   // ========================================================================
   // 7. Front Desk Advisors (7)

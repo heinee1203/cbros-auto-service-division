@@ -13,6 +13,7 @@ import {
   Receipt,
   Calendar,
   BarChart3,
+  Coins,
   Settings,
   X,
 } from "lucide-react";
@@ -39,6 +40,7 @@ const MORE_ITEMS: NavItem[] = [
   { label: "Vehicles", href: "/vehicles", icon: Car, permission: "customers:view" },
   { label: "Invoices", href: "/invoices", icon: Receipt, permission: "invoices:view" },
   { label: "Analytics", href: "/analytics", icon: BarChart3, permission: "analytics:view" },
+  { label: "Commissions", href: "/commissions", icon: Coins, permission: "commissions:view" },
   { label: "Settings", href: "/settings", icon: Settings, permission: "settings:manage" },
 ];
 

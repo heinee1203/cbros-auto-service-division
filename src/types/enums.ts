@@ -483,3 +483,24 @@ export const APPOINTMENT_STATUS_COLORS: Record<AppointmentStatus, string> = {
   CANCELLED: "surface",
   COMPLETED: "green",
 };
+
+// Commission
+export const CommissionPeriodStatus = {
+  DRAFT: "DRAFT",
+  FINALIZED: "FINALIZED",
+  PAID: "PAID",
+} as const;
+export type CommissionPeriodStatus =
+  (typeof CommissionPeriodStatus)[keyof typeof CommissionPeriodStatus];
+
+export const COMMISSION_PERIOD_STATUS_LABELS: Record<CommissionPeriodStatus, string> = {
+  DRAFT: "Draft",
+  FINALIZED: "Finalized",
+  PAID: "Paid",
+};
+
+export const COMMISSION_PERIOD_STATUS_COLORS: Record<CommissionPeriodStatus, string> = {
+  DRAFT: "bg-amber-100 text-amber-700",
+  FINALIZED: "bg-blue-100 text-blue-700",
+  PAID: "bg-success-100 text-success-600",
+};

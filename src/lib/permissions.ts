@@ -153,6 +153,10 @@ export const PERMISSIONS = {
   "schedule:bays_assign": [UserRole.OWNER, UserRole.MANAGER, UserRole.ADVISOR],
   "schedule:tech_view": [UserRole.OWNER, UserRole.MANAGER],
   "schedule:tech_manage": [UserRole.OWNER, UserRole.MANAGER],
+
+  // Commissions
+  "commissions:view": [UserRole.OWNER, UserRole.MANAGER],
+  "commissions:manage": [UserRole.OWNER, UserRole.MANAGER],
 } as const;
 
 export type Permission = keyof typeof PERMISSIONS;
@@ -178,4 +182,5 @@ export const ROUTE_PERMISSIONS: Record<string, Permission> = {
   "/analytics": "analytics:view",
   "/reports": "reports:view",
   "/schedule": "schedule:view",
+  "/commissions": "commissions:view",
 };

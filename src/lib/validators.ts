@@ -433,6 +433,25 @@ export const updateWorkScheduleSchema = z.object({
 export type UpdateWorkScheduleInput = z.infer<typeof updateWorkScheduleSchema>;
 
 // ---------------------------------------------------------------------------
+// Commission
+// ---------------------------------------------------------------------------
+export const commissionRateSchema = z.object({
+  userId: z.string().min(1, "Technician is required"),
+  rate: z.coerce.number().min(0).max(100, "Rate must be 0-100%"),
+  notes: z.string().optional().nullable(),
+});
+export type CommissionRateInput = z.infer<typeof commissionRateSchema>;
+
+export const commissionPeriodSchema = z.object({
+  periodStart: z.string().min(1, "Start date is required"),
+  periodEnd: z.string().min(1, "End date is required"),
+}).refine(
+  (d) => new Date(d.periodEnd) >= new Date(d.periodStart),
+  { message: "Period end must be on or after period start", path: ["periodEnd"] }
+);
+export type CommissionPeriodInput = z.infer<typeof commissionPeriodSchema>;
+
+// ---------------------------------------------------------------------------
 // Walk-in Intake — new vehicle + customer creation
 // ---------------------------------------------------------------------------
 export const walkInVehicleSchema = z.object({

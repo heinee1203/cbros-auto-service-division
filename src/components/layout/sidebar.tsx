@@ -11,6 +11,7 @@ import {
   Receipt,
   Calendar,
   BarChart3,
+  Coins,
   Settings,
   ChevronLeft,
   ChevronRight,
@@ -29,6 +30,7 @@ const ICONS = {
   Calendar,
   Receipt,
   BarChart3,
+  Coins,
   Settings,
 } as const;
 
@@ -84,6 +86,12 @@ const NAV_ITEMS: NavItem[] = [
     href: "/analytics",
     icon: "BarChart3",
     permission: "analytics:view",
+  },
+  {
+    label: "Commissions",
+    href: "/commissions",
+    icon: "Coins",
+    permission: "commissions:view",
   },
   {
     label: "Settings",
