@@ -938,31 +938,30 @@ export default function EstimateCardBuilder({
   // ---------------------------------------------------------------------------
 
   const handleSave = useCallback(() => {
-    setSaving(true);
-    onSave();
-    setSaving(false);
+    toast.success("Estimate saved");
+    onSave(); // navigates away
   }, [onSave]);
 
   const handleSaveAndSend = useCallback(async () => {
     setSaving(true);
     try {
-      onSave();
       const result = await generateApprovalTokenAction(versionId);
       if (result.success && result.data) {
         const url = `${window.location.origin}/view/estimate/${result.data.token}`;
         setApprovalUrl(url);
+        toast.success("Approval link generated");
       } else {
         toast.error(result.error || "Failed to generate link");
       }
     } finally {
       setSaving(false);
     }
-  }, [versionId, onSave]);
+    // Stay on page — approval link modal is shown
+  }, [versionId]);
 
   const handleSaveAndPrint = useCallback(async () => {
     setSaving(true);
     try {
-      onSave();
       const result = await generateApprovalTokenAction(versionId);
       if (result.success && result.data) {
         window.open(
@@ -970,13 +969,15 @@ export default function EstimateCardBuilder({
           "_blank",
           "noopener"
         );
+        toast.success("Print preview opened in new tab");
       } else {
         toast.error(result.error || "Failed to generate link");
       }
     } finally {
       setSaving(false);
     }
-  }, [versionId, onSave]);
+    // Stay on page — don't redirect
+  }, [versionId]);
 
   // ---------------------------------------------------------------------------
   // Render
