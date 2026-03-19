@@ -36,8 +36,10 @@ export async function POST(request: NextRequest) {
     const ext = path.extname(file.name) || ".jpg";
     const buffer = Buffer.from(await file.arrayBuffer());
 
-    // Ensure directories exist
-    const baseDir = path.join(process.cwd(), "public", "uploads");
+    // Ensure directories exist — configurable for Railway volume mounts
+    const baseDir = process.env.PHOTO_STORAGE_PATH
+      ? path.resolve(process.env.PHOTO_STORAGE_PATH)
+      : path.join(process.cwd(), "public", "uploads");
     await fs.mkdir(path.join(baseDir, "originals"), { recursive: true });
     await fs.mkdir(path.join(baseDir, "full"), { recursive: true });
     await fs.mkdir(path.join(baseDir, "thumbs"), { recursive: true });

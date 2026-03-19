@@ -34,9 +34,11 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# prisma
+# prisma / database
 prisma/dev.db
 prisma/dev.db-journal
+*.db
+*.db-journal
 
 # photos storage
 /uploads
