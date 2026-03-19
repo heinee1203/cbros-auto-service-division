@@ -13,6 +13,7 @@ import {
   Loader2,
   Package,
   ChevronDown,
+  Check,
 } from "lucide-react";
 import { formatPeso, centavosToPesos } from "@/lib/utils";
 import { PartsSearch } from "./parts-search";
@@ -225,12 +226,12 @@ function PesoInput({
 
 function AddPartForm({
   onAdd,
-  onCancel,
+  onDone,
   isPending,
   catalogEnabled,
 }: {
-  onAdd: (desc: string, qty: number, pricePesos: string, apexProductId?: string, apexSku?: string) => void;
-  onCancel: () => void;
+  onAdd: (desc: string, qty: number, pricePesos: string, apexProductId?: string, apexSku?: string) => Promise<boolean>;
+  onDone: () => void;
   isPending: boolean;
   catalogEnabled?: boolean;
 }) {
@@ -240,11 +241,54 @@ function AddPartForm({
   const [price, setPrice] = useState("");
   const [apexProductId, setApexProductId] = useState<string | undefined>();
   const [apexSku, setApexSku] = useState<string | undefined>();
+  const [justAdded, setJustAdded] = useState(false);
+  const descRef = useRef<HTMLInputElement>(null);
 
   const canSubmit = desc.trim().length > 0 && parseFloat(price) > 0;
 
+  const handleSubmit = async () => {
+    if (!canSubmit) return;
+    const success = await onAdd(desc.trim(), qty, price, apexProductId, apexSku);
+    if (success) {
+      // Clear form for next entry — stay open
+      setDesc("");
+      setQty(1);
+      setPrice("");
+      setApexProductId(undefined);
+      setApexSku(undefined);
+      setJustAdded(true);
+      setTimeout(() => setJustAdded(false), 1500);
+      // Reset to search mode if catalog enabled
+      if (catalogEnabled) {
+        setMode("search");
+      } else {
+        // Focus description input for next entry
+        setTimeout(() => descRef.current?.focus(), 100);
+      }
+    }
+  };
+
+  const handleDone = () => {
+    // If fields have data, add first then close
+    if (canSubmit) {
+      onAdd(desc.trim(), qty, price, apexProductId, apexSku).then((ok) => {
+        if (ok) onDone();
+      });
+    } else {
+      onDone();
+    }
+  };
+
   return (
     <div className="mt-3 p-3 rounded-lg border border-[var(--sch-accent)]/30 bg-[var(--sch-bg)]">
+      {/* Success indicator */}
+      {justAdded && (
+        <div className="flex items-center gap-1.5 text-xs text-emerald-400 font-medium mb-2 animate-pulse">
+          <Check className="h-3.5 w-3.5" />
+          Added — enter next part
+        </div>
+      )}
+
       {mode === "search" ? (
         <div className="mb-3">
           <PartsSearch
@@ -262,6 +306,7 @@ function AddPartForm({
       ) : (
         <>
           <input
+            ref={descRef}
             type="text"
             value={desc}
             onChange={(e) => setDesc(e.target.value)}
@@ -285,15 +330,15 @@ function AddPartForm({
           <div className="flex gap-2 justify-end">
             <button
               type="button"
-              onClick={onCancel}
+              onClick={handleDone}
               disabled={isPending}
               className="h-10 px-4 rounded-lg border border-[var(--sch-border)] text-[var(--sch-text-muted)] text-sm font-medium disabled:opacity-40"
             >
-              Cancel
+              Done
             </button>
             <button
               type="button"
-              onClick={() => canSubmit && onAdd(desc.trim(), qty, price, apexProductId, apexSku)}
+              onClick={handleSubmit}
               disabled={!canSubmit || isPending}
               className="h-10 px-4 rounded-lg bg-[var(--sch-accent)] text-black text-sm font-semibold disabled:opacity-40 flex items-center gap-1.5"
             >
@@ -337,7 +382,7 @@ function ServiceCard({
     partCount: number,
     apexProductId?: string,
     apexSku?: string
-  ) => void;
+  ) => Promise<boolean>;
   onRemovePart: (itemId: string) => void;
   isPending: boolean;
   catalogEnabled?: boolean;
@@ -444,7 +489,7 @@ function ServiceCard({
                   apexSku
                 )
               }
-              onCancel={onToggleAddPart}
+              onDone={onToggleAddPart}
               isPending={isPending}
               catalogEnabled={catalogEnabled}
             />
@@ -477,7 +522,7 @@ function OtherItemsCard({
 }: {
   items: LineItem[];
   onRemove: (id: string) => void;
-  onAddItem: (desc: string, qty: number, pricePesos: string, apexProductId?: string, apexSku?: string) => void;
+  onAddItem: (desc: string, qty: number, pricePesos: string, apexProductId?: string, apexSku?: string) => Promise<boolean>;
   isPending: boolean;
   catalogEnabled?: boolean;
 }) {
@@ -532,11 +577,10 @@ function OtherItemsCard({
       {showAddForm ? (
         <div className="mt-3">
           <AddPartForm
-            onAdd={(desc, qty, price, apexProductId, apexSku) => {
-              onAddItem(desc, qty, price, apexProductId, apexSku);
-              setShowAddForm(false);
-            }}
-            onCancel={() => setShowAddForm(false)}
+            onAdd={(desc, qty, price, apexProductId, apexSku) =>
+              onAddItem(desc, qty, price, apexProductId, apexSku)
+            }
+            onDone={() => setShowAddForm(false)}
             isPending={isPending}
             catalogEnabled={catalogEnabled}
           />
@@ -713,7 +757,7 @@ export default function EstimateCardBuilder({
   // ---------------------------------------------------------------------------
 
   const handleAddPart = useCallback(
-    (
+    async (
       serviceCatalogId: string,
       desc: string,
       qty: number,
@@ -721,49 +765,48 @@ export default function EstimateCardBuilder({
       partCount: number,
       apexProductId?: string,
       apexSku?: string
-    ) => {
+    ): Promise<boolean> => {
       const price = parseFloat(pricePesos);
-      if (isNaN(price) || price <= 0) return;
+      if (isNaN(price) || price <= 0) return false;
 
-      startTransition(async () => {
-        const result = await addLineItemAction(versionId, {
+      const result = await addLineItemAction(versionId, {
+        group: "PARTS",
+        description: desc,
+        serviceCatalogId,
+        quantity: qty,
+        unit: "pcs",
+        unitCost: price, // Action expects pesos
+        markup: 0,
+        sortOrder: (partCount + 1) * 10,
+        ...(apexProductId && { apexProductId }),
+        ...(apexSku && { apexSku }),
+      });
+
+      if (result.success && result.data) {
+        // Add the new item locally
+        const centavos = Math.round(price * 100);
+        const subtotal = Math.round(qty * centavos);
+        const newItem: LineItem = {
+          id: result.data.id as string,
           group: "PARTS",
           description: desc,
           serviceCatalogId,
           quantity: qty,
           unit: "pcs",
-          unitCost: price, // Action expects pesos
+          unitCost: centavos,
           markup: 0,
+          subtotal,
+          notes: null,
+          estimatedHours: null,
           sortOrder: (partCount + 1) * 10,
-          ...(apexProductId && { apexProductId }),
-          ...(apexSku && { apexSku }),
-        });
-
-        if (result.success && result.data) {
-          // Add the new item locally
-          const centavos = Math.round(price * 100);
-          const subtotal = Math.round(qty * centavos);
-          const newItem: LineItem = {
-            id: result.data.id as string,
-            group: "PARTS",
-            description: desc,
-            serviceCatalogId,
-            quantity: qty,
-            unit: "pcs",
-            unitCost: centavos,
-            markup: 0,
-            subtotal,
-            notes: null,
-            estimatedHours: null,
-            sortOrder: (partCount + 1) * 10,
-          };
-          setLineItems((prev) => [...prev, newItem]);
-          setAddingPartFor(null);
-          toast.success("Part added");
-        } else {
-          toast.error(result.error || "Failed to add part");
-        }
-      });
+        };
+        setLineItems((prev) => [...prev, newItem]);
+        // Form stays open — AddPartForm handles its own clear
+        return true;
+      } else {
+        toast.error(result.error || "Failed to add part");
+        return false;
+      }
     },
     [versionId]
   );
@@ -782,47 +825,46 @@ export default function EstimateCardBuilder({
 
   // Add item to "Other Items" (no serviceCatalogId)
   const handleAddOtherItem = useCallback(
-    (desc: string, qty: number, pricePesos: string, apexProductId?: string, apexSku?: string) => {
+    async (desc: string, qty: number, pricePesos: string, apexProductId?: string, apexSku?: string): Promise<boolean> => {
       const price = parseFloat(pricePesos);
-      if (isNaN(price) || price <= 0) return;
+      if (isNaN(price) || price <= 0) return false;
 
-      startTransition(async () => {
-        const result = await addLineItemAction(versionId, {
+      const result = await addLineItemAction(versionId, {
+        group: "PARTS",
+        description: desc,
+        serviceCatalogId: null,
+        quantity: qty,
+        unit: "pcs",
+        unitCost: price,
+        markup: 0,
+        sortOrder: (otherItems.length + 1) * 10,
+        ...(apexProductId && { apexProductId }),
+        ...(apexSku && { apexSku }),
+      });
+
+      if (result.success && result.data) {
+        const centavos = Math.round(price * 100);
+        const subtotal = Math.round(qty * centavos);
+        const newItem: LineItem = {
+          id: result.data.id as string,
           group: "PARTS",
           description: desc,
           serviceCatalogId: null,
           quantity: qty,
           unit: "pcs",
-          unitCost: price,
+          unitCost: centavos,
           markup: 0,
+          subtotal,
+          notes: null,
+          estimatedHours: null,
           sortOrder: (otherItems.length + 1) * 10,
-          ...(apexProductId && { apexProductId }),
-          ...(apexSku && { apexSku }),
-        });
-
-        if (result.success && result.data) {
-          const centavos = Math.round(price * 100);
-          const subtotal = Math.round(qty * centavos);
-          const newItem: LineItem = {
-            id: result.data.id as string,
-            group: "PARTS",
-            description: desc,
-            serviceCatalogId: null,
-            quantity: qty,
-            unit: "pcs",
-            unitCost: centavos,
-            markup: 0,
-            subtotal,
-            notes: null,
-            estimatedHours: null,
-            sortOrder: (otherItems.length + 1) * 10,
-          };
-          setLineItems((prev) => [...prev, newItem]);
-          toast.success("Item added");
-        } else {
-          toast.error(result.error || "Failed to add item");
-        }
-      });
+        };
+        setLineItems((prev) => [...prev, newItem]);
+        return true;
+      } else {
+        toast.error(result.error || "Failed to add item");
+        return false;
+      }
     },
     [versionId, otherItems.length]
   );
