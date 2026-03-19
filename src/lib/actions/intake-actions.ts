@@ -14,6 +14,8 @@ import {
   type IntakeRecordInput,
   type JobOrderConfigInput,
 } from "@/lib/validators";
+import { sendCustomerSms } from "@/lib/services/sms";
+import { prisma } from "@/lib/prisma";
 import {
   createJobOrderFromEstimate,
   addDamageEntry,
@@ -188,6 +190,22 @@ export async function completeIntakeAction(
     signaturesObj,
     session.user.id
   );
+
+  // SMS — vehicle checked in
+  // result is the jobOrder; fetch vehicle plate for the SMS
+  const vehicle = await prisma.vehicle.findUnique({
+    where: { id: result.vehicleId },
+    select: { plateNumber: true },
+  });
+  sendCustomerSms(
+    result.customerId,
+    "VEHICLE_CHECKED_IN",
+    {
+      vehiclePlate: vehicle?.plateNumber ?? "",
+      jobNumber: result.jobOrderNumber ?? "",
+    },
+    result.id
+  ).catch((err) => console.error("[SMS] VEHICLE_CHECKED_IN failed:", err));
 
   revalidatePath("/jobs");
   revalidatePath("/estimates");

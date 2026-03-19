@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import crypto from "crypto";
+import { sendCustomerSms } from "@/lib/services/sms";
 import type { SupplementLineItemInput } from "@/lib/validators";
 import { UserRole } from "@/types/enums";
 
@@ -390,6 +391,14 @@ export async function approveWithSignature(
       },
     });
   }
+
+  // SMS — supplement approved
+  sendCustomerSms(
+    supplement.jobOrder.customerId,
+    "SUPPLEMENT_APPROVAL",
+    { vehiclePlate: supplement.jobOrder.vehicle?.plateNumber ?? "" },
+    supplement.jobOrderId
+  ).catch((err) => console.error("[SMS] SUPPLEMENT_APPROVAL failed:", err));
 
   return supplement;
 }

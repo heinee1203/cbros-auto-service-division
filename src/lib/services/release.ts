@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { sendCustomerSms } from "@/lib/services/sms";
 import { logActivity } from "@/lib/services/job-activities";
 import {
   SERVICE_WARRANTY_MAP,
@@ -414,6 +415,14 @@ export async function completeRelease(releaseId: string, userId: string) {
       })),
     });
   }
+
+  // SMS — vehicle ready for pickup
+  sendCustomerSms(
+    jobOrder.customerId,
+    "VEHICLE_READY",
+    { vehiclePlate: jobOrder.vehicle.plateNumber },
+    jobOrder.id
+  ).catch((err) => console.error("[SMS] VEHICLE_READY failed:", err));
 
   // Log activity
   await logActivity({

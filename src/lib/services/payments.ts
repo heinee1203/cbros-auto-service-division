@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { formatPeso, generateDocNumber } from "@/lib/utils";
+import { sendCustomerSms } from "@/lib/services/sms";
 import { logActivity } from "@/lib/services/job-activities";
 
 // ---------------------------------------------------------------------------
@@ -21,7 +22,7 @@ export async function recordPayment(
 ) {
   const invoice = await prisma.invoice.findUniqueOrThrow({
     where: { id: invoiceId },
-    include: { jobOrder: { select: { id: true } } },
+    include: { jobOrder: { select: { id: true, customerId: true, jobOrderNumber: true } } },
   });
 
   const now = new Date();
@@ -107,6 +108,16 @@ export async function recordPayment(
         entityId: invoiceId,
       })),
     });
+  }
+
+  // SMS — payment confirmation to customer
+  if (invoice?.jobOrder) {
+    sendCustomerSms(
+      invoice.jobOrder.customerId,
+      "PAYMENT_RECEIVED",
+      { amount: formatPeso(data.amount), jobNumber: invoice.jobOrder.jobOrderNumber },
+      invoice.jobOrder.id
+    ).catch((err) => console.error("[SMS] PAYMENT_RECEIVED failed:", err));
   }
 
   return payment;

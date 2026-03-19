@@ -26,6 +26,7 @@ import {
   generateApprovalToken,
 } from "@/lib/services/estimates";
 import { signTechReview, signMgmtApproval } from "@/lib/services/estimate-approvals";
+import { sendCustomerSms } from "@/lib/services/sms";
 import { prisma } from "@/lib/prisma";
 import { generateDocNumber } from "@/lib/utils";
 
@@ -266,6 +267,27 @@ export async function updateEstimateStatusAction(
       approvalToken = await generateApprovalToken(latestVersion.id, session.user.id);
     } else if (latestVersion?.approvalToken) {
       approvalToken = latestVersion.approvalToken;
+    }
+  }
+
+  // SMS — estimate ready for review
+  if (status === "ESTIMATE_SENT" && approvalToken) {
+    const estRequest = await prisma.estimateRequest.findUnique({
+      where: { id: estimateRequestId },
+      include: {
+        vehicle: { select: { plateNumber: true } },
+      },
+    });
+    if (estRequest) {
+      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+      sendCustomerSms(
+        estRequest.customerId,
+        "ESTIMATE_READY",
+        {
+          vehiclePlate: estRequest.vehicle.plateNumber,
+          link: `${baseUrl}/approve/estimate/${approvalToken}`,
+        }
+      ).catch((err) => console.error("[SMS] ESTIMATE_READY failed:", err));
     }
   }
 
