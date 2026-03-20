@@ -48,6 +48,9 @@ export async function getInvoices(params: GetInvoicesParams = {}) {
             vehicle: { select: { plateNumber: true, make: true, model: true } },
           },
         },
+        chargeAccount: {
+          select: { companyName: true },
+        },
         _count: { select: { payments: true } },
       },
       orderBy: { [sortBy]: sortOrder },

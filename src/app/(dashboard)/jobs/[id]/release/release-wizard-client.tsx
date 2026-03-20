@@ -19,8 +19,9 @@ import {
   Image,
   CheckCircle2,
   Key,
+  Building2,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, formatPeso, formatDate } from "@/lib/utils";
 import { StepIndicator } from "@/components/ui/step-indicator";
 import { FuelGauge } from "@/components/intake/fuel-gauge";
 import { SignaturePad } from "@/components/ui/signature-pad";
@@ -85,6 +86,15 @@ interface ReleaseWizardClientProps {
     terms: string;
   }>;
   canRelease: boolean;
+  invoice: {
+    id: string;
+    invoiceType: string;
+    paymentStatus: string;
+    balanceDue: number;
+    creditTerms: string | null;
+    dueDate: string | null;
+    chargeAccount: { id: string; companyName: string } | null;
+  } | null;
 }
 
 interface ReleaseRecordData {
@@ -125,6 +135,8 @@ const STEPS = RELEASE_WIZARD_STEPS.map((s) => ({ label: s.label }));
 const RELEASE_ALLOWED_STATUSES = [
   "FULLY_PAID",
   "RELEASED",
+  "AWAITING_PAYMENT", // allowed for charge invoices
+  "PARTIAL_PAYMENT",  // allowed for charge invoices
 ];
 
 // ---------------------------------------------------------------------------
@@ -149,6 +161,7 @@ export default function ReleaseWizardClient({
   preReleaseValidation,
   warrantyInfo,
   canRelease,
+  invoice,
 }: ReleaseWizardClientProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -232,7 +245,10 @@ export default function ReleaseWizardClient({
     );
   }
 
-  if (!RELEASE_ALLOWED_STATUSES.includes(jobStatus)) {
+  const isChargeInvoice = invoice?.invoiceType === "CHARGE";
+  const isPaymentPending = ["AWAITING_PAYMENT", "PARTIAL_PAYMENT"].includes(jobStatus);
+
+  if (!RELEASE_ALLOWED_STATUSES.includes(jobStatus) && !(isChargeInvoice && isPaymentPending)) {
     return (
       <div className="text-center py-12">
         <AlertTriangle className="w-12 h-12 text-surface-300 mx-auto mb-3" />
@@ -498,6 +514,30 @@ export default function ReleaseWizardClient({
             {vehicle.plateNumber} &bull; {vehicle.color}
           </p>
         </div>
+
+        {/* Charge invoice info box */}
+        {isChargeInvoice && invoice?.chargeAccount && invoice.paymentStatus !== "PAID" && (
+          <div className="bg-amber-50 border border-amber-300 rounded-lg p-4">
+            <div className="flex items-start gap-2">
+              <Building2 className="w-5 h-5 text-amber-600 mt-0.5 shrink-0" />
+              <div>
+                <p className="font-medium text-amber-800">
+                  Charge Invoice &mdash; {invoice.chargeAccount.companyName}
+                </p>
+                <p className="mt-1 text-sm text-amber-700">
+                  Amount {formatPeso(invoice.balanceDue)} will be billed to the company account.
+                </p>
+                {(invoice.creditTerms || invoice.dueDate) && (
+                  <p className="mt-1 text-xs text-amber-600">
+                    {invoice.creditTerms && <>Terms: {invoice.creditTerms.replace(/_/g, " ")}</>}
+                    {invoice.creditTerms && invoice.dueDate && <> &middot; </>}
+                    {invoice.dueDate && <>Due: {formatDate(invoice.dueDate)}</>}
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Pre-release validation issues */}
         {preReleaseValidation.issues.length > 0 && (

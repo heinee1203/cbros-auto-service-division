@@ -155,6 +155,9 @@ export default async function InvoicesPage({
                     Status
                   </th>
                   <th className="text-left text-xs font-medium text-surface-500 uppercase tracking-wider px-4 py-3">
+                    Type
+                  </th>
+                  <th className="text-left text-xs font-medium text-surface-500 uppercase tracking-wider px-4 py-3">
                     Date
                   </th>
                 </tr>
@@ -222,6 +225,25 @@ export default async function InvoicesPage({
                           >
                             {PAYMENT_STATUS_LABELS[status] ?? status}
                           </span>
+                        </Link>
+                      </td>
+                      <td className="px-4 py-3">
+                        <Link href={`/jobs/${invoice.jobOrderId}/invoice`}>
+                          {invoice.invoiceType === "CHARGE" ? (
+                            <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-700">
+                              Charge
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center gap-1 rounded-full bg-green-50 px-2 py-0.5 text-xs font-medium text-green-700">
+                              Cash
+                            </span>
+                          )}
+                          {invoice.invoiceType === "CHARGE" &&
+                            invoice.chargeAccount && (
+                              <span className="block text-xs text-surface-400 mt-0.5 truncate max-w-[120px]">
+                                {invoice.chargeAccount.companyName}
+                              </span>
+                            )}
                         </Link>
                       </td>
                       <td className="px-4 py-3 font-mono text-surface-500">

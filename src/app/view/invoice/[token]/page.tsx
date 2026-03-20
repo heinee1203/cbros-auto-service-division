@@ -121,7 +121,11 @@ export default async function PublicInvoicePage({ params }: PublicInvoicePagePro
           <div className="border-b border-surface-200 px-8 py-4">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-xl font-bold text-primary">INVOICE</h2>
+                <h2 className="text-xl font-bold text-primary">
+                  {invoice.invoiceType === "CHARGE"
+                    ? "CHARGE INVOICE"
+                    : "INVOICE"}
+                </h2>
                 <p className="text-sm font-medium text-surface-600">
                   {invoice.invoiceNumber}
                 </p>
@@ -141,6 +145,14 @@ export default async function PublicInvoicePage({ params }: PublicInvoicePagePro
                     </span>
                   </p>
                 )}
+                {invoice.creditTerms && (
+                  <p>
+                    Terms:{" "}
+                    <span className="font-medium text-primary">
+                      {invoice.creditTerms.replace("_", " ")}
+                    </span>
+                  </p>
+                )}
               </div>
             </div>
           </div>
@@ -152,15 +164,56 @@ export default async function PublicInvoicePage({ params }: PublicInvoicePagePro
                 <h3 className="text-xs font-semibold uppercase tracking-wide text-surface-400">
                   Bill To
                 </h3>
-                <p className="mt-1 font-medium text-primary">{customerName}</p>
-                {customer.address && (
-                  <p className="text-sm text-surface-500">{customer.address}</p>
-                )}
-                {customer.phone && (
-                  <p className="text-sm text-surface-500">{customer.phone}</p>
-                )}
-                {customer.email && (
-                  <p className="text-sm text-surface-500">{customer.email}</p>
+                {invoice.invoiceType === "CHARGE" && invoice.chargeAccount ? (
+                  <>
+                    <p className="mt-1 font-medium text-primary">
+                      {invoice.chargeAccount.companyName}
+                    </p>
+                    {invoice.chargeAccount.address && (
+                      <p className="text-sm text-surface-500">
+                        {invoice.chargeAccount.address}
+                      </p>
+                    )}
+                    {invoice.chargeAccount.contactPerson && (
+                      <p className="text-sm text-surface-500">
+                        Attn: {invoice.chargeAccount.contactPerson}
+                      </p>
+                    )}
+                    {invoice.chargeAccount.phone && (
+                      <p className="text-sm text-surface-500">
+                        {invoice.chargeAccount.phone}
+                      </p>
+                    )}
+                    {invoice.chargeAccount.tinNumber && (
+                      <p className="text-sm text-surface-500">
+                        TIN: {invoice.chargeAccount.tinNumber}
+                      </p>
+                    )}
+                    <p className="text-xs text-surface-400 mt-1">
+                      Customer: {customerName}
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <p className="mt-1 font-medium text-primary">
+                      {customerName}
+                    </p>
+                    {customer.address && (
+                      <p className="text-sm text-surface-500">
+                        {customer.address}
+                      </p>
+                    )}
+                    {customer.phone && (
+                      <p className="text-sm text-surface-500">
+                        {customer.phone}
+                      </p>
+                    )}
+                    {customer.email && (
+                      <p className="text-sm text-surface-500">
+                        {customer.email}
+                      </p>
+                    )}
+                  </>
                 )}
               </div>
               <div>

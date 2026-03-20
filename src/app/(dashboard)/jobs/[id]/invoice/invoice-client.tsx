@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useEffect, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import {
   FileText,
@@ -28,6 +28,7 @@ import {
 import {
   generateInvoiceAction,
   toggleBillingModeAction,
+  updateInvoiceTypeAction,
   updateInvoiceAction,
   applyDiscountAction,
   addInvoiceLineItemAction,
@@ -145,8 +146,32 @@ export default function InvoiceClient({
   const [shareUrl, setShareUrl] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
+  // Invoice type state
+  const [invoiceType, setInvoiceType] = useState<string>(
+    invoice?.invoiceType ?? "CASH"
+  );
+  const [chargeAccountId, setChargeAccountId] = useState<string | null>(
+    invoice?.chargeAccountId ?? null
+  );
+  const [chargeAccounts, setChargeAccounts] = useState<
+    Array<{
+      id: string;
+      companyName: string;
+      creditTerms: string;
+      currentBalance: number;
+    }>
+  >([]);
+
   // Error state
   const [error, setError] = useState<string | null>(null);
+
+  // Fetch charge accounts on mount
+  useEffect(() => {
+    fetch("/api/charge-accounts")
+      .then((r) => r.json())
+      .then((d) => setChargeAccounts(d.accounts || []))
+      .catch(() => {});
+  }, []);
 
   // -------------------------------------------------------------------------
   // No Invoice State
@@ -362,6 +387,31 @@ export default function InvoiceClient({
     setTimeout(() => setCopied(false), 2000);
   }
 
+  function handleInvoiceTypeChange(type: string, accountId?: string | null) {
+    setError(null);
+    const newType = type;
+    const newAccountId = accountId ?? chargeAccountId;
+    const selectedAccount = chargeAccounts.find((a) => a.id === newAccountId);
+
+    startTransition(async () => {
+      const result = await updateInvoiceTypeAction(invoice.id, job.id, {
+        invoiceType: newType,
+        chargeAccountId: newType === "CHARGE" ? newAccountId : null,
+        creditTerms:
+          newType === "CHARGE"
+            ? selectedAccount?.creditTerms ?? "NET_30"
+            : null,
+      });
+      if (result.success) {
+        setInvoiceType(newType);
+        if (newType === "CASH") setChargeAccountId(null);
+        router.refresh();
+      } else {
+        setError(result.error ?? "Failed to update invoice type");
+      }
+    });
+  }
+
   // -------------------------------------------------------------------------
   // Discount display helpers
   // -------------------------------------------------------------------------
@@ -453,7 +503,9 @@ export default function InvoiceClient({
 
             {/* Invoice Details */}
             <div className="text-right">
-              <h3 className="text-lg font-semibold text-primary">INVOICE</h3>
+              <h3 className="text-lg font-semibold text-primary">
+                {invoiceType === "CHARGE" ? "CHARGE INVOICE" : "CASH INVOICE"}
+              </h3>
               <p className="text-sm font-medium font-mono text-primary mt-1">
                 {invoice.invoiceNumber}
               </p>
@@ -517,6 +569,101 @@ export default function InvoiceClient({
                   </button>
                 </div>
               </div>
+            </div>
+          )}
+
+          {/* Invoice Type Toggle */}
+          {canEdit && (
+            <div className="no-print mt-4 pt-4 border-t border-surface-200">
+              <div className="flex flex-col gap-3">
+                <div className="flex items-center gap-3">
+                  <span className="text-sm text-surface-500">Invoice Type:</span>
+                  <div className="flex rounded-lg overflow-hidden border border-surface-200">
+                    <button
+                      onClick={() => {
+                        if (invoiceType !== "CASH") {
+                          handleInvoiceTypeChange("CASH");
+                        }
+                      }}
+                      disabled={isPending}
+                      className={cn(
+                        "px-4 py-2 text-sm font-medium transition-colors",
+                        invoiceType === "CASH"
+                          ? "bg-accent text-white"
+                          : "bg-white text-surface-500 hover:bg-surface-50"
+                      )}
+                    >
+                      Cash
+                    </button>
+                    <button
+                      onClick={() => {
+                        if (invoiceType !== "CHARGE") {
+                          setInvoiceType("CHARGE");
+                        }
+                      }}
+                      disabled={isPending}
+                      className={cn(
+                        "px-4 py-2 text-sm font-medium transition-colors",
+                        invoiceType === "CHARGE"
+                          ? "bg-accent text-white"
+                          : "bg-white text-surface-500 hover:bg-surface-50"
+                      )}
+                    >
+                      Charge
+                    </button>
+                  </div>
+                </div>
+
+                {invoiceType === "CHARGE" && (
+                  <div className="p-4 rounded-xl border border-amber-200 bg-amber-50">
+                    <label className="text-sm font-medium text-surface-700 block mb-2">
+                      Company Account
+                    </label>
+                    <select
+                      value={chargeAccountId || ""}
+                      onChange={(e) => {
+                        const accId = e.target.value || null;
+                        setChargeAccountId(accId);
+                        if (accId) {
+                          handleInvoiceTypeChange("CHARGE", accId);
+                        }
+                      }}
+                      className="w-full px-3 py-2 border border-surface-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-accent-300 focus:border-accent-400"
+                    >
+                      <option value="">Select account...</option>
+                      {chargeAccounts.map((acc) => (
+                        <option key={acc.id} value={acc.id}>
+                          {acc.companyName} ({acc.creditTerms}) — Balance:{" "}
+                          {(acc.currentBalance / 100).toLocaleString("en-PH", {
+                            style: "currency",
+                            currency: "PHP",
+                          })}
+                        </option>
+                      ))}
+                    </select>
+                    {chargeAccountId && (
+                      <div className="mt-2 text-xs text-surface-500">
+                        Terms:{" "}
+                        {chargeAccounts.find((a) => a.id === chargeAccountId)
+                          ?.creditTerms ?? "—"}
+                        {invoice.dueDate && (
+                          <>
+                            {" "}
+                            · Due: {formatDate(invoice.dueDate)}
+                          </>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Charge invoice info banner (read-only) */}
+          {invoiceType === "CHARGE" && !canEdit && (
+            <div className="mt-4 p-3 rounded-lg border border-amber-200 bg-amber-50 text-sm text-amber-800">
+              This is a charge invoice. Vehicle may be released without payment.
             </div>
           )}
         </div>

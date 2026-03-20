@@ -238,12 +238,54 @@ export const COMMON_BELONGINGS = [
 // Job order status filter tabs for the jobs list page
 export const JOB_ORDER_STATUS_TABS = [
   { value: "ALL", label: "All" },
-  { value: "CHECKED_IN", label: "Checked In" },
-  { value: "IN_PROGRESS", label: "In Progress" },
-  { value: "QC_PENDING", label: "QC Pending" },
-  { value: "AWAITING_PAYMENT", label: "Awaiting Payment" },
-  { value: "RELEASED", label: "Released" },
+  { value: "WAITLIST", label: "Waitlist" },
+  { value: "IN_SERVICE", label: "In-Service" },
+  { value: "QC", label: "QC" },
+  { value: "PICKUP", label: "Pickup" },
+  { value: "DONE", label: "Done" },
 ] as const;
+
+// Grouped status mapping for tabs
+export const JOB_TAB_STATUS_MAP: Record<string, string[]> = {
+  ALL: [],
+  WAITLIST: ["PENDING", "PENDING_ESTIMATE", "CHECKED_IN"],
+  IN_SERVICE: ["IN_PROGRESS"],
+  QC: ["QC_PENDING", "QC_PASSED", "QC_FAILED_REWORK"],
+  PICKUP: ["AWAITING_PAYMENT", "FULLY_PAID", "AWAITING_RELEASE"],
+  DONE: ["RELEASED"],
+};
+
+// Centralized status labels (friendly names)
+export const JOB_STATUS_LABELS: Record<string, string> = {
+  PENDING: "Waitlist",
+  PENDING_ESTIMATE: "Waitlist",
+  CHECKED_IN: "Waitlist",
+  IN_PROGRESS: "In-Service",
+  QC_PENDING: "QC Review",
+  QC_PASSED: "QC Passed",
+  QC_FAILED_REWORK: "Rework",
+  AWAITING_PAYMENT: "Ready for Pickup",
+  FULLY_PAID: "Paid",
+  AWAITING_RELEASE: "Ready for Pickup",
+  RELEASED: "Done",
+  CANCELLED: "Cancelled",
+};
+
+// Centralized status badge colors
+export const JOB_STATUS_COLORS: Record<string, { bg: string; text: string }> = {
+  PENDING: { bg: "rgba(251,191,36,0.2)", text: "#FBBF24" },
+  PENDING_ESTIMATE: { bg: "rgba(251,191,36,0.2)", text: "#FBBF24" },
+  CHECKED_IN: { bg: "rgba(251,191,36,0.2)", text: "#FBBF24" },
+  IN_PROGRESS: { bg: "rgba(52,211,153,0.2)", text: "#34D399" },
+  QC_PENDING: { bg: "rgba(96,165,250,0.2)", text: "#60A5FA" },
+  QC_PASSED: { bg: "rgba(96,165,250,0.2)", text: "#60A5FA" },
+  QC_FAILED_REWORK: { bg: "rgba(248,113,113,0.2)", text: "#F87171" },
+  AWAITING_PAYMENT: { bg: "rgba(251,146,60,0.2)", text: "#FB923C" },
+  FULLY_PAID: { bg: "rgba(52,211,153,0.2)", text: "#34D399" },
+  AWAITING_RELEASE: { bg: "rgba(251,146,60,0.2)", text: "#FB923C" },
+  RELEASED: { bg: "rgba(156,163,175,0.2)", text: "#9CA3AF" },
+  CANCELLED: { bg: "rgba(248,113,113,0.2)", text: "#F87171" },
+};
 
 // Damage mapper zones for the car SVG diagram
 export const DAMAGE_ZONES = [

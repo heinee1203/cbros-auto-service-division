@@ -10,6 +10,7 @@ import {
   Printer,
   Download,
   AlertTriangle,
+  Crown,
 } from "lucide-react";
 import { formatPeso, formatDate } from "@/lib/utils";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
@@ -37,23 +38,34 @@ interface TechJobEntry {
   customerName: string;
   laborBilled: number;
   commissionRate: number;
-  commissionAmount: number;
+  grossCommission: number;
+  smDeduction: number;
+  netCommission: number;
   completedDate: string;
 }
 
 interface TechCommission {
   user: { id: string; name: string; nickname: string };
+  isChiefMechanic: boolean;
   jobs: TechJobEntry[];
   totalLaborBilled: number;
   commissionRate: number;
-  totalCommission: number;
+  totalGrossCommission: number;
+  totalSmDeduction: number;
+  totalNetCommission: number;
+  cmOptionA?: number;
+  cmOptionB?: number;
+  cmSelectedOption?: string;
 }
 
 interface PreviewData {
   entries: TechCommission[];
   unassignedLabor: number;
-  grandTotalLabor: number;
-  grandTotalCommission: number;
+  totalMechanicalLabor: number;
+  grandTotalGross: number;
+  grandTotalSmDeduction: number;
+  grandTotalNet: number;
+  smPayout: number;
   periodStart: string;
   periodEnd: string;
 }
@@ -63,7 +75,10 @@ interface Period {
   periodStart: string;
   periodEnd: string;
   status: string;
-  totalCommission: number;
+  totalNetCommission: number;
+  totalSmDeduction: number;
+  totalGrossCommission: number;
+  smPayout: number;
   notes: string | null;
   finalizedAt: string | null;
   createdAt: string;
@@ -261,15 +276,17 @@ export function CommissionsClient({
   const handleExportCSV = useCallback(() => {
     if (!preview) return;
     const rows = [
-      ["Technician", "Rate %", "Jobs", "Labor Billed", "Commission"],
+      ["Technician", "Rate %", "Jobs", "Labor Billed", "Gross Commission", "SM Deduction", "Net Commission"],
     ];
     for (const tech of preview.entries) {
       rows.push([
-        tech.user.nickname,
-        tech.commissionRate.toString(),
+        tech.isChiefMechanic ? `${tech.user.nickname} (CM)` : tech.user.nickname,
+        tech.commissionRate === -1 ? "CM" : tech.commissionRate.toString(),
         tech.jobs.length.toString(),
         (tech.totalLaborBilled / 100).toFixed(2),
-        (tech.totalCommission / 100).toFixed(2),
+        (tech.totalGrossCommission / 100).toFixed(2),
+        (tech.totalSmDeduction / 100).toFixed(2),
+        (tech.totalNetCommission / 100).toFixed(2),
       ]);
       for (const job of tech.jobs) {
         rows.push([
@@ -277,7 +294,9 @@ export function CommissionsClient({
           "",
           job.vehicle,
           (job.laborBilled / 100).toFixed(2),
-          (job.commissionAmount / 100).toFixed(2),
+          (job.grossCommission / 100).toFixed(2),
+          (job.smDeduction / 100).toFixed(2),
+          (job.netCommission / 100).toFixed(2),
         ]);
       }
     }
@@ -286,9 +305,15 @@ export function CommissionsClient({
       "TOTAL",
       "",
       "",
-      (preview.grandTotalLabor / 100).toFixed(2),
-      (preview.grandTotalCommission / 100).toFixed(2),
+      (preview.totalMechanicalLabor / 100).toFixed(2),
+      (preview.grandTotalGross / 100).toFixed(2),
+      (preview.grandTotalSmDeduction / 100).toFixed(2),
+      (preview.grandTotalNet / 100).toFixed(2),
     ]);
+    if (preview.smPayout > 0) {
+      rows.push([]);
+      rows.push(["SM Payout", "", "", "", "", "", (preview.smPayout / 100).toFixed(2)]);
+    }
 
     const csv = rows.map((r) => r.join(",")).join("\n");
     const blob = new Blob([csv], { type: "text/csv" });
@@ -345,7 +370,7 @@ export function CommissionsClient({
                     <td className="py-2.5 text-surface-500">
                       {r.effectiveFrom
                         ? formatDate(r.effectiveFrom)
-                        : "—"}
+                        : "\u2014"}
                     </td>
                     <td className="py-2.5 text-right">
                       <button
@@ -451,7 +476,7 @@ export function CommissionsClient({
             <div className="flex items-center gap-2 bg-amber-50 px-5 py-3 text-sm text-amber-700">
               <AlertTriangle className="w-4 h-4" />
               <span>
-                {formatPeso(preview.unassignedLabor)} in labor has no
+                {formatPeso(preview.unassignedLabor)} in mechanical labor has no
                 technician assigned
               </span>
             </div>
@@ -466,10 +491,16 @@ export function CommissionsClient({
                   <th className="px-3 py-3 font-medium text-right">Rate</th>
                   <th className="px-3 py-3 font-medium text-right">Jobs</th>
                   <th className="px-3 py-3 font-medium text-right">
-                    Labor Billed
+                    Mech. Labor
+                  </th>
+                  <th className="px-3 py-3 font-medium text-right">
+                    Gross
+                  </th>
+                  <th className="px-3 py-3 font-medium text-right">
+                    SM Ded.
                   </th>
                   <th className="px-5 py-3 font-medium text-right">
-                    Commission
+                    Net
                   </th>
                 </tr>
               </thead>
@@ -495,12 +526,29 @@ export function CommissionsClient({
                     )}
                   </td>
                   <td className="px-3 py-3 text-right font-mono text-surface-900">
-                    {formatPeso(preview.grandTotalLabor)}
+                    {formatPeso(preview.totalMechanicalLabor)}
+                  </td>
+                  <td className="px-3 py-3 text-right font-mono text-surface-900">
+                    {formatPeso(preview.grandTotalGross)}
+                  </td>
+                  <td className="px-3 py-3 text-right font-mono text-red-600">
+                    ({formatPeso(preview.grandTotalSmDeduction)})
                   </td>
                   <td className="px-5 py-3 text-right font-mono text-surface-900">
-                    {formatPeso(preview.grandTotalCommission)}
+                    {formatPeso(preview.grandTotalNet)}
                   </td>
                 </tr>
+                {preview.smPayout > 0 && (
+                  <tr className="bg-blue-50/50">
+                    <td className="px-5 py-2" />
+                    <td className="px-3 py-2 text-sm text-blue-700" colSpan={6}>
+                      Service Manager Payout
+                    </td>
+                    <td className="px-5 py-2 text-right font-mono text-sm font-semibold text-blue-700">
+                      {formatPeso(preview.smPayout)}
+                    </td>
+                  </tr>
+                )}
               </tfoot>
             </table>
           </div>
@@ -526,9 +574,9 @@ export function CommissionsClient({
                 <tr className="border-b border-surface-200 bg-surface-50 text-left text-surface-500">
                   <th className="px-5 py-3 font-medium">Period</th>
                   <th className="px-3 py-3 font-medium">Status</th>
-                  <th className="px-3 py-3 font-medium text-right">
-                    Total Commission
-                  </th>
+                  <th className="px-3 py-3 font-medium text-right">Gross</th>
+                  <th className="px-3 py-3 font-medium text-right">SM Ded.</th>
+                  <th className="px-3 py-3 font-medium text-right">Net Payout</th>
                   <th className="px-5 py-3 font-medium text-right">Actions</th>
                 </tr>
               </thead>
@@ -551,8 +599,14 @@ export function CommissionsClient({
                         ] ?? p.status}
                       </span>
                     </td>
-                    <td className="px-3 py-3 text-right font-mono text-surface-900">
-                      {formatPeso(p.totalCommission)}
+                    <td className="px-3 py-3 text-right font-mono text-surface-600">
+                      {formatPeso(p.totalGrossCommission)}
+                    </td>
+                    <td className="px-3 py-3 text-right font-mono text-red-600">
+                      ({formatPeso(p.totalSmDeduction)})
+                    </td>
+                    <td className="px-3 py-3 text-right font-mono font-semibold text-surface-900">
+                      {formatPeso(p.totalNetCommission)}
                     </td>
                     <td className="px-5 py-3 text-right">
                       <div className="flex items-center justify-end gap-2">
@@ -597,7 +651,7 @@ export function CommissionsClient({
       <SlideOver
         open={!!editRate}
         onClose={() => setEditRate(null)}
-        title={`Edit Commission Rate — ${editRate?.user.firstName ?? ""}`}
+        title={`Edit Commission Rate \u2014 ${editRate?.user.firstName ?? ""}`}
         footer={
           <div className="flex gap-3">
             <button
@@ -707,10 +761,22 @@ function TechRow({
           )}
         </td>
         <td className="px-3 py-3 font-medium text-surface-900">
-          {tech.user.nickname}
+          <span className="flex items-center gap-1.5">
+            {tech.user.nickname}
+            {tech.isChiefMechanic && (
+              <span className="inline-flex items-center gap-0.5 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700">
+                <Crown className="w-3 h-3" />
+                CM
+              </span>
+            )}
+          </span>
         </td>
         <td className="px-3 py-3 text-right font-mono">
-          {tech.commissionRate === -1 ? "Mixed" : `${tech.commissionRate}%`}
+          {tech.isChiefMechanic
+            ? `Opt ${tech.cmSelectedOption}`
+            : tech.commissionRate === -1
+            ? "Mixed"
+            : `${tech.commissionRate}%`}
         </td>
         <td className="px-3 py-3 text-right font-mono">
           {tech.jobs.length}
@@ -718,10 +784,27 @@ function TechRow({
         <td className="px-3 py-3 text-right font-mono">
           {formatPeso(tech.totalLaborBilled)}
         </td>
+        <td className="px-3 py-3 text-right font-mono">
+          {formatPeso(tech.totalGrossCommission)}
+        </td>
+        <td className="px-3 py-3 text-right font-mono text-red-600">
+          ({formatPeso(tech.totalSmDeduction)})
+        </td>
         <td className="px-5 py-3 text-right font-mono font-semibold">
-          {formatPeso(tech.totalCommission)}
+          {formatPeso(tech.totalNetCommission)}
         </td>
       </tr>
+      {/* CM option detail row */}
+      {expanded && tech.isChiefMechanic && tech.cmOptionA != null && tech.cmOptionB != null && (
+        <tr className="bg-amber-50/50">
+          <td className="px-5 py-2" />
+          <td className="px-3 py-2 text-xs text-amber-700" colSpan={7}>
+            Option A (shop rate): {formatPeso(tech.cmOptionA)} &middot;
+            Option B (own labor): {formatPeso(tech.cmOptionB)} &middot;
+            Selected: <strong>Option {tech.cmSelectedOption}</strong>
+          </td>
+        </tr>
+      )}
       {expanded &&
         tech.jobs.map((job, i) => (
           <tr
@@ -738,8 +821,14 @@ function TechRow({
             <td className="px-3 py-2 text-right font-mono text-xs text-surface-600">
               {formatPeso(job.laborBilled)}
             </td>
+            <td className="px-3 py-2 text-right font-mono text-xs text-surface-600">
+              {formatPeso(job.grossCommission)}
+            </td>
+            <td className="px-3 py-2 text-right font-mono text-xs text-red-500">
+              ({formatPeso(job.smDeduction)})
+            </td>
             <td className="px-5 py-2 text-right font-mono text-xs text-surface-600">
-              {formatPeso(job.commissionAmount)}
+              {formatPeso(job.netCommission)}
             </td>
           </tr>
         ))}

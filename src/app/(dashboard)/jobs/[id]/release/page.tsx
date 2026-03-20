@@ -106,6 +106,22 @@ export default async function JobReleasePage({
     orderBy: { createdAt: "asc" },
   });
 
+  // Fetch latest invoice (for charge invoice detection)
+  const latestInvoice = await prisma.invoice.findFirst({
+    where: { jobOrderId: id, isLatest: true, deletedAt: null },
+    select: {
+      id: true,
+      invoiceType: true,
+      paymentStatus: true,
+      balanceDue: true,
+      creditTerms: true,
+      dueDate: true,
+      chargeAccount: {
+        select: { id: true, companyName: true },
+      },
+    },
+  });
+
   // Pre-release validation
   const validation = await validatePreRelease(id);
 
@@ -184,6 +200,7 @@ export default async function JobReleasePage({
       preReleaseValidation={validation}
       warrantyInfo={warrantyInfo}
       canRelease={canRelease}
+      invoice={latestInvoice ? JSON.parse(JSON.stringify(latestInvoice)) : null}
     />
   );
 }

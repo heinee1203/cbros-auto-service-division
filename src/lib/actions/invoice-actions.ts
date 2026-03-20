@@ -282,7 +282,95 @@ export async function generateShareLinkAction(
 }
 
 // ---------------------------------------------------------------------------
-// 8. toggleBillingModeAction
+// 8. updateInvoiceTypeAction
+// ---------------------------------------------------------------------------
+export async function updateInvoiceTypeAction(
+  invoiceId: string,
+  jobOrderId: string,
+  data: {
+    invoiceType: string;
+    chargeAccountId?: string | null;
+    creditTerms?: string | null;
+  }
+): Promise<ActionResult> {
+  const session = await getSession();
+  if (!session?.user) return { success: false, error: "Unauthorized" };
+  if (!can(session.user.role, "invoices:edit")) {
+    return { success: false, error: "Permission denied" };
+  }
+
+  if (data.invoiceType !== "CASH" && data.invoiceType !== "CHARGE") {
+    return {
+      success: false,
+      error: 'Invoice type must be "CASH" or "CHARGE"',
+    };
+  }
+
+  try {
+    const updateData: Record<string, unknown> = {
+      invoiceType: data.invoiceType,
+      updatedBy: session.user.id,
+    };
+
+    if (data.invoiceType === "CHARGE") {
+      if (!data.chargeAccountId) {
+        return {
+          success: false,
+          error: "Charge account is required for charge invoices",
+        };
+      }
+      updateData.chargeAccountId = data.chargeAccountId;
+      updateData.creditTerms = data.creditTerms ?? "NET_30";
+
+      // Calculate due date based on credit terms
+      const termDays: Record<string, number> = {
+        NET_15: 15,
+        NET_30: 30,
+        NET_60: 60,
+        DUE_ON_RECEIPT: 0,
+      };
+      const days = termDays[data.creditTerms ?? "NET_30"] ?? 30;
+      const dueDate = new Date();
+      dueDate.setDate(dueDate.getDate() + days);
+      updateData.dueDate = dueDate;
+    } else {
+      // CASH — clear charge fields
+      updateData.chargeAccountId = null;
+      updateData.creditTerms = null;
+      updateData.dueDate = null;
+    }
+
+    await prisma.invoice.update({
+      where: { id: invoiceId },
+      data: updateData,
+    });
+
+    // If switching to CHARGE, recalculate account balance
+    if (
+      data.invoiceType === "CHARGE" &&
+      data.chargeAccountId
+    ) {
+      const { recalculateAccountBalance } = await import(
+        "@/lib/services/charge-accounts"
+      );
+      await recalculateAccountBalance(data.chargeAccountId);
+    }
+
+    revalidatePath(`/jobs/${jobOrderId}`);
+    revalidatePath("/invoices");
+    revalidatePath("/charge-accounts");
+    return { success: true };
+  } catch (err) {
+    return {
+      success: false,
+      error:
+        err instanceof Error ? err.message : "Failed to update invoice type",
+    };
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 9. toggleBillingModeAction
 // ---------------------------------------------------------------------------
 export async function toggleBillingModeAction(
   invoiceId: string,

@@ -803,6 +803,7 @@ export async function getInvoiceByToken(token: string) {
         where: { deletedAt: null },
         orderBy: [{ group: "asc" }, { sortOrder: "asc" }],
       },
+      chargeAccount: true,
       jobOrder: {
         include: {
           customer: true,

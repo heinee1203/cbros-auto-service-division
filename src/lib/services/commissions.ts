@@ -2,6 +2,21 @@ import { prisma } from "@/lib/prisma";
 import { getSettingValue } from "@/lib/services/settings";
 
 // ============================================================================
+// Constants
+// ============================================================================
+
+const DEFAULT_ELIGIBLE_CATEGORIES = [
+  "Preventive Maintenance Service (PMS)",
+  "Brake System",
+  "Suspension & Steering",
+  "Engine & Drivetrain",
+  "Electrical & Diagnostics",
+  "Tires & Wheels",
+  "Air Conditioning",
+  "Diagnostics & Inspection",
+];
+
+// ============================================================================
 // Commission Rate Management
 // ============================================================================
 
@@ -56,7 +71,6 @@ export async function setCommissionRate(
   createdBy: string,
   notes?: string | null
 ) {
-  // Close the current active rate
   const current = await prisma.commissionRate.findFirst({
     where: { userId, effectiveTo: null },
     orderBy: { effectiveFrom: "desc" },
@@ -93,7 +107,7 @@ export async function getCommissionRateHistory(userId: string) {
 }
 
 // ============================================================================
-// Commission Calculation
+// Commission Calculation — Types
 // ============================================================================
 
 interface TechJobEntry {
@@ -101,59 +115,76 @@ interface TechJobEntry {
   jobNumber: string;
   vehicle: string;
   customerName: string;
-  laborBilled: number; // centavos
-  commissionRate: number; // %
-  commissionAmount: number; // centavos
+  laborBilled: number;
+  commissionRate: number;
+  grossCommission: number;
+  smDeduction: number;
+  netCommission: number;
   completedDate: Date;
   taskId?: string;
 }
 
 interface TechCommission {
   user: { id: string; name: string; nickname: string };
+  isChiefMechanic: boolean;
   jobs: TechJobEntry[];
   totalLaborBilled: number;
   commissionRate: number;
-  totalCommission: number;
+  totalGrossCommission: number;
+  totalSmDeduction: number;
+  totalNetCommission: number;
+  cmOptionA?: number;
+  cmOptionB?: number;
+  cmSelectedOption?: string;
 }
 
 export interface CommissionPreview {
   entries: TechCommission[];
   unassignedLabor: number;
-  grandTotalLabor: number;
-  grandTotalCommission: number;
+  totalMechanicalLabor: number;
+  grandTotalGross: number;
+  grandTotalSmDeduction: number;
+  grandTotalNet: number;
+  smPayout: number;
   periodStart: Date;
   periodEnd: Date;
 }
+
+// ============================================================================
+// Commission Calculation — Engine
+// ============================================================================
 
 export async function calculateCommission(
   periodStart: Date,
   periodEnd: Date
 ): Promise<CommissionPreview> {
-  // Get commission settings
+  // Load settings
   const includeOnlyPaid = await getSettingValue("commission_include_only_paid", true);
   const includeOnlyReleased = await getSettingValue("commission_include_only_released", false);
+  const chiefMechanicId = await getSettingValue<string>("commission_chief_mechanic_id", "");
+  const cmShopRate = await getSettingValue<number>("commission_cm_shop_rate", 5);
+  const cmOwnRate = await getSettingValue<number>("commission_cm_own_rate", 10);
+  const smDeductionRate = await getSettingValue<number>("commission_sm_deduction_rate", 5);
+  const eligibleCategoriesStr = await getSettingValue<string>(
+    "commission_eligible_categories",
+    DEFAULT_ELIGIBLE_CATEGORIES.join(",")
+  );
+  const eligibleCategories = eligibleCategoriesStr.split(",").map((c) => c.trim());
 
   // Build status filter
   const statusFilter: string[] = [];
   if (includeOnlyPaid) statusFilter.push("FULLY_PAID");
   if (includeOnlyReleased) statusFilter.push("RELEASED");
-  if (statusFilter.length === 0) {
-    // Default: both released and fully paid
-    statusFilter.push("FULLY_PAID", "RELEASED");
-  }
+  if (statusFilter.length === 0) statusFilter.push("FULLY_PAID", "RELEASED");
 
-  // Find all qualifying jobs in the period
-  // Use actualCompletionDate for accuracy; fallback to updatedAt only if not set
+  // Find qualifying jobs
   const jobs = await prisma.jobOrder.findMany({
     where: {
       status: { in: statusFilter },
       deletedAt: null,
       OR: [
         { actualCompletionDate: { gte: periodStart, lte: periodEnd } },
-        {
-          actualCompletionDate: null,
-          updatedAt: { gte: periodStart, lte: periodEnd },
-        },
+        { actualCompletionDate: null, updatedAt: { gte: periodStart, lte: periodEnd } },
       ],
     },
     include: {
@@ -162,6 +193,7 @@ export async function calculateCommission(
       tasks: {
         where: { deletedAt: null },
         include: {
+          serviceCatalog: { select: { category: true } },
           timeEntries: {
             where: { deletedAt: null },
             select: { technicianId: true, netMinutes: true },
@@ -186,6 +218,9 @@ export async function calculateCommission(
             include: {
               lineItems: {
                 where: { group: "LABOR", deletedAt: null },
+                include: {
+                  serviceCatalog: { select: { category: true } },
+                },
               },
             },
           },
@@ -194,67 +229,98 @@ export async function calculateCommission(
     },
   });
 
-  // Build tech → jobs map
+  // Build tech → jobs map (mechanical labor only)
   const techMap = new Map<string, TechJobEntry[]>();
   let unassignedLabor = 0;
+  let totalMechanicalLabor = 0;
 
   for (const job of jobs) {
-    // Determine total labor billed: invoice first, then estimate fallback
-    let totalLaborBilled = 0;
+    // Determine mechanical labor billed
+    let mechLaborBilled = 0;
+
     const latestInvoice = job.invoices[0];
     if (latestInvoice && latestInvoice.lineItems.length > 0) {
-      totalLaborBilled = latestInvoice.lineItems.reduce(
-        (sum, li) => sum + li.subtotal,
-        0
+      // Invoice exists — we need to determine which labor line items are mechanical
+      // Use tasks' service catalog to check if the job has mechanical services
+      const hasMechanicalTasks = job.tasks.some(
+        (t) => t.serviceCatalog && eligibleCategories.includes(t.serviceCatalog.category)
       );
+      const hasNonMechanicalTasks = job.tasks.some(
+        (t) => t.serviceCatalog && !eligibleCategories.includes(t.serviceCatalog.category)
+      );
+
+      if (hasMechanicalTasks && !hasNonMechanicalTasks) {
+        // Pure mechanical job — all labor counts
+        mechLaborBilled = latestInvoice.lineItems.reduce((sum, li) => sum + li.subtotal, 0);
+      } else if (hasMechanicalTasks && hasNonMechanicalTasks) {
+        // Mixed job — proportion by mechanical task hours vs total
+        const mechHours = job.tasks
+          .filter((t) => t.serviceCatalog && eligibleCategories.includes(t.serviceCatalog.category))
+          .reduce((sum, t) => sum + t.estimatedHours, 0);
+        const totalHours = job.tasks.reduce((sum, t) => sum + t.estimatedHours, 0);
+        const proportion = totalHours > 0 ? mechHours / totalHours : 0;
+        const totalLabor = latestInvoice.lineItems.reduce((sum, li) => sum + li.subtotal, 0);
+        mechLaborBilled = Math.round(totalLabor * proportion);
+      } else if (!hasMechanicalTasks && job.tasks.length === 0) {
+        // No tasks — check estimate line items for category
+        for (const est of job.estimates) {
+          const version = est.versions[0];
+          if (version) {
+            mechLaborBilled = version.lineItems
+              .filter((li) => li.serviceCatalog && eligibleCategories.includes(li.serviceCatalog.category))
+              .reduce((sum, li) => sum + li.subtotal, 0);
+            break;
+          }
+        }
+      }
+      // else: purely non-mechanical job, mechLaborBilled stays 0
     } else {
-      // Fallback to approved estimate
+      // Fallback to estimate
       for (const est of job.estimates) {
         const version = est.versions[0];
         if (version) {
-          totalLaborBilled = version.lineItems.reduce(
-            (sum, li) => sum + li.subtotal,
-            0
-          );
+          mechLaborBilled = version.lineItems
+            .filter((li) => li.serviceCatalog && eligibleCategories.includes(li.serviceCatalog.category))
+            .reduce((sum, li) => sum + li.subtotal, 0);
           break;
         }
       }
     }
 
-    if (totalLaborBilled === 0) continue;
+    if (mechLaborBilled === 0) continue;
+    totalMechanicalLabor += mechLaborBilled;
 
-    // Attribute labor to technicians
+    // Attribute labor to technicians (same priority chain as before)
     const techHours = new Map<string, number>();
     let totalHoursLogged = 0;
 
-    // Priority 1: Time entries on tasks
+    // Priority 1: Time entries
     for (const task of job.tasks) {
+      // Only count mechanical tasks for attribution
+      if (task.serviceCatalog && !eligibleCategories.includes(task.serviceCatalog.category)) continue;
       for (const te of task.timeEntries) {
         const hours = te.netMinutes / 60;
-        techHours.set(
-          te.technicianId,
-          (techHours.get(te.technicianId) ?? 0) + hours
-        );
+        techHours.set(te.technicianId, (techHours.get(te.technicianId) ?? 0) + hours);
         totalHoursLogged += hours;
       }
     }
 
-    // Priority 2: If no time entries, use assigned techs on tasks
+    // Priority 2: Assigned techs on mechanical tasks
     if (totalHoursLogged === 0) {
       const assignedTechs = new Set<string>();
       for (const task of job.tasks) {
-        if (task.assignedTechnicianId) {
-          assignedTechs.add(task.assignedTechnicianId);
-        }
+        if (task.serviceCatalog && !eligibleCategories.includes(task.serviceCatalog.category)) continue;
+        if (task.assignedTechnicianId) assignedTechs.add(task.assignedTechnicianId);
       }
 
-      // Priority 3: Estimate line item assignments
+      // Priority 3: Estimate line items
       if (assignedTechs.size === 0) {
         for (const est of job.estimates) {
           const version = est.versions[0];
           if (version) {
             for (const li of version.lineItems) {
-              if (li.assignedTechnicianId) {
+              if (li.assignedTechnicianId && li.serviceCatalog &&
+                  eligibleCategories.includes(li.serviceCatalog.category)) {
                 assignedTechs.add(li.assignedTechnicianId);
               }
             }
@@ -263,7 +329,6 @@ export async function calculateCommission(
       }
 
       if (assignedTechs.size > 0) {
-        // Split evenly
         const shareHours = 1 / assignedTechs.size;
         Array.from(assignedTechs).forEach((techId) => {
           techHours.set(techId, shareHours);
@@ -272,9 +337,8 @@ export async function calculateCommission(
       }
     }
 
-    // If still no tech attribution, mark as unassigned
     if (techHours.size === 0) {
-      unassignedLabor += totalLaborBilled;
+      unassignedLabor += mechLaborBilled;
       continue;
     }
 
@@ -282,14 +346,14 @@ export async function calculateCommission(
     const vehicleStr = `${job.vehicle.make} ${job.vehicle.model} (${job.vehicle.plateNumber})`;
     const customerStr = `${job.customer.firstName} ${job.customer.lastName}`;
 
-    // Distribute labor proportionally
+    // Distribute mechanical labor proportionally — gross commission only (SM deduction applied later)
     const techEntries = Array.from(techHours.entries());
     for (let i = 0; i < techEntries.length; i++) {
       const [techId, hours] = techEntries[i];
       const proportion = hours / totalHoursLogged;
-      const techLaborBilled = Math.round(totalLaborBilled * proportion);
+      const techLaborBilled = Math.round(mechLaborBilled * proportion);
       const rate = (await getRateAtDate(techId, completedDate)) ?? 0;
-      const commissionAmount = Math.round(techLaborBilled * rate / 100);
+      const grossCommission = Math.round(techLaborBilled * rate / 100);
 
       const entry: TechJobEntry = {
         jobOrderId: job.id,
@@ -298,7 +362,9 @@ export async function calculateCommission(
         customerName: customerStr,
         laborBilled: techLaborBilled,
         commissionRate: rate,
-        commissionAmount,
+        grossCommission,
+        smDeduction: 0, // calculated per-tech after CM formula
+        netCommission: 0,
         completedDate,
       };
 
@@ -317,18 +383,58 @@ export async function calculateCommission(
   const techUserMap = new Map(techUsers.map((u) => [u.id, u]));
 
   const entries: TechCommission[] = [];
-  let grandTotalLabor = 0;
-  let grandTotalCommission = 0;
+  let grandTotalGross = 0;
+  let grandTotalSmDeduction = 0;
+  let grandTotalNet = 0;
 
   const techMapEntries = Array.from(techMap.entries());
   for (let i = 0; i < techMapEntries.length; i++) {
     const [techId, jobEntries] = techMapEntries[i];
     const user = techUserMap.get(techId);
+    const isCM = !!(chiefMechanicId && techId === chiefMechanicId);
     const totalLabor = jobEntries.reduce((s, j) => s + j.laborBilled, 0);
-    const totalComm = jobEntries.reduce((s, j) => s + j.commissionAmount, 0);
-    // Show rate if consistent across all jobs, -1 signals "mixed"
+
+    let techGrossCommission: number;
+    let cmOptionA: number | undefined;
+    let cmOptionB: number | undefined;
+    let cmSelectedOption: string | undefined;
+
+    if (isCM) {
+      // CM Option A: cmShopRate% of TOTAL mechanical labor
+      cmOptionA = Math.round(totalMechanicalLabor * cmShopRate / 100);
+      // CM Option B: cmOwnRate% of CM's OWN labor
+      cmOptionB = Math.round(totalLabor * cmOwnRate / 100);
+      // Select the higher
+      if (cmOptionA >= cmOptionB) {
+        techGrossCommission = cmOptionA;
+        cmSelectedOption = "A";
+      } else {
+        techGrossCommission = cmOptionB;
+        cmSelectedOption = "B";
+      }
+    } else {
+      techGrossCommission = jobEntries.reduce((s, j) => s + j.grossCommission, 0);
+    }
+
+    // Apply SM deduction
+    const techSmDeduction = Math.round(techGrossCommission * smDeductionRate / 100);
+    const techNetCommission = techGrossCommission - techSmDeduction;
+
+    // Update job entries with SM deduction (distributed proportionally)
+    const jobGrossTotal = jobEntries.reduce((s, j) => s + j.grossCommission, 0);
+    for (const job of jobEntries) {
+      if (isCM) {
+        // For CM, recalculate per-job gross based on selected option
+        const jobProportion = jobGrossTotal > 0 ? job.grossCommission / jobGrossTotal : 0;
+        job.grossCommission = Math.round(techGrossCommission * jobProportion);
+      }
+      const jobSmProportion = techGrossCommission > 0 ? job.grossCommission / techGrossCommission : 0;
+      job.smDeduction = Math.round(techSmDeduction * jobSmProportion);
+      job.netCommission = job.grossCommission - job.smDeduction;
+    }
+
     const rates = new Set(jobEntries.map((j) => j.commissionRate));
-    const avgRate = rates.size === 1 ? jobEntries[0].commissionRate : -1;
+    const displayRate = isCM ? -1 : (rates.size === 1 ? jobEntries[0].commissionRate : -1);
 
     entries.push({
       user: {
@@ -336,24 +442,38 @@ export async function calculateCommission(
         name: user ? `${user.firstName} ${user.lastName}` : "Unknown",
         nickname: user?.firstName ?? "Unknown",
       },
+      isChiefMechanic: isCM,
       jobs: jobEntries,
       totalLaborBilled: totalLabor,
-      commissionRate: avgRate,
-      totalCommission: totalComm,
+      commissionRate: displayRate,
+      totalGrossCommission: techGrossCommission,
+      totalSmDeduction: techSmDeduction,
+      totalNetCommission: techNetCommission,
+      cmOptionA,
+      cmOptionB,
+      cmSelectedOption,
     });
 
-    grandTotalLabor += totalLabor;
-    grandTotalCommission += totalComm;
+    grandTotalGross += techGrossCommission;
+    grandTotalSmDeduction += techSmDeduction;
+    grandTotalNet += techNetCommission;
   }
 
-  // Sort by total commission descending
-  entries.sort((a, b) => b.totalCommission - a.totalCommission);
+  // Sort: CM first, then by net commission descending
+  entries.sort((a, b) => {
+    if (a.isChiefMechanic && !b.isChiefMechanic) return -1;
+    if (!a.isChiefMechanic && b.isChiefMechanic) return 1;
+    return b.totalNetCommission - a.totalNetCommission;
+  });
 
   return {
     entries,
     unassignedLabor,
-    grandTotalLabor,
-    grandTotalCommission,
+    totalMechanicalLabor,
+    grandTotalGross,
+    grandTotalSmDeduction,
+    grandTotalNet,
+    smPayout: grandTotalSmDeduction,
     periodStart,
     periodEnd,
   };
@@ -368,7 +488,7 @@ export async function createCommissionPeriod(
   periodEnd: Date,
   createdBy: string
 ) {
-  // Prevent duplicate periods for the same date range
+  // Prevent duplicate periods
   const existing = await prisma.commissionPeriod.findFirst({
     where: {
       periodStart: { gte: periodStart, lte: periodStart },
@@ -382,13 +502,19 @@ export async function createCommissionPeriod(
   }
 
   const preview = await calculateCommission(periodStart, periodEnd);
+  const serviceManagerId = await getSettingValue<string>("commission_service_manager_id", "");
 
   const period = await prisma.commissionPeriod.create({
     data: {
       periodStart,
       periodEnd,
       status: "DRAFT",
-      totalCommission: preview.grandTotalCommission,
+      totalMechanicalLabor: preview.totalMechanicalLabor,
+      totalGrossCommission: preview.grandTotalGross,
+      totalSmDeduction: preview.grandTotalSmDeduction,
+      totalNetCommission: preview.grandTotalNet,
+      smPayout: preview.smPayout,
+      serviceManagerId: serviceManagerId || null,
       createdBy,
       entries: {
         create: preview.entries.flatMap((tech) =>
@@ -398,48 +524,35 @@ export async function createCommissionPeriod(
             taskId: job.taskId ?? null,
             laborBilled: job.laborBilled,
             commissionRate: job.commissionRate,
-            commissionAmount: job.commissionAmount,
+            grossCommission: job.grossCommission,
+            smDeduction: job.smDeduction,
+            netCommission: job.netCommission,
+            cmOptionA: tech.cmOptionA ?? null,
+            cmOptionB: tech.cmOptionB ?? null,
+            cmSelectedOption: tech.cmSelectedOption ?? null,
           }))
         ),
       },
     },
-    include: {
-      entries: true,
-    },
+    include: { entries: true },
   });
 
   return period;
 }
 
-export async function finalizeCommissionPeriod(
-  periodId: string,
-  userId: string
-) {
-  const period = await prisma.commissionPeriod.findUnique({
-    where: { id: periodId },
-  });
-
+export async function finalizeCommissionPeriod(periodId: string, userId: string) {
+  const period = await prisma.commissionPeriod.findUnique({ where: { id: periodId } });
   if (!period) throw new Error("Commission period not found");
   if (period.status !== "DRAFT") throw new Error("Can only finalize DRAFT periods");
 
   return prisma.commissionPeriod.update({
     where: { id: periodId },
-    data: {
-      status: "FINALIZED",
-      finalizedBy: userId,
-      finalizedAt: new Date(),
-    },
+    data: { status: "FINALIZED", finalizedBy: userId, finalizedAt: new Date() },
   });
 }
 
-export async function markCommissionPaid(
-  periodId: string,
-  userId: string
-) {
-  const period = await prisma.commissionPeriod.findUnique({
-    where: { id: periodId },
-  });
-
+export async function markCommissionPaid(periodId: string, userId: string) {
+  const period = await prisma.commissionPeriod.findUnique({ where: { id: periodId } });
   if (!period) throw new Error("Commission period not found");
   if (period.status !== "FINALIZED") throw new Error("Can only mark FINALIZED periods as paid");
 
@@ -449,17 +562,12 @@ export async function markCommissionPaid(
   });
 }
 
-export async function getCommissionPeriods(options?: {
-  status?: string;
-  limit?: number;
-}) {
+export async function getCommissionPeriods(options?: { status?: string; limit?: number }) {
   return prisma.commissionPeriod.findMany({
     where: options?.status ? { status: options.status } : undefined,
     orderBy: { periodStart: "desc" },
     take: options?.limit ?? 50,
-    include: {
-      _count: { select: { entries: true } },
-    },
+    include: { _count: { select: { entries: true } } },
   });
 }
 
@@ -492,8 +600,13 @@ export async function getCommissionPeriodDetail(periodId: string) {
       user: { id: string; firstName: string; lastName: string };
       entries: typeof period.entries;
       totalLaborBilled: number;
-      totalCommission: number;
+      totalGrossCommission: number;
+      totalSmDeduction: number;
+      totalNetCommission: number;
       commissionRate: number;
+      cmOptionA: number | null;
+      cmOptionB: number | null;
+      cmSelectedOption: string | null;
     }
   >();
 
@@ -502,14 +615,21 @@ export async function getCommissionPeriodDetail(periodId: string) {
     if (existing) {
       existing.entries.push(entry);
       existing.totalLaborBilled += entry.laborBilled;
-      existing.totalCommission += entry.commissionAmount;
+      existing.totalGrossCommission += entry.grossCommission;
+      existing.totalSmDeduction += entry.smDeduction;
+      existing.totalNetCommission += entry.netCommission;
     } else {
       techMap.set(entry.userId, {
         user: entry.user,
         entries: [entry],
         totalLaborBilled: entry.laborBilled,
-        totalCommission: entry.commissionAmount,
+        totalGrossCommission: entry.grossCommission,
+        totalSmDeduction: entry.smDeduction,
+        totalNetCommission: entry.netCommission,
         commissionRate: entry.commissionRate,
+        cmOptionA: entry.cmOptionA,
+        cmOptionB: entry.cmOptionB,
+        cmSelectedOption: entry.cmSelectedOption,
       });
     }
   }
@@ -517,12 +637,15 @@ export async function getCommissionPeriodDetail(periodId: string) {
   return {
     ...period,
     techBreakdown: Array.from(techMap.values()).sort(
-      (a, b) => b.totalCommission - a.totalCommission
+      (a, b) => b.totalNetCommission - a.totalNetCommission
     ),
   };
 }
 
-// Get commission data for a specific technician (frontliner view)
+// ============================================================================
+// Frontliner — Technician Commission View
+// ============================================================================
+
 export async function getTechnicianCommission(userId: string) {
   const now = new Date();
   const startOfWeek = getStartOfWeek(now);
@@ -537,11 +660,9 @@ export async function getTechnicianCommission(userId: string) {
 
   // This week: calculate live
   const thisWeekPreview = await calculateCommission(startOfWeek, endOfWeek);
-  const thisWeekEntry = thisWeekPreview.entries.find(
-    (e) => e.user.id === userId
-  );
+  const thisWeekEntry = thisWeekPreview.entries.find((e) => e.user.id === userId);
 
-  // Last week: check for saved period first, then calculate
+  // Last week: check for saved period first
   let lastWeekAmount = 0;
   let lastWeekJobs = 0;
   let lastWeekStatus: string | null = null;
@@ -551,31 +672,24 @@ export async function getTechnicianCommission(userId: string) {
       periodStart: { lte: lastWeekEnd },
       periodEnd: { gte: lastWeekStart },
     },
-    include: {
-      entries: {
-        where: { userId },
-      },
-    },
+    include: { entries: { where: { userId } } },
     orderBy: { createdAt: "desc" },
   });
 
   if (lastWeekPeriod) {
-    lastWeekAmount = lastWeekPeriod.entries.reduce(
-      (s, e) => s + e.commissionAmount,
-      0
-    );
+    lastWeekAmount = lastWeekPeriod.entries.reduce((s, e) => s + e.netCommission, 0);
     lastWeekJobs = lastWeekPeriod.entries.length;
     lastWeekStatus = lastWeekPeriod.status;
   } else {
     const lastWeekPreview = await calculateCommission(lastWeekStart, lastWeekEnd);
     const entry = lastWeekPreview.entries.find((e) => e.user.id === userId);
-    lastWeekAmount = entry?.totalCommission ?? 0;
+    lastWeekAmount = entry?.totalNetCommission ?? 0;
     lastWeekJobs = entry?.jobs.length ?? 0;
   }
 
   return {
     thisWeek: {
-      amount: thisWeekEntry?.totalCommission ?? 0,
+      amount: thisWeekEntry?.totalNetCommission ?? 0,
       jobs: thisWeekEntry?.jobs.length ?? 0,
       breakdown: thisWeekEntry?.jobs ?? [],
     },
@@ -590,7 +704,6 @@ export async function getTechnicianCommission(userId: string) {
 function getStartOfWeek(date: Date): Date {
   const d = new Date(date);
   const day = d.getDay();
-  // Monday = 1, so shift: Sun=0 -> offset 6, Mon=1 -> offset 0, etc.
   const diff = day === 0 ? 6 : day - 1;
   d.setDate(d.getDate() - diff);
   d.setHours(0, 0, 0, 0);

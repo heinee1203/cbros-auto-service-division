@@ -29,7 +29,7 @@ export default async function CommissionPrintPage({
   const shopAddress = await getSettingValue<string>("shop_address", "");
   const shopPhone = await getSettingValue<string>("shop_phone", "");
 
-  const periodRange = `${formatDate(period.periodStart)} — ${formatDate(period.periodEnd)}`;
+  const periodRange = `${formatDate(period.periodStart)} \u2014 ${formatDate(period.periodEnd)}`;
 
   return (
     <div className="max-w-[210mm] mx-auto bg-white print:max-w-none">
@@ -57,8 +57,10 @@ export default async function CommissionPrintPage({
               <th className="text-left py-2 font-semibold">Technician</th>
               <th className="text-right py-2 font-semibold">Rate</th>
               <th className="text-right py-2 font-semibold">Jobs</th>
-              <th className="text-right py-2 font-semibold">Labor Billed</th>
-              <th className="text-right py-2 font-semibold">Commission</th>
+              <th className="text-right py-2 font-semibold">Mech. Labor</th>
+              <th className="text-right py-2 font-semibold">Gross</th>
+              <th className="text-right py-2 font-semibold">SM Ded.</th>
+              <th className="text-right py-2 font-semibold">Net</th>
             </tr>
           </thead>
           <tbody>
@@ -82,9 +84,25 @@ export default async function CommissionPrintPage({
                 )}
               </td>
               <td className="py-2 text-right font-mono">
-                {formatPeso(period.totalCommission)}
+                {formatPeso(period.totalGrossCommission)}
+              </td>
+              <td className="py-2 text-right font-mono">
+                ({formatPeso(period.totalSmDeduction)})
+              </td>
+              <td className="py-2 text-right font-mono">
+                {formatPeso(period.totalNetCommission)}
               </td>
             </tr>
+            {period.smPayout > 0 && (
+              <tr className="text-sm">
+                <td className="py-1 text-gray-600" colSpan={6}>
+                  Service Manager Payout
+                </td>
+                <td className="py-1 text-right font-mono font-semibold">
+                  {formatPeso(period.smPayout)}
+                </td>
+              </tr>
+            )}
           </tfoot>
         </table>
 
@@ -93,8 +111,18 @@ export default async function CommissionPrintPage({
           <div key={tech.user.id} className="mb-6">
             <h3 className="text-sm font-semibold border-b border-gray-300 pb-1 mb-2">
               {tech.user.firstName}
-              {tech.user.lastName !== "." ? ` ${tech.user.lastName}` : ""} — {tech.commissionRate}%
+              {tech.user.lastName !== "." ? ` ${tech.user.lastName}` : ""}
+              {tech.cmSelectedOption
+                ? ` \u2014 Chief Mechanic (Option ${tech.cmSelectedOption})`
+                : ` \u2014 ${tech.commissionRate}%`}
             </h3>
+            {tech.cmOptionA != null && tech.cmOptionB != null && (
+              <p className="text-xs text-gray-500 mb-2">
+                Option A (shop rate): {formatPeso(tech.cmOptionA)} &middot;
+                Option B (own labor): {formatPeso(tech.cmOptionB)} &middot;
+                Selected: Option {tech.cmSelectedOption}
+              </p>
+            )}
             <table className="w-full text-xs">
               <thead>
                 <tr className="text-gray-500">
@@ -102,7 +130,9 @@ export default async function CommissionPrintPage({
                   <th className="text-left py-1">Vehicle</th>
                   <th className="text-left py-1">Customer</th>
                   <th className="text-right py-1">Labor</th>
-                  <th className="text-right py-1">Commission</th>
+                  <th className="text-right py-1">Gross</th>
+                  <th className="text-right py-1">SM Ded.</th>
+                  <th className="text-right py-1">Net</th>
                 </tr>
               </thead>
               <tbody>
@@ -121,7 +151,13 @@ export default async function CommissionPrintPage({
                       {formatPeso(entry.laborBilled)}
                     </td>
                     <td className="py-1 text-right font-mono">
-                      {formatPeso(entry.commissionAmount)}
+                      {formatPeso(entry.grossCommission)}
+                    </td>
+                    <td className="py-1 text-right font-mono">
+                      ({formatPeso(entry.smDeduction)})
+                    </td>
+                    <td className="py-1 text-right font-mono">
+                      {formatPeso(entry.netCommission)}
                     </td>
                   </tr>
                 ))}
@@ -133,7 +169,13 @@ export default async function CommissionPrintPage({
                     {formatPeso(tech.totalLaborBilled)}
                   </td>
                   <td className="py-1 text-right font-mono">
-                    {formatPeso(tech.totalCommission)}
+                    {formatPeso(tech.totalGrossCommission)}
+                  </td>
+                  <td className="py-1 text-right font-mono">
+                    ({formatPeso(tech.totalSmDeduction)})
+                  </td>
+                  <td className="py-1 text-right font-mono">
+                    {formatPeso(tech.totalNetCommission)}
                   </td>
                 </tr>
               </tfoot>
@@ -186,14 +228,23 @@ function TechPrintSection({
       <td className="py-2">
         {tech.user.firstName}
         {tech.user.lastName !== "." ? ` ${tech.user.lastName}` : ""}
+        {tech.cmSelectedOption ? " (CM)" : ""}
       </td>
-      <td className="py-2 text-right font-mono">{tech.commissionRate}%</td>
+      <td className="py-2 text-right font-mono">
+        {tech.cmSelectedOption ? `Opt ${tech.cmSelectedOption}` : `${tech.commissionRate}%`}
+      </td>
       <td className="py-2 text-right font-mono">{tech.entries.length}</td>
       <td className="py-2 text-right font-mono">
         {formatPeso(tech.totalLaborBilled)}
       </td>
       <td className="py-2 text-right font-mono">
-        {formatPeso(tech.totalCommission)}
+        {formatPeso(tech.totalGrossCommission)}
+      </td>
+      <td className="py-2 text-right font-mono">
+        ({formatPeso(tech.totalSmDeduction)})
+      </td>
+      <td className="py-2 text-right font-mono">
+        {formatPeso(tech.totalNetCommission)}
       </td>
     </tr>
   );

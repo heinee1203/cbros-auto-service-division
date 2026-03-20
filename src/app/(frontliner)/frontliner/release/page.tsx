@@ -9,8 +9,11 @@ export default async function FrontlinerReleasePage() {
   if (!session?.user) redirect("/login");
   if (!can(session.user.role, "release:create")) redirect("/frontliner");
 
-  const jobs = await prisma.jobOrder.findMany({
-    where: { status: "FULLY_PAID" },
+  // Fetch jobs that are fully paid OR have a charge invoice (awaiting/partial payment)
+  const allJobs = await prisma.jobOrder.findMany({
+    where: {
+      status: { in: ["FULLY_PAID", "AWAITING_PAYMENT", "PARTIAL_PAYMENT"] },
+    },
     include: {
       customer: {
         select: { firstName: true, lastName: true, phone: true },
@@ -18,8 +21,23 @@ export default async function FrontlinerReleasePage() {
       vehicle: {
         select: { plateNumber: true, make: true, model: true },
       },
+      invoices: {
+        where: { isLatest: true, deletedAt: null },
+        select: {
+          invoiceType: true,
+          chargeAccount: { select: { companyName: true } },
+        },
+        take: 1,
+      },
     },
     orderBy: { createdAt: "desc" },
+  });
+
+  // Filter: FULLY_PAID jobs always show; AWAITING_PAYMENT/PARTIAL_PAYMENT only if charge invoice
+  const jobs = allJobs.filter((job) => {
+    if (job.status === "FULLY_PAID") return true;
+    const latestInvoice = job.invoices[0];
+    return latestInvoice?.invoiceType === "CHARGE";
   });
 
   return (
@@ -72,6 +90,11 @@ export default async function FrontlinerReleasePage() {
                   >
                     {job.customer.phone}
                   </p>
+                )}
+                {job.invoices[0]?.invoiceType === "CHARGE" && (
+                  <span className="inline-flex items-center mt-1 px-2 py-0.5 rounded text-[10px] font-medium bg-amber-900/30 text-amber-300">
+                    Charge &mdash; {job.invoices[0].chargeAccount?.companyName}
+                  </span>
                 )}
               </div>
               <Link

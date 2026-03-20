@@ -95,16 +95,21 @@ export async function validatePreRelease(
   });
   if (!qcPassed) issues.push("QC inspection has not passed");
 
-  // Check invoice fully paid
-  const paidInvoice = await prisma.invoice.findFirst({
+  // Check invoice fully paid (charge invoices bypass payment requirement)
+  const latestInvoice = await prisma.invoice.findFirst({
     where: {
       jobOrderId,
       isLatest: true,
-      paymentStatus: "PAID",
       deletedAt: null,
     },
   });
-  if (!paidInvoice) issues.push("Invoice not fully paid");
+  if (!latestInvoice) {
+    issues.push("No invoice found");
+  } else if (latestInvoice.invoiceType === "CHARGE") {
+    // Charge invoices: allow release without payment — billed to company account
+  } else if (latestInvoice.paymentStatus !== "PAID") {
+    issues.push("Invoice not fully paid");
+  }
 
   // Check release photos
   const releasePhotoCount = await prisma.photo.count({

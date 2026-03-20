@@ -12,6 +12,7 @@ import {
   Calendar,
   BarChart3,
   Coins,
+  Building2,
   Settings,
   ChevronLeft,
   ChevronRight,
@@ -29,6 +30,7 @@ const ICONS = {
   Car,
   Calendar,
   Receipt,
+  Building2,
   BarChart3,
   Coins,
   Settings,
@@ -79,6 +81,12 @@ const NAV_ITEMS: NavItem[] = [
     label: "Invoices",
     href: "/invoices",
     icon: "Receipt",
+    permission: "invoices:view",
+  },
+  {
+    label: "Charge Accounts",
+    href: "/charge-accounts",
+    icon: "Building2",
     permission: "invoices:view",
   },
   {
