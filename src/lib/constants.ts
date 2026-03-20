@@ -131,6 +131,51 @@ export const SERVICE_GROUPS = {
 
 export type ServiceGroupName = keyof typeof SERVICE_GROUPS;
 
+// Mechanical/auto repair categories — shown on Live Floor
+export const MECHANICAL_CATEGORIES = [
+  "Preventive Maintenance Service (PMS)",
+  "Brake System",
+  "Suspension & Steering",
+  "Engine & Drivetrain",
+  "Electrical & Diagnostics",
+  "Tires & Wheels",
+  "Air Conditioning",
+  "Diagnostics & Inspection",
+] as const;
+
+// Body & paint categories — tracked in Job Orders only, not on Live Floor
+export const BODY_PAINT_CATEGORIES = [
+  "Collision Repair",
+  "Painting & Refinishing",
+  "Buffing & Paint Correction",
+  "Car Detailing",
+  "Undercoating & Rust Protection",
+  "Car Restoration",
+  "Accessories & Add-ons",
+] as const;
+
+/** Returns true if ALL service categories are body/paint (no mechanical work) */
+export function isBodyPaintOnly(serviceCategories: string[]): boolean {
+  if (serviceCategories.length === 0) return false;
+  return serviceCategories.every((cat) =>
+    (BODY_PAINT_CATEGORIES as readonly string[]).includes(cat)
+  );
+}
+
+/** Returns true if the job has at least one mechanical service category */
+export function hasMechanicalWork(serviceCategories: string[]): boolean {
+  return serviceCategories.some((cat) =>
+    (MECHANICAL_CATEGORIES as readonly string[]).includes(cat)
+  );
+}
+
+// Category group filter tabs for Job Orders and Frontliner Jobs
+export const JOB_CATEGORY_GROUP_TABS = [
+  { value: "ALL", label: "All Jobs" },
+  { value: "AUTO_REPAIR", label: "Auto Repair" },
+  { value: "BODY_PAINT", label: "Body & Paint" },
+] as const;
+
 // Short labels for category pills (horizontal scrollable nav)
 export const CATEGORY_SHORT_LABELS: Record<string, string> = {
   "Collision Repair": "Collision",

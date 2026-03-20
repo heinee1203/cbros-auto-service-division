@@ -19,12 +19,14 @@ export async function GET(request: NextRequest) {
   const sortBy = searchParams.get("sortBy") || "createdAt";
   const sortOrder =
     searchParams.get("sortOrder") === "asc" ? "asc" : ("desc" as const);
+  const categoryGroup = searchParams.get("categoryGroup") || undefined;
 
   const result = await getJobOrders({
     page,
     pageSize,
     search,
     status,
+    categoryGroup,
     sortBy,
     sortOrder,
   });

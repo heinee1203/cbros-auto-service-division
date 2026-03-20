@@ -9,7 +9,9 @@ import {
   Wrench,
   MapPin,
   AlertTriangle,
+  Info,
 } from "lucide-react";
+import { isBodyPaintOnly } from "@/lib/constants";
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */
@@ -42,6 +44,7 @@ export interface IntakeAssignmentProps {
   onBack: () => void;
   prefilledTechId?: string;
   prefilledBayId?: string;
+  serviceCategories?: string[];
 }
 
 /* ------------------------------------------------------------------ */
@@ -70,7 +73,9 @@ export function IntakeAssignment({
   onBack,
   prefilledTechId,
   prefilledBayId,
+  serviceCategories = [],
 }: IntakeAssignmentProps) {
+  const hideBayAssignment = isBodyPaintOnly(serviceCategories);
   /* ---- data ---- */
   const [advisors, setAdvisors] = useState<StaffUser[]>([]);
   const [technicians, setTechnicians] = useState<StaffUser[]>([]);
@@ -270,26 +275,40 @@ export function IntakeAssignment({
           </select>
         </FieldRow>
 
-        {/* Bay */}
-        <FieldRow icon={<MapPin size={16} />} label="Bay">
-          <select
-            value={assignedBayId}
-            onChange={(e) => setAssignedBayId(e.target.value)}
-            className="w-full rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2"
+        {/* Bay — hidden for body & paint only jobs */}
+        {hideBayAssignment ? (
+          <div
+            className="flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm"
             style={{
-              ...selectStyle,
-              // @ts-expect-error -- CSS custom property
-              "--tw-ring-color": "var(--sch-accent)",
+              background: "rgba(245,158,11,0.1)",
+              color: "var(--sch-text-muted)",
+              border: "1px solid rgba(245,158,11,0.2)",
             }}
           >
-            <option value="">Assign later...</option>
-            {bays.map((b) => (
-              <option key={b.id} value={b.id}>
-                {b.name} {b.occupied ? "(occupied)" : "(available)"}
-              </option>
-            ))}
-          </select>
-        </FieldRow>
+            <Info size={16} style={{ color: "var(--sch-accent)", flexShrink: 0 }} />
+            Body & Paint jobs do not require bay assignment.
+          </div>
+        ) : (
+          <FieldRow icon={<MapPin size={16} />} label="Bay">
+            <select
+              value={assignedBayId}
+              onChange={(e) => setAssignedBayId(e.target.value)}
+              className="w-full rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2"
+              style={{
+                ...selectStyle,
+                // @ts-expect-error -- CSS custom property
+                "--tw-ring-color": "var(--sch-accent)",
+              }}
+            >
+              <option value="">Assign later...</option>
+              {bays.map((b) => (
+                <option key={b.id} value={b.id}>
+                  {b.name} {b.occupied ? "(occupied)" : "(available)"}
+                </option>
+              ))}
+            </select>
+          </FieldRow>
+        )}
 
         {/* Priority */}
         <FieldRow icon={<AlertTriangle size={16} />} label="Priority">

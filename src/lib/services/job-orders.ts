@@ -1,10 +1,12 @@
 import { prisma } from "@/lib/prisma";
+import { MECHANICAL_CATEGORIES, BODY_PAINT_CATEGORIES } from "@/lib/constants";
 
 export interface JobOrderListParams {
   page?: number;
   pageSize?: number;
   search?: string;
   status?: string;
+  categoryGroup?: string; // "AUTO_REPAIR" | "BODY_PAINT" | "ALL"
   sortBy?: string;
   sortOrder?: "asc" | "desc";
 }
@@ -17,10 +19,28 @@ export async function getJobOrders({
   pageSize = 25,
   search,
   status,
+  categoryGroup,
   sortBy = "createdAt",
   sortOrder = "desc",
 }: JobOrderListParams = {}) {
   const where: Record<string, unknown> = {};
+
+  // Category group filter: filter by service categories on tasks
+  if (categoryGroup === "AUTO_REPAIR") {
+    where.tasks = {
+      some: {
+        deletedAt: null,
+        serviceCatalog: { category: { in: [...MECHANICAL_CATEGORIES] } },
+      },
+    };
+  } else if (categoryGroup === "BODY_PAINT") {
+    where.tasks = {
+      some: {
+        deletedAt: null,
+        serviceCatalog: { category: { in: [...BODY_PAINT_CATEGORIES] } },
+      },
+    };
+  }
 
   if (search) {
     const normalizedPlate = search.replace(/[\s-]/g, "").toUpperCase();
@@ -258,6 +278,12 @@ export async function getActiveJobsForFloor() {
         include: { bay: { select: { id: true, name: true } } },
         take: 1,
       },
+      tasks: {
+        where: { deletedAt: null },
+        select: {
+          serviceCatalog: { select: { category: true } },
+        },
+      },
       estimates: {
         where: { deletedAt: null },
         select: {
@@ -283,7 +309,7 @@ export async function getActiveJobsForFloor() {
 }
 
 // ---------------------------------------------------------------------------
-// 4b. getJobQueueForFloor — all active + today's released jobs for queue view
+// 4b. getJobQueueForFloor — mechanical/auto repair jobs only (Live Floor)
 // ---------------------------------------------------------------------------
 export async function getJobQueueForFloor() {
   const today = new Date();
@@ -297,6 +323,15 @@ export async function getJobQueueForFloor() {
         // Today's released jobs (for "Done" filter)
         { status: "RELEASED", actualCompletionDate: { gte: today } },
       ],
+      // Only jobs with at least one mechanical service category
+      tasks: {
+        some: {
+          deletedAt: null,
+          serviceCatalog: {
+            category: { in: [...MECHANICAL_CATEGORIES] },
+          },
+        },
+      },
     },
     include: {
       customer: { select: { id: true, firstName: true, lastName: true, phone: true } },

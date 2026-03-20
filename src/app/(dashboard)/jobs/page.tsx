@@ -14,7 +14,7 @@ import {
   formatPlateNumber,
   cn,
 } from "@/lib/utils";
-import { JOB_ORDER_STATUS_TABS, JOB_TAB_STATUS_MAP } from "@/lib/constants";
+import { JOB_ORDER_STATUS_TABS, JOB_TAB_STATUS_MAP, JOB_CATEGORY_GROUP_TABS } from "@/lib/constants";
 import {
   JOB_ORDER_STATUS_LABELS,
   JOB_ORDER_STATUS_COLORS,
@@ -325,6 +325,7 @@ export default function JobsPage() {
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  const [categoryGroup, setCategoryGroup] = useState("ALL");
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [pageIndex, setPageIndex] = useState(0);
   const [sorting, setSorting] = useState<SortingState>([
@@ -354,6 +355,9 @@ export default function JobsPage() {
         sortOrder: sort?.desc ? "desc" : "asc",
       });
       if (debouncedSearch) params.set("search", debouncedSearch);
+      if (categoryGroup && categoryGroup !== "ALL") {
+        params.set("categoryGroup", categoryGroup);
+      }
       if (statusFilter && statusFilter !== "ALL") {
         const statuses = JOB_TAB_STATUS_MAP[statusFilter];
         if (statuses && statuses.length > 0) {
@@ -375,7 +379,7 @@ export default function JobsPage() {
     } finally {
       setLoading(false);
     }
-  }, [pageIndex, sorting, debouncedSearch, statusFilter]);
+  }, [pageIndex, sorting, debouncedSearch, statusFilter, categoryGroup]);
 
   useEffect(() => {
     fetchData();
@@ -419,6 +423,11 @@ export default function JobsPage() {
     router.push(`/jobs/${row.id}`);
   }
 
+  function handleCategoryGroupChange(value: string) {
+    setCategoryGroup(value);
+    setPageIndex(0);
+  }
+
   function handleStatusChange(value: string) {
     setStatusFilter(value);
     setPageIndex(0);
@@ -436,6 +445,26 @@ export default function JobsPage() {
             </span>
           )}
         </div>
+      </div>
+
+      {/* Category group filter */}
+      <div className="flex items-center gap-1 overflow-x-auto pb-1">
+        {JOB_CATEGORY_GROUP_TABS.map((tab) => (
+          <button
+            key={tab.value}
+            onClick={() => handleCategoryGroupChange(tab.value)}
+            className={cn(
+              "px-3 py-2 text-sm font-medium rounded-lg whitespace-nowrap transition-colors touch-target",
+              categoryGroup === tab.value
+                ? "bg-primary text-white shadow-sm"
+                : "text-surface-500 hover:text-primary hover:bg-surface-100"
+            )}
+          >
+            {tab.value === "AUTO_REPAIR" && "🔧 "}
+            {tab.value === "BODY_PAINT" && "🎨 "}
+            {tab.label}
+          </button>
+        ))}
       </div>
 
       {/* Status filter tabs */}
@@ -492,12 +521,12 @@ export default function JobsPage() {
           <EmptyState
             icon={Wrench}
             title={
-              search || statusFilter !== "ALL"
+              search || statusFilter !== "ALL" || categoryGroup !== "ALL"
                 ? "No job orders found"
                 : "No job orders yet"
             }
             description={
-              search || statusFilter !== "ALL"
+              search || statusFilter !== "ALL" || categoryGroup !== "ALL"
                 ? "No job orders match the current filters. Try adjusting your search."
                 : "Job orders will appear here once vehicles are checked in."
             }

@@ -9,6 +9,7 @@ import { ExternalLink, Loader2, ClipboardList } from "lucide-react";
 import { BottomSheet } from "./bottom-sheet";
 import { JobCard } from "./job-card";
 import { advanceJobStatusAction } from "@/lib/actions/job-status-actions";
+import { hasMechanicalWork, isBodyPaintOnly } from "@/lib/constants";
 import {
   JOB_ORDER_STATUS_LABELS,
   type JobOrderStatus,
@@ -22,6 +23,7 @@ type Job = {
   vehicle: { plateNumber: string; make: string; model: string };
   primaryTechnician: { firstName: string; lastName: string } | null;
   bayName: string | null;
+  serviceCategories: string[];
   hasEstimate: boolean;
   latestVersionId: string | null;
   estimateRequestId: string | null;
@@ -53,24 +55,43 @@ const FILTERS = [
   },
 ] as const;
 
+const CATEGORY_GROUPS = [
+  { label: "All", value: "ALL" },
+  { label: "🔧 Auto Repair", value: "AUTO_REPAIR" },
+  { label: "🎨 Body & Paint", value: "BODY_PAINT" },
+] as const;
+
 export function JobsClient({ jobs }: JobsClientProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
+  const [categoryGroup, setCategoryGroup] = useState("ALL");
   const [selectedFilter, setSelectedFilter] = useState(0);
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
 
+  // First filter by category group
+  const categoryFilteredJobs = useMemo(() => {
+    if (categoryGroup === "AUTO_REPAIR") {
+      return jobs.filter((j) => hasMechanicalWork(j.serviceCategories));
+    }
+    if (categoryGroup === "BODY_PAINT") {
+      return jobs.filter((j) => isBodyPaintOnly(j.serviceCategories));
+    }
+    return jobs;
+  }, [jobs, categoryGroup]);
+
+  // Then filter by status
   const filteredJobs = useMemo(() => {
     const filter = FILTERS[selectedFilter];
-    if (!filter.statuses) return jobs;
-    return jobs.filter((j) => (filter.statuses as readonly string[]).includes(j.status));
-  }, [jobs, selectedFilter]);
+    if (!filter.statuses) return categoryFilteredJobs;
+    return categoryFilteredJobs.filter((j) => (filter.statuses as readonly string[]).includes(j.status));
+  }, [categoryFilteredJobs, selectedFilter]);
 
   const filterCounts = useMemo(() => {
     return FILTERS.map((f) => {
-      if (!f.statuses) return jobs.length;
-      return jobs.filter((j) => (f.statuses as readonly string[]).includes(j.status)).length;
+      if (!f.statuses) return categoryFilteredJobs.length;
+      return categoryFilteredJobs.filter((j) => (f.statuses as readonly string[]).includes(j.status)).length;
     });
-  }, [jobs]);
+  }, [categoryFilteredJobs]);
 
   const handleStatusChange = (jobId: string, direction: "forward" | "backward") => {
     startTransition(async () => {
@@ -91,7 +112,24 @@ export function JobsClient({ jobs }: JobsClientProps) {
 
   return (
     <div className="space-y-4 p-4">
-      {/* Filter pills — horizontally scrollable */}
+      {/* Category group pills */}
+      <div className="flex gap-2 overflow-x-auto pb-1 -mx-4 px-4">
+        {CATEGORY_GROUPS.map((g) => (
+          <button
+            key={g.value}
+            onClick={() => { setCategoryGroup(g.value); setSelectedFilter(0); }}
+            className={`flex-shrink-0 h-10 rounded-xl px-4 text-sm font-medium transition-colors ${
+              categoryGroup === g.value
+                ? "bg-[var(--sch-text)] text-[var(--sch-bg)]"
+                : "bg-[var(--sch-surface)] text-[var(--sch-text-muted)]"
+            }`}
+          >
+            {g.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Status filter pills — horizontally scrollable */}
       <div className="flex gap-2 overflow-x-auto pb-2 -mx-4 px-4">
         {FILTERS.map((f, i) => (
           <button

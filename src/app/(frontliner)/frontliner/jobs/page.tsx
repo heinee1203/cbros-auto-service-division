@@ -33,6 +33,13 @@ export default async function FrontlinerJobsPage() {
       : null,
     bayName:
       jo.bayAssignments.length > 0 ? jo.bayAssignments[0].bay.name : null,
+    serviceCategories: Array.from(
+      new Set(
+        jo.tasks
+          .map((t) => t.serviceCatalog?.category)
+          .filter(Boolean) as string[]
+      )
+    ),
     hasEstimate:
       jo.estimates.length > 0 && jo.estimates[0].versions.length > 0,
     latestVersionId:

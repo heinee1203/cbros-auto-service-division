@@ -39,7 +39,7 @@ export function LiveFloorGrid({ bays, onBayClick }: LiveFloorGridProps) {
           total={nonLifterBays.length}
           bays={nonLifterBays}
           onBayClick={onBayClick}
-          gridCols="grid-cols-2 sm:grid-cols-3 md:grid-cols-5"
+          gridCols="grid-cols-2 sm:grid-cols-3 lg:grid-cols-5"
         />
       )}
       {otherBays.length > 0 && (
@@ -86,7 +86,7 @@ function BaySection({
       </div>
       <div
         className={`grid gap-3 ${
-          gridCols || "grid-cols-2 sm:grid-cols-4 md:grid-cols-7"
+          gridCols || "grid-cols-2 sm:grid-cols-4 lg:grid-cols-7"
         }`}
       >
         {bays.map((bay) => (

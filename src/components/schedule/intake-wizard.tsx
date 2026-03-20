@@ -465,6 +465,7 @@ export function IntakeWizard({ variant = "schedule", onComplete }: IntakeWizardP
           <IntakeAssignment
             onComplete={handleAssignmentComplete}
             onBack={goBack}
+            serviceCategories={data.serviceCategories}
           />
         );
 

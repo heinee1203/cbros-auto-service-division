@@ -17,7 +17,7 @@ export function LiveFloorStatsBar({ stats }: { stats: LiveFloorStats }) {
   ];
 
   return (
-    <div className="grid grid-cols-4 gap-3">
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
       {metrics.map((m) => (
         <div
           key={m.label}

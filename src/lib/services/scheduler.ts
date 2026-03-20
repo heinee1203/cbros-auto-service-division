@@ -1,4 +1,17 @@
 import { prisma } from "@/lib/prisma";
+import { MECHANICAL_CATEGORIES } from "@/lib/constants";
+
+// Filter for jobs that have at least one mechanical service task
+const HAS_MECHANICAL_TASK = {
+  tasks: {
+    some: {
+      deletedAt: null,
+      serviceCatalog: {
+        category: { in: [...MECHANICAL_CATEGORIES] },
+      },
+    },
+  },
+};
 
 // ============================================================================
 // BAY FUNCTIONS
@@ -552,10 +565,10 @@ export async function getLiveFloorData() {
 
   const [queueCount, activeCount, totalTechs, clockedInTechIds, pendingEstimatesCount] = await Promise.all([
     prisma.jobOrder.count({
-      where: { status: "CHECKED_IN", deletedAt: null },
+      where: { status: "CHECKED_IN", deletedAt: null, ...HAS_MECHANICAL_TASK },
     }),
     prisma.jobOrder.count({
-      where: { status: "IN_PROGRESS", deletedAt: null },
+      where: { status: "IN_PROGRESS", deletedAt: null, ...HAS_MECHANICAL_TASK },
     }),
     prisma.user.count({
       where: { role: "TECHNICIAN", isActive: true, deletedAt: null },
@@ -583,6 +596,8 @@ export async function getLiveFloorData() {
         { status: { notIn: ["CANCELLED", "RELEASED"] } },
         { status: "RELEASED", actualCompletionDate: { gte: startOfToday } },
       ],
+      // Live Floor: only mechanical/auto repair jobs
+      ...HAS_MECHANICAL_TASK,
     },
     select: {
       id: true,

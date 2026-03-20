@@ -20,7 +20,7 @@ import {
 import { cn } from "@/lib/utils";
 import { can, type Permission } from "@/lib/permissions";
 import type { UserRole } from "@/types/enums";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const ICONS = {
   LayoutDashboard,
@@ -116,6 +116,13 @@ interface SidebarProps {
 export function Sidebar({ userRole }: SidebarProps) {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
+
+  // Auto-collapse on tablet (md), expand on desktop (lg+)
+  useEffect(() => {
+    if (window.innerWidth < 1024) {
+      setCollapsed(true);
+    }
+  }, []);
 
   const filteredItems = NAV_ITEMS.filter(
     (item) => !item.permission || can(userRole, item.permission)
