@@ -2,12 +2,13 @@ import { getServerSession, type NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { prisma } from "./prisma";
-import type { UserRole } from "@/types/enums";
+import type { UserRole, UserDivision } from "@/types/enums";
 
 declare module "next-auth" {
   interface User {
     id: string;
     role: UserRole;
+    division: UserDivision;
     firstName: string;
     lastName: string;
   }
@@ -15,6 +16,7 @@ declare module "next-auth" {
     user: {
       id: string;
       role: UserRole;
+      division: UserDivision;
       firstName: string;
       lastName: string;
       name: string;
@@ -26,6 +28,7 @@ declare module "next-auth/jwt" {
   interface JWT {
     id: string;
     role: UserRole;
+    division: UserDivision;
     firstName: string;
     lastName: string;
   }
@@ -66,6 +69,7 @@ export const authOptions: NextAuthOptions = {
         return {
           id: user.id,
           role: user.role as UserRole,
+          division: user.division as UserDivision,
           firstName: user.firstName,
           lastName: user.lastName,
         };
@@ -98,6 +102,7 @@ export const authOptions: NextAuthOptions = {
             return {
               id: user.id,
               role: user.role as UserRole,
+              division: user.division as UserDivision,
               firstName: user.firstName,
               lastName: user.lastName,
             };
@@ -113,6 +118,7 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.id = user.id;
         token.role = user.role;
+        token.division = user.division;
         token.firstName = user.firstName;
         token.lastName = user.lastName;
       }
@@ -122,6 +128,7 @@ export const authOptions: NextAuthOptions = {
       session.user = {
         id: token.id,
         role: token.role,
+        division: token.division,
         firstName: token.firstName,
         lastName: token.lastName,
         name: `${token.firstName} ${token.lastName}`,

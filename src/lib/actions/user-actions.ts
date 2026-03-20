@@ -51,6 +51,7 @@ export async function createUserAction(
     firstName: parsed.data.firstName,
     lastName: parsed.data.lastName,
     role: parsed.data.role,
+    division: parsed.data.division || "ALL",
     phone: parsed.data.phone || undefined,
     email: parsed.data.email || undefined,
     pin: parsed.data.pin || undefined,
@@ -84,6 +85,7 @@ export async function updateUserAction(
       lastName: parsed.data.lastName,
     }),
     ...(parsed.data.role !== undefined && { role: parsed.data.role }),
+    ...(parsed.data.division !== undefined && { division: parsed.data.division }),
     ...(parsed.data.phone !== undefined && { phone: parsed.data.phone }),
     ...(parsed.data.email !== undefined && {
       email: parsed.data.email || undefined,

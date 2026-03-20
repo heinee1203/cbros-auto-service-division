@@ -5,17 +5,23 @@ import Link from "next/link";
 import { signOut } from "next-auth/react";
 import { ArrowLeft, Search, Sun, Moon, LogOut } from "lucide-react";
 import { useScheduleTheme } from "./schedule-theme-provider";
+import { useDivision } from "@/components/division-provider";
+import { USER_DIVISION_LABELS, type UserDivision } from "@/types/enums";
+
+const DIVISION_OPTIONS: UserDivision[] = ["ALL", "MECHANICAL", "BODY_PAINT"];
 
 interface ScheduleTopbarProps {
   user: {
     firstName: string;
     lastName: string;
     role: string;
+    division: UserDivision;
   };
 }
 
 export function ScheduleTopbar({ user }: ScheduleTopbarProps) {
   const { theme, toggleTheme } = useScheduleTheme();
+  const { activeDivision, setActiveDivision, canSwitch } = useDivision();
   const [searchQuery, setSearchQuery] = useState("");
 
   return (
@@ -43,6 +49,32 @@ export function ScheduleTopbar({ user }: ScheduleTopbarProps) {
           Back to AutoServ
         </Link>
       </div>
+
+      {/* Division switcher (ALL users only) */}
+      {canSwitch ? (
+        <div className="flex items-center gap-1 rounded-lg p-0.5" style={{ backgroundColor: "var(--sch-bg)" }}>
+          {DIVISION_OPTIONS.map((d) => (
+            <button
+              key={d}
+              onClick={() => setActiveDivision(d)}
+              className="px-2.5 py-1 text-xs font-medium rounded-md transition-colors whitespace-nowrap"
+              style={{
+                backgroundColor: activeDivision === d ? "var(--sch-accent)" : "transparent",
+                color: activeDivision === d ? "#000" : "var(--sch-text-muted)",
+              }}
+            >
+              {USER_DIVISION_LABELS[d]}
+            </button>
+          ))}
+        </div>
+      ) : (
+        <span
+          className="text-xs font-medium px-2 py-1 rounded-md"
+          style={{ backgroundColor: "var(--sch-bg)", color: "var(--sch-text-muted)" }}
+        >
+          {USER_DIVISION_LABELS[user.division]}
+        </span>
+      )}
 
       {/* Center section: search */}
       <div className="hidden md:flex flex-1 justify-center max-w-md mx-auto">

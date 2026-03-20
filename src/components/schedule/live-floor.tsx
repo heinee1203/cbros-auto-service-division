@@ -12,9 +12,11 @@ import { BayAssignModal } from "./bay-assign-modal";
 import { QuickJobModal } from "./quick-job-modal";
 import { EmptyState } from "@/components/ui/empty-state";
 import { JobQueue } from "./job-queue";
+import { useDivision } from "@/components/division-provider";
 import type { LiveFloorBay, LiveFloorStats, LiveFloorJob } from "./live-floor-types";
 
 export default function LiveFloor() {
+  const { activeDivision } = useDivision();
   const [bays, setBays] = useState<LiveFloorBay[]>([]);
   const [stats, setStats] = useState<LiveFloorStats>({ queueLength: 0, activeServices: 0, availableTechs: 0, totalTechs: 0, pendingEstimates: 0 });
   const [jobs, setJobs] = useState<LiveFloorJob[]>([]);
@@ -28,7 +30,9 @@ export default function LiveFloor() {
   const fetchData = useCallback(async () => {
     try {
       setLoading(true);
-      const res = await fetch("/api/bays/live-floor");
+      const params = new URLSearchParams();
+      if (activeDivision !== "ALL") params.set("division", activeDivision);
+      const res = await fetch(`/api/bays/live-floor?${params}`);
       if (!res.ok) throw new Error("Failed to fetch");
       const data = await res.json();
       setBays(data.bays);
@@ -39,7 +43,7 @@ export default function LiveFloor() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [activeDivision]);
 
   useEffect(() => {
     fetchData();

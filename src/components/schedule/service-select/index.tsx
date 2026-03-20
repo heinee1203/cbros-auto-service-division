@@ -18,6 +18,8 @@ import {
   FREQUENTLY_USED_SERVICE_NAMES,
   type ServiceGroupName,
 } from "@/lib/constants";
+import { useDivision } from "@/components/division-provider";
+import { divisionToServiceGroup, getDivisionCategories } from "@/lib/division";
 
 import type { CatalogService } from "./types";
 import { ServiceSearchBar } from "./service-search-bar";
@@ -69,9 +71,10 @@ export function IntakeServiceSelect({
   const [manualLevel, setManualLevel] = useState<IntakeLevel | null>(null);
 
   /* ---- navigation layers ---- */
+  const { activeDivision } = useDivision();
   const [searchQuery, setSearchQuery] = useState("");
   const deferredSearch = useDeferredValue(searchQuery);
-  const [activeGroup, setActiveGroup] = useState<ServiceGroupName>("Auto Service");
+  const [activeGroup, setActiveGroup] = useState<ServiceGroupName>(() => divisionToServiceGroup(activeDivision));
   const [scrollToCategory, setScrollToCategory] = useState<string | null>(null);
   const [collapsedCategories, setCollapsedCategories] = useState<Set<string>>(new Set());
 
@@ -97,21 +100,35 @@ export function IntakeServiceSelect({
     return () => { cancelled = true; };
   }, []);
 
+  /* ---- division-filtered services ---- */
+  const allowedDivisionCategories = useMemo(
+    () => getDivisionCategories(activeDivision),
+    [activeDivision],
+  );
+
+  const divisionServices = useMemo(() => {
+    if (!allowedDivisionCategories) return services; // ALL — no filter
+    const allowed = new Set(allowedDivisionCategories);
+    // Always include "Other" group categories (Accessories, Diagnostics)
+    for (const cat of SERVICE_GROUPS["Other"]) allowed.add(cat);
+    return services.filter((s) => allowed.has(s.category));
+  }, [services, allowedDivisionCategories]);
+
   /* ---- check-up service ---- */
   const checkUpService = useMemo(
-    () => services.find(
+    () => divisionServices.find(
       (s) => s.name === CHECK_UP_SERVICE_NAME && s.category === CHECK_UP_CATEGORY,
     ),
-    [services],
+    [divisionServices],
   );
 
   /* ---- frequently used services ---- */
   const frequentlyUsedServices = useMemo(
     () => {
       const nameSet = new Set(FREQUENTLY_USED_SERVICE_NAMES);
-      return services.filter((s) => nameSet.has(s.name));
+      return divisionServices.filter((s) => nameSet.has(s.name));
     },
-    [services],
+    [divisionServices],
   );
 
   /* ---- search active? ---- */
@@ -119,21 +136,22 @@ export function IntakeServiceSelect({
 
   /* ---- filtered + grouped services ---- */
   const grouped = useMemo(() => {
-    let filtered = services;
+    let filtered = divisionServices;
 
     if (isSearching) {
       const q = deferredSearch.toLowerCase();
-      filtered = services.filter(
+      filtered = divisionServices.filter(
         (s) =>
           s.name.toLowerCase().includes(q) ||
           (s.description && s.description.toLowerCase().includes(q)) ||
           s.category.toLowerCase().includes(q),
       );
-    } else {
-      // Filter by active group
+    } else if (activeDivision === "ALL") {
+      // ALL users: filter by active group toggle
       const allowedCategories = new Set<string>(SERVICE_GROUPS[activeGroup]);
-      filtered = services.filter((s) => allowedCategories.has(s.category));
+      filtered = divisionServices.filter((s) => allowedCategories.has(s.category));
     }
+    // Single-division users: show all divisionServices (already filtered by division)
 
     const map = new Map<string, CatalogService[]>();
     for (const s of filtered) {
@@ -142,7 +160,7 @@ export function IntakeServiceSelect({
       map.set(s.category, arr);
     }
     return Array.from(map.entries());
-  }, [services, isSearching, deferredSearch, activeGroup]);
+  }, [divisionServices, isSearching, deferredSearch, activeGroup, activeDivision]);
 
   /* ---- visible categories (for pills) ---- */
   const visibleCategories = useMemo(
@@ -153,22 +171,22 @@ export function IntakeServiceSelect({
   /* ---- selected counts per category ---- */
   const selectedCounts = useMemo(() => {
     const counts: Record<string, number> = {};
-    for (const s of services) {
+    for (const s of divisionServices) {
       if (selectedIds.has(s.id)) {
         counts[s.category] = (counts[s.category] ?? 0) + 1;
       }
     }
     return counts;
-  }, [services, selectedIds]);
+  }, [divisionServices, selectedIds]);
 
   /* ---- selected categories & level ---- */
   const selectedCategories = useMemo(() => {
     const cats = new Set<string>();
-    for (const s of services) {
+    for (const s of divisionServices) {
       if (selectedIds.has(s.id)) cats.add(s.category);
     }
     return Array.from(cats);
-  }, [services, selectedIds]);
+  }, [divisionServices, selectedIds]);
 
   const detectedLevel = useMemo(
     () => getIntakeLevel(selectedCategories),
@@ -276,12 +294,14 @@ export function IntakeServiceSelect({
       {/* -- Group Toggle + Check-Up (hidden during search) -- */}
       {!isSearching && (
         <>
-          <div className="mb-3">
-            <ServiceGroupToggle
-              activeGroup={activeGroup}
-              onGroupChange={setActiveGroup}
-            />
-          </div>
+          {activeDivision === "ALL" && (
+            <div className="mb-3">
+              <ServiceGroupToggle
+                activeGroup={activeGroup}
+                onGroupChange={setActiveGroup}
+              />
+            </div>
+          )}
 
           {/* Check-Up Only toggle */}
           <div

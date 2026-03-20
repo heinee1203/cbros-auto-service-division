@@ -18,7 +18,7 @@ import {
   resetPasswordAction,
   resetPinAction,
 } from "@/lib/actions/user-actions";
-import { UserRole, USER_ROLE_LABELS } from "@/types/enums";
+import { UserRole, USER_ROLE_LABELS, USER_DIVISION_LABELS, type UserDivision } from "@/types/enums";
 import type { UserCreateInput, UserUpdateInput } from "@/lib/validators";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -29,6 +29,7 @@ interface UserRow {
   firstName: string;
   lastName: string;
   role: string;
+  division: string;
   phone: string | null;
   email: string | null;
   isActive: boolean;
@@ -58,6 +59,7 @@ interface UserFormState {
   username: string;
   password: string;
   role: string;
+  division: string;
   phone: string;
   email: string;
   pin: string;
@@ -73,6 +75,7 @@ function UserForm({ open, onClose, onSuccess, user, currentUserId }: UserFormPro
     username: "",
     password: "",
     role: "TECHNICIAN",
+    division: "ALL",
     phone: "",
     email: "",
     pin: "",
@@ -89,6 +92,7 @@ function UserForm({ open, onClose, onSuccess, user, currentUserId }: UserFormPro
         username: user.username,
         password: "",
         role: user.role,
+        division: user.division || "ALL",
         phone: user.phone ?? "",
         email: user.email ?? "",
         pin: "",
@@ -100,6 +104,7 @@ function UserForm({ open, onClose, onSuccess, user, currentUserId }: UserFormPro
         username: "",
         password: "",
         role: "TECHNICIAN",
+        division: "ALL",
         phone: "",
         email: "",
         pin: "",
@@ -125,9 +130,10 @@ function UserForm({ open, onClose, onSuccess, user, currentUserId }: UserFormPro
         phone: form.phone || undefined,
         email: form.email || undefined,
       };
-      // Only include role if not self
+      // Only include role/division if not self
       if (!isSelf) {
         payload.role = form.role as UserUpdateInput["role"];
+        payload.division = form.division as UserDivision;
       }
 
       const result = await updateUserAction(user!.id, payload);
@@ -147,6 +153,7 @@ function UserForm({ open, onClose, onSuccess, user, currentUserId }: UserFormPro
         username: form.username,
         password: form.password,
         role: form.role as UserCreateInput["role"],
+        division: form.division as UserDivision,
         phone: form.phone || undefined,
         email: form.email || undefined,
         pin: form.pin || undefined,
@@ -294,6 +301,26 @@ function UserForm({ open, onClose, onSuccess, user, currentUserId }: UserFormPro
           </select>
           {isSelf && (
             <p className="text-xs text-surface-400 mt-1">You cannot change your own role.</p>
+          )}
+        </div>
+
+        {/* Division */}
+        <div>
+          <label className={labelClass}>Division *</label>
+          <select
+            className={inputClass}
+            value={form.division}
+            onChange={(e) => setField("division", e.target.value)}
+            disabled={isSelf}
+          >
+            {Object.entries(USER_DIVISION_LABELS).map(([value, label]) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+          </select>
+          {isSelf && (
+            <p className="text-xs text-surface-400 mt-1">You cannot change your own division.</p>
           )}
         </div>
 
@@ -698,6 +725,19 @@ export function UsersClient({ currentUserId }: { currentUserId: string }) {
           <Badge variant={roleVariant(role)}>
             {USER_ROLE_LABELS[role as UserRole] ?? role}
           </Badge>
+        );
+      },
+    },
+    {
+      accessorKey: "division",
+      header: "Division",
+      enableSorting: false,
+      cell: ({ getValue }) => {
+        const div = getValue() as string;
+        return (
+          <span className="text-xs font-medium text-surface-500">
+            {USER_DIVISION_LABELS[div as UserDivision] ?? div}
+          </span>
         );
       },
     },

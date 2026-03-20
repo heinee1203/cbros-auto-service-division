@@ -28,6 +28,7 @@ model User {
   firstName     String
   lastName      String
   role          String    @default("TECHNICIAN") // UserRole
+  division      String    @default("ALL") // "MECHANICAL", "BODY_PAINT", "ALL"
   isActive      Boolean   @default(true)
   phone         String?
   email         String?
@@ -59,6 +60,7 @@ model User {
 
   @@index([pinHash])
   @@index([role])
+  @@index([division])
   @@index([deletedAt])
 }
 

@@ -14,6 +14,8 @@ import {
   JOB_ORDER_STATUS_LABELS,
   type JobOrderStatus,
 } from "@/types/enums";
+import { useDivision } from "@/components/division-provider";
+import { divisionToCategoryGroup } from "@/lib/division";
 
 type Job = {
   id: string;
@@ -64,7 +66,8 @@ const CATEGORY_GROUPS = [
 export function JobsClient({ jobs }: JobsClientProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
-  const [categoryGroup, setCategoryGroup] = useState("ALL");
+  const { activeDivision } = useDivision();
+  const [categoryGroup, setCategoryGroup] = useState(() => divisionToCategoryGroup(activeDivision));
   const [selectedFilter, setSelectedFilter] = useState(0);
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
 

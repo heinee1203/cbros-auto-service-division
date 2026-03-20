@@ -13,6 +13,7 @@ export interface CreateUserInput {
   firstName: string;
   lastName: string;
   role: string;
+  division?: string;
   phone?: string;
   email?: string;
   pin?: string;
@@ -22,6 +23,7 @@ export interface UpdateUserInput {
   firstName?: string;
   lastName?: string;
   role?: string;
+  division?: string;
   phone?: string;
   email?: string;
   isActive?: boolean;
@@ -57,6 +59,7 @@ export async function getUsers({
         firstName: true,
         lastName: true,
         role: true,
+        division: true,
         phone: true,
         email: true,
         isActive: true,
@@ -83,6 +86,7 @@ export async function getUserById(id: string) {
       firstName: true,
       lastName: true,
       role: true,
+      division: true,
       phone: true,
       email: true,
       isActive: true,
@@ -107,6 +111,7 @@ export async function createUser(input: CreateUserInput) {
       firstName: input.firstName,
       lastName: input.lastName,
       role: input.role,
+      division: input.division || "ALL",
       phone: input.phone || null,
       email: input.email || null,
     },
@@ -120,6 +125,7 @@ export async function updateUser(id: string, input: UpdateUserInput) {
       ...(input.firstName !== undefined && { firstName: input.firstName }),
       ...(input.lastName !== undefined && { lastName: input.lastName }),
       ...(input.role !== undefined && { role: input.role }),
+      ...(input.division !== undefined && { division: input.division }),
       ...(input.phone !== undefined && { phone: input.phone || null }),
       ...(input.email !== undefined && { email: input.email || null }),
       ...(input.isActive !== undefined && { isActive: input.isActive }),

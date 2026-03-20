@@ -12,6 +12,19 @@ export const UserRole = {
 } as const;
 export type UserRole = (typeof UserRole)[keyof typeof UserRole];
 
+export const UserDivision = {
+  MECHANICAL: "MECHANICAL",
+  BODY_PAINT: "BODY_PAINT",
+  ALL: "ALL",
+} as const;
+export type UserDivision = (typeof UserDivision)[keyof typeof UserDivision];
+
+export const USER_DIVISION_LABELS: Record<UserDivision, string> = {
+  MECHANICAL: "Auto Repair",
+  BODY_PAINT: "Body & Paint",
+  ALL: "All Divisions",
+};
+
 export const EstimateRequestStatus = {
   INQUIRY_RECEIVED: "INQUIRY_RECEIVED",
   PENDING_ESTIMATE: "PENDING_ESTIMATE",

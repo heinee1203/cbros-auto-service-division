@@ -22,6 +22,7 @@ async function main() {
       firstName: "Shop",
       lastName: "Owner",
       role: "OWNER",
+      division: "ALL",
       isActive: true,
     },
   });
@@ -550,18 +551,18 @@ async function main() {
   // 6. Technicians (12)
   // ========================================================================
   const technicians = [
-    { firstName: "Allan", username: "allan", pin: "1001" },
-    { firstName: "Inggo", username: "inggo", pin: "1002" },
-    { firstName: "Lino", username: "lino", pin: "1003" },
-    { firstName: "Toni", username: "toni", pin: "1004" },
-    { firstName: "Jurell", username: "jurell", pin: "1005" },
-    { firstName: "Sam", username: "sam", pin: "1006" },
-    { firstName: "Nold", username: "nold", pin: "1007" },
-    { firstName: "Joy", username: "joy", pin: "1008" },
-    { firstName: "Kevin", username: "kevin", pin: "1009" },
-    { firstName: "Joseph", username: "joseph", pin: "1010" },
-    { firstName: "Roi", username: "roi", pin: "1011" },
-    { firstName: "Buban", username: "buban", pin: "1012" },
+    { firstName: "Allan", username: "allan", pin: "1001", division: "MECHANICAL" },
+    { firstName: "Inggo", username: "inggo", pin: "1002", division: "MECHANICAL" },
+    { firstName: "Lino", username: "lino", pin: "1003", division: "MECHANICAL" },
+    { firstName: "Toni", username: "toni", pin: "1004", division: "MECHANICAL" },
+    { firstName: "Jurell", username: "jurell", pin: "1005", division: "MECHANICAL" },
+    { firstName: "Sam", username: "sam", pin: "1006", division: "MECHANICAL" },
+    { firstName: "Nold", username: "nold", pin: "1007", division: "BODY_PAINT" },
+    { firstName: "Joy", username: "joy", pin: "1008", division: "BODY_PAINT" },
+    { firstName: "Kevin", username: "kevin", pin: "1009", division: "BODY_PAINT" },
+    { firstName: "Joseph", username: "joseph", pin: "1010", division: "BODY_PAINT" },
+    { firstName: "Roi", username: "roi", pin: "1011", division: "BODY_PAINT" },
+    { firstName: "Buban", username: "buban", pin: "1012", division: "BODY_PAINT" },
   ];
 
   for (const tech of technicians) {
@@ -577,6 +578,7 @@ async function main() {
         firstName: tech.firstName,
         lastName: ".",
         role: "TECHNICIAN",
+        division: tech.division,
         isActive: true,
       },
     });
@@ -626,13 +628,13 @@ async function main() {
   // 7. Front Desk Advisors (7)
   // ========================================================================
   const advisors = [
-    { firstName: "Abi", username: "abi", pin: "2001" },
-    { firstName: "Kathleen", username: "kathleen", pin: "2002" },
-    { firstName: "Jelyn", username: "jelyn", pin: "2003" },
-    { firstName: "Arlene", username: "arlene", pin: "2004" },
-    { firstName: "Leslie", username: "leslie", pin: "2005" },
-    { firstName: "Ma Jelyn", username: "majelyn", pin: "2006" },
-    { firstName: "Ronna", username: "ronna", pin: "2007" },
+    { firstName: "Abi", username: "abi", pin: "2001", division: "MECHANICAL" },
+    { firstName: "Kathleen", username: "kathleen", pin: "2002", division: "MECHANICAL" },
+    { firstName: "Jelyn", username: "jelyn", pin: "2003", division: "MECHANICAL" },
+    { firstName: "Arlene", username: "arlene", pin: "2004", division: "BODY_PAINT" },
+    { firstName: "Leslie", username: "leslie", pin: "2005", division: "BODY_PAINT" },
+    { firstName: "Ma Jelyn", username: "majelyn", pin: "2006", division: "BODY_PAINT" },
+    { firstName: "Ronna", username: "ronna", pin: "2007", division: "ALL" },
   ];
 
   for (const adv of advisors) {
@@ -648,6 +650,7 @@ async function main() {
         firstName: adv.firstName,
         lastName: ".",
         role: "ADVISOR",
+        division: adv.division,
         isActive: true,
       },
     });
@@ -669,6 +672,7 @@ async function main() {
       firstName: "Service",
       lastName: "Manager",
       role: "MANAGER",
+      division: "ALL",
       isActive: true,
     },
   });

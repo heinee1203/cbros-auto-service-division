@@ -370,17 +370,22 @@ export async function getAllActiveServices(category?: string) {
 // ---------------------------------------------------------------------------
 // 11. getActiveTechnicians
 // ---------------------------------------------------------------------------
-export async function getActiveTechnicians() {
+export async function getActiveTechnicians(division?: string) {
+  const where: Record<string, unknown> = {
+    isActive: true,
+    role: { in: ["TECHNICIAN", "QC_INSPECTOR"] },
+  };
+  if (division && division !== "ALL") {
+    where.division = { in: [division, "ALL"] };
+  }
   return prisma.user.findMany({
-    where: {
-      isActive: true,
-      role: { in: ["TECHNICIAN", "QC_INSPECTOR"] },
-    },
+    where,
     select: {
       id: true,
       firstName: true,
       lastName: true,
       role: true,
+      division: true,
     },
     orderBy: { firstName: "asc" },
   });

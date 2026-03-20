@@ -1,5 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { MECHANICAL_CATEGORIES } from "@/lib/constants";
+import { divisionJobFilter, divisionUserFilter } from "@/lib/division";
+import type { UserDivision } from "@/types/enums";
 
 // Filter for jobs that have at least one mechanical service task
 const HAS_MECHANICAL_TASK = {
@@ -513,7 +515,9 @@ export async function getShopCapacity(startDate: Date, endDate: Date) {
 // LIVE FLOOR DATA
 // ============================================================================
 
-export async function getLiveFloorData() {
+export async function getLiveFloorData(division: UserDivision = "ALL") {
+  // Use division filter if specified, otherwise default to mechanical for Live Floor
+  const jobFilter = division === "ALL" ? HAS_MECHANICAL_TASK : divisionJobFilter(division);
   const bays = await prisma.bay.findMany({
     where: { deletedAt: null, isActive: true },
     orderBy: { sortOrder: "asc" },
@@ -565,13 +569,13 @@ export async function getLiveFloorData() {
 
   const [queueCount, activeCount, totalTechs, clockedInTechIds, pendingEstimatesCount] = await Promise.all([
     prisma.jobOrder.count({
-      where: { status: "CHECKED_IN", deletedAt: null, ...HAS_MECHANICAL_TASK },
+      where: { status: "CHECKED_IN", deletedAt: null, ...jobFilter },
     }),
     prisma.jobOrder.count({
-      where: { status: "IN_PROGRESS", deletedAt: null, ...HAS_MECHANICAL_TASK },
+      where: { status: "IN_PROGRESS", deletedAt: null, ...jobFilter },
     }),
     prisma.user.count({
-      where: { role: "TECHNICIAN", isActive: true, deletedAt: null },
+      where: { role: "TECHNICIAN", isActive: true, deletedAt: null, ...divisionUserFilter(division) },
     }),
     prisma.timeEntry.findMany({
       where: { clockOut: null },
@@ -596,8 +600,8 @@ export async function getLiveFloorData() {
         { status: { notIn: ["CANCELLED", "RELEASED"] } },
         { status: "RELEASED", actualCompletionDate: { gte: startOfToday } },
       ],
-      // Live Floor: only mechanical/auto repair jobs
-      ...HAS_MECHANICAL_TASK,
+      // Filter by division (defaults to mechanical for ALL)
+      ...jobFilter,
     },
     select: {
       id: true,

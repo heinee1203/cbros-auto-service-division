@@ -21,6 +21,8 @@ import {
   type JobOrderStatus,
   type JobOrderPriority,
 } from "@/types/enums";
+import { useDivision } from "@/components/division-provider";
+import { divisionToCategoryGroup } from "@/lib/division";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -314,6 +316,7 @@ function buildColumns(
 
 export default function JobsPage() {
   const router = useRouter();
+  const { activeDivision } = useDivision();
 
   const [data, setData] = useState<JobOrderRow[]>([]);
   const [total, setTotal] = useState(0);
@@ -325,7 +328,14 @@ export default function JobsPage() {
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const [categoryGroup, setCategoryGroup] = useState("ALL");
+  const defaultCategoryGroup = divisionToCategoryGroup(activeDivision);
+  const [categoryGroup, setCategoryGroup] = useState(defaultCategoryGroup);
+
+  // Sync category group when division changes
+  useEffect(() => {
+    setCategoryGroup(divisionToCategoryGroup(activeDivision));
+    setPageIndex(0);
+  }, [activeDivision]);
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [pageIndex, setPageIndex] = useState(0);
   const [sorting, setSorting] = useState<SortingState>([

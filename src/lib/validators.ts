@@ -334,6 +334,7 @@ export const userCreateSchema = z.object({
     "QC_INSPECTOR",
     "CASHIER",
   ]),
+  division: z.enum(["MECHANICAL", "BODY_PAINT", "ALL"]).optional().default("ALL"),
   phone: z.string().optional(),
   email: z.string().email().optional().or(z.literal("")),
   pin: z
@@ -359,6 +360,7 @@ export const userUpdateSchema = z.object({
       "CASHIER",
     ])
     .optional(),
+  division: z.enum(["MECHANICAL", "BODY_PAINT", "ALL"]).optional(),
   phone: z.string().optional(),
   email: z.string().email().optional().or(z.literal("")),
   isActive: z.boolean().optional(),
